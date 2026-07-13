@@ -14,6 +14,6 @@ html: $(DOXYGEN_CONF)
 	@( cat $(DOXYGEN_CONF) ; echo "GENERATE_HTML=NO" ; echo "EXTRACT_ALL=NO" ; echo "WARN_LOGFILE=undoc.log" ; echo "QUIET=YES" ) | doxygen - &> /dev/null
 
 clean:
-	rm -rf $(DOXYGEN_CONF) build documentation.html *~
+	rm -rf build documentation.html *~
 	rm -rf  undoc.log warnings.log
 
