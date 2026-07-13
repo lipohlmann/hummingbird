@@ -72,6 +72,7 @@ Testing/
 .vscode/
 
 # documentation
+docs/Doxyfile
 *.html
 
 # external dependencies
