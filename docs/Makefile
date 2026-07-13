@@ -1,7 +1,7 @@
 # Adapted from MFEM (https://github.com/mfem/mfem/blob/master/doc/makefile)
 
 SHELL = /bin/bash
-MFEM_DIR ?= ..
+HUMMINGBIRD_DIR ?= ..
 DOXYGEN_CONF = Doxyfile
 
 # doxygen uses: graphviz, latex
@@ -16,4 +16,8 @@ html: $(DOXYGEN_CONF)
 clean:
 	rm -rf $(DOXYGEN_CONF) build documentation.html *~
 	rm -rf  undoc.log warnings.log
+
+$(DOXYGEN_CONF): $(HUMMINGBIRD_DIR)/docs/$(DOXYGEN_CONF).in
+	@sed -e 's%@HUMMINGBIRD_SOURCE_DIR@%$(HUMMINGBIRD_DIR)%g' $(<) \
+          > $(DOXYGEN_CONF)
 
