@@ -74,3 +74,6 @@ Testing/
 # documentation
 *.html
 
+# external dependencies
+external/
+
