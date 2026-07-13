@@ -70,3 +70,7 @@ Testing/
 
 # vscode
 .vscode/
+
+# documentation
+*.html
+
