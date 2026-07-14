@@ -75,6 +75,3 @@ Testing/
 docs/Doxyfile
 *.html
 
-# external dependencies
-external/
-
