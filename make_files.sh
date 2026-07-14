@@ -11,7 +11,7 @@ fi
 NAME="$1"
 
 # Convert filename to a header guard
-GUARD=$(echo "KINGFISHER_${NAME}_H" | tr '[:lower:]-' '[:upper:]_')
+GUARD=$(echo "HUMMINGBIRD_${NAME}_H" | tr '[:lower:]-' '[:upper:]_')
 
 mkdir -p include src tests
 
