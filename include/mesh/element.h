@@ -1,5 +1,5 @@
-#ifndef HUMMINGBIRD_ELEMENT_H
-#define HUMMINGBIRD_ELEMENT_H
+#ifndef HUMMINGBIRD_MESH_ELEMENT_H
+#define HUMMINGBIRD_MESH_ELEMENT_H
 
 #include <memory>
 #include <vector>
@@ -7,7 +7,7 @@
 #include "material.h"
 #include "node.h"
 
-namespace hummingbird {
+namespace hummingbird::mesh {
 class Element {
  public:
   Element();
@@ -15,6 +15,6 @@ class Element {
  private:
   const int material_id;
 };
-}  // namespace hummingbird
+}  // namespace hummingbird::mesh
 
-#endif  // HUMMINGBIRD_ELEMENT_H
+#endif  // HUMMINGBIRD_MESH_ELEMENT_H
