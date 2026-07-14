@@ -11,9 +11,13 @@ fi
 NAME="$1"
 
 # Convert filename to a header guard
-GUARD=$(echo "HUMMINGBIRD_${NAME}_H" | tr '[:lower:]-' '[:upper:]_')
+GUARD=$(printf "HUMMINGBIRD_%s_H" "$NAME" \
+    | tr '/[:lower:]-' '_[:upper:]_')
 
-mkdir -p include src tests
+mkdir -p \
+    "include/$(dirname "$NAME")" \
+    "src/$(dirname "$NAME")" \
+    "tests/$(dirname "$NAME")"
 
 cat > "include/${NAME}.h" <<EOF
 #ifndef ${GUARD}
