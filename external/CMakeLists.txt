@@ -3,8 +3,7 @@
 find_package(pugixml REQUIRED)
 target_link_libraries(hummingbird_lib PRIVATE pugixml::pugixml)
 
-find_package(Armadillo REQUIRED)
-find_package(Armadillo REQUIRED)
+find_package(Armadillo CONFIG REQUIRED)
 
 if(Armadillo_FOUND AND NOT TARGET Armadillo::Armadillo)
   add_library(Armadillo::Armadillo INTERFACE IMPORTED)
