@@ -1,4 +1,4 @@
-#include "quadrature/gl_angular_quadrature.h"
+#include "quadrature/gl_quadrature.h"
 
 #include "math/legendre_polynomials.h"
 
