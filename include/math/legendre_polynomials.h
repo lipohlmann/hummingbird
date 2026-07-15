@@ -73,7 +73,7 @@ std::vector<double> AllLegendreRoots(const int n);
  * approximating the root with
  *
  * \f[
- * x_k^(0)\approx \cos \left(\frac{4k+3}{4n+2}\pi\right)
+ * x_k^{(0)}\approx \cos \left(\frac{4k+3}{4n+2}\pi\right)
  * \f]
  * then using Newton's method to converge to the root.
  *
