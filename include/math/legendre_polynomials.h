@@ -27,6 +27,13 @@ double LegendrePolynomial(const int n, const double x);
  * P'_n (x)=\frac{nP_{n-1}(x)-nxP_n(x)}{1-x^2}
  * \f]
  *
+ * The value of the derivative at the bounds is special:
+ *
+ * \f[
+ * P'_n(x)=\begin{cases} (-1)^{n-1}\frac{n(n+1)}{2} & x=-1
+ * \\ \frac{n(n+1)}{2} &x=1 \end{cases}
+ * \f]
+ *
  * @param n
  * @param x
  * @return double
