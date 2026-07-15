@@ -13,6 +13,20 @@ namespace hummingbird::math {
  */
 double LegendrePolynomial(const int n, const double x);
 
+/**
+ * @brief Computes the first derivative of the Legendre polynomial of degree n
+ * at a point x using the recurrence relation:
+ *
+ * \f[
+ * P'_n (x)=\frac{nP_{n-1}(x)-nxP_n(x)}{1-x^2}
+ * \f]
+ *
+ * @param n
+ * @param x
+ * @return double
+ */
+double LegendrePolynomialDerivative(const int n, const double x);
+
 }  // namespace hummingbird::math
 
 #endif  // HUMMINGBIRD_MATH_LEGENDRE_POLYNOMIALS_H
