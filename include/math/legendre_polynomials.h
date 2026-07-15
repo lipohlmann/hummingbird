@@ -1,3 +1,8 @@
+/* The following was written heavily based on the teachings and codes found in
+ * the book Numerical Methods in Physics with Python, Second Edition by Alex
+ * Gezerlis. For more information on this text, please see
+ * https://numphyspy.org/. */
+
 #ifndef HUMMINGBIRD_MATH_LEGENDRE_POLYNOMIALS_H
 #define HUMMINGBIRD_MATH_LEGENDRE_POLYNOMIALS_H
 
@@ -6,11 +11,24 @@
 namespace hummingbird::math {
 /**
  * @brief Computes the Legendre polynomial of degree n at a point x using the
- * recursion formula:
+ * formula:
  *
  * \f[
  * P_{n+1}(x)=\frac{(2n+1)xP_{n}(x)-nP_{n-1}(x)}{n+1}
  * \f]
+ *
+ * with:
+ *
+ * \f[
+ * P_0=1,\quad P_1=x
+ * \f]
+ *
+ * The above is implemented to evaluate the n-th order Legendre polynomial by
+ * building from the bottom up, as opposed to using a recursion relation. This
+ * greatly improves the evaluation speed. This algorithm was taken from
+ * https://github.com/CambridgeUniversityPress/NumericalMethodsPhysicsWithPython/blob/master/second_edition/codes/legendre.py
+ * written by Alex Gezerlis for his book, Numerical Methods in Physics With
+ * Python, Second Edition.
  *
  *  Legendre polynomials are defined on the interval \f$x\in
  * [-1,1]\f$.
