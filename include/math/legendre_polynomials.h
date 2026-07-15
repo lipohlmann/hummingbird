@@ -4,7 +4,13 @@
 namespace hummingbird::math {
 /**
  * @brief Computes the Legendre polynomial of degree n at a point x using the
- * recursion formula. Legendre polynomials are defined on the interval \f$x\in
+ * recursion formula:
+ *
+ * \f[
+ * P_{n+1}(x)=\frac{(2n+1)xP_{n}(x)-nP_{n-1}(x)}{n+1}
+ * \f]
+ *
+ *  Legendre polynomials are defined on the interval \f$x\in
  * [-1,1]\f$.
  *
  * @param n Order of polynomial to evaluate
