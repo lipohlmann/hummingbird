@@ -1,9 +1,10 @@
 name: hummingbird
 channels:
-  - https://conda.software.inl.gov/public
+  - conda-forge
   - defaults
 dependencies:
   - gtest
   - armadillo
   - pugixml
+  - doxygen
 prefix: /Users/lipohlmann/anaconda3/envs/hummingbird
