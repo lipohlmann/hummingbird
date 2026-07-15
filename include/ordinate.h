@@ -45,7 +45,13 @@ class Ordinate {
   /// @brief Polar angle in radians
   const double polar_;
 
-  void CheckInput();
+  /**
+   * @brief Check that input angles are within expected bounds
+   *
+   * @param azimuth Azimuthal angle in radians
+   * @param polar Polar angle in radians
+   */
+  void CheckInput(const double azimuth, const double polar);
 };
 }  // namespace hummingbird
 
