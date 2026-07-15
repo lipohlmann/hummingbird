@@ -26,6 +26,8 @@ struct QuadraturePair {
 template <typename T>
 class Quadrature {
  public:
+  Quadrature(const std::vector<T> abscissas);
+
   /**
    * @brief Get the weight value corresponding to a given abscissa value
    *
@@ -52,7 +54,7 @@ class Quadrature {
    */
   const std::vector<T>& abscissas() const { return abscissas_; }
 
- private:
+ protected:
   /// @brief Abscissa values
   const std::vector<T> abscissas_;
 

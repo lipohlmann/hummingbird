@@ -2,6 +2,10 @@
 
 namespace hummingbird::quadrature {
 template <typename T>
+Quadrature<T>::Quadrature(const std::vector<T> abscissas)
+    : abscissas_(abscissas) {}
+
+template <typename T>
 double Quadrature<T>::Integrate(
     const std::vector<QuadraturePair<T>>& quad_pairs) {
   double sum = 0;
