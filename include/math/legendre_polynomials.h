@@ -1,6 +1,8 @@
 #ifndef HUMMINGBIRD_MATH_LEGENDRE_POLYNOMIALS_H
 #define HUMMINGBIRD_MATH_LEGENDRE_POLYNOMIALS_H
 
+#include <vector>
+
 namespace hummingbird::math {
 /**
  * @brief Computes the Legendre polynomial of degree n at a point x using the
@@ -39,6 +41,29 @@ double LegendrePolynomial(const int n, const double x);
  * @return double
  */
 double LegendrePolynomialDerivative(const int n, const double x);
+
+/**
+ * @brief Compute all roots of the Legendre polynomial of order n
+ *
+ * @param n Order
+ * @return std::vector<double>
+ */
+std::vector<double> AllLegendreRoots(const int n);
+
+/**
+ * @brief Computes the k-th root of the n-th order Legendre polynomial by first
+ * approximating the root with
+ *
+ * \f[
+ * x_k^(0)\approx \cos \left(\frac{4k+3}{4n+2}\pi\right)
+ * \f]
+ * then using Newton's method to converge to the root.
+ *
+ * @param n Order of the polynomial
+ * @param k Root to find
+ * @return double
+ */
+double LegendreRoot(const int n, const int k);
 
 }  // namespace hummingbird::math
 

@@ -1,7 +1,10 @@
 #include "math/legendre_polynomials.h"
 
 #include <cmath>
+#include <numeric>
+#include <stdexcept>
 
+#include "utils/constants.h"
 #include "utils/misc.h"
 
 namespace hummingbird::math {
@@ -14,11 +17,15 @@ double LegendrePolynomial(const int n, const double x) {
       return x;
 
     default:
-      int j = n - 1;
-      return ((2.0 * static_cast<double>(j) + 1.0) * x *
-                  LegendrePolynomial(j, x) -
-              static_cast<double>(j) * LegendrePolynomial(j - 1, x)) /
-             (static_cast<double>(j) + 1.0);
+      double previous = 1.0;
+      double current = x;
+      for (double j = 1; j < n; j++) {
+        double next =
+            ((2.0 * j + 1.0) * x * current - j * previous) / (j + 1.0);
+        previous = current;
+        current = next;
+      }
+      return current;
   }
 }
 
@@ -40,5 +47,33 @@ double LegendrePolynomialDerivative(const int n, const double x) {
               static_cast<double>(n) * x * LegendrePolynomial(n, x)) /
              (1.0 - x * x);
   }
+}
+
+std::vector<double> AllLegendreRoots(const int n) {
+  unsigned int n_even =
+      static_cast<unsigned int>(std::floor(static_cast<double>(n) / 2.0));
+  std::vector<double> computed_roots(n);
+
+  for (auto i = 0; i < n_even; i++) {
+    computed_roots[n - 1 - i] = LegendreRoot(n, i);
+    computed_roots[i] = -computed_roots[n - 1 - i];
+  }
+  return computed_roots;
+}
+
+double LegendreRoot(const int n, const int k) {
+  if (k > n) throw std::invalid_argument("k must be less than or equal to n.");
+  double x_old = std::cos((4.0 * static_cast<double>(k) + 3.0) /
+                          (4.0 * static_cast<double>(n) + 2.0) * M_PI);
+  double error = std::numeric_limits<double>::infinity();
+  unsigned int safety = 100;
+  for (auto i = 0; i < safety; i++) {
+    double x_new = x_old - LegendrePolynomial(n, x_old) /
+                               LegendrePolynomialDerivative(n, x_old);
+    error = std::abs((x_new - x_old) / x_new);
+    if (error < utils::TOLERANCE) return x_new;
+    x_old = x_new;
+  }
+  throw std::runtime_error("LegendreRoot did not converge.");
 }
 }  // namespace hummingbird::math
