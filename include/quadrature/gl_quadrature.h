@@ -9,4 +9,4 @@ class GLQuadrature : public Quadrature<double> {
 };
 }  // namespace hummingbird::quadrature
 
-#endif  // HUMMINGBIRD_QUADRATURE_GL_ANGULAR_QUADRATURE_H
+#endif  // HUMMINGBIRD_QUADRATURE_GL_QUADRATURE_H
