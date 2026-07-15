@@ -28,3 +28,5 @@ cmake_path(APPEND ROOT_DIR "test" OUTPUT_VARIABLE TEST_DIR)
 add_subdirectory(src)
 add_subdirectory(external)
 add_subdirectory(tests)
+add_subdirectory(docs)
+
