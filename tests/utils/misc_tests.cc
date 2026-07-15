@@ -1,5 +1,6 @@
 #include <gtest/gtest.h>
 
+#include "utils/constants.h"
 #include "utils/misc.h"
 
 namespace hummingbird::utils {
