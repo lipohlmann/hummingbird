@@ -5,4 +5,19 @@
 namespace hummingbird::quadrature {
 GLQuadrature::GLQuadrature(const unsigned int n)
     : Quadrature<double>(math::AllLegendreRoots(n)) {}
+
+void GLQuadrature::CreateWeightMap() {
+  int order = abscissas_.size();
+  for (auto i = 0; i < order; i++) {
+    double weight = ComputeWeight(i, order);
+    weight_map_.insert({abscissas_[i], weight});
+  }
+}
+
+double GLQuadrature::ComputeWeight(const auto k, const auto n) {
+  double abscissa = abscissas_.at(k);
+  double derivative_weight = math::LegendrePolynomialDerivative(n, abscissa);
+  return 2.0 / (1 - abscissa * abscissa) / derivative_weight /
+         derivative_weight;
+}
 }  // namespace hummingbird::quadrature
