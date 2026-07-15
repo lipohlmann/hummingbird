@@ -1,0 +1,9 @@
+name: hummingbird
+channels:
+  - https://conda.software.inl.gov/public
+  - defaults
+dependencies:
+  - gtest
+  - armadillo
+  - pugixml
+prefix: /Users/lipohlmann/anaconda3/envs/hummingbird
