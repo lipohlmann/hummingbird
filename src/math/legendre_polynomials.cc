@@ -15,9 +15,10 @@ double LegendrePolynomial(const int n, const double x) {
 
     default:
       int j = n - 1;
-      return ((2.0 * j + 1.0) * x * LegendrePolynomial(j, x) -
-              j * LegendrePolynomial(j - 1, x)) /
-             (j + 1.0);
+      return ((2.0 * static_cast<double>(j) + 1.0) * x *
+                  LegendrePolynomial(j, x) -
+              static_cast<double>(j) * LegendrePolynomial(j - 1, x)) /
+             (static_cast<double>(j) + 1.0);
   }
 }
 
@@ -35,8 +36,8 @@ double LegendrePolynomialDerivative(const int n, const double x) {
       return 1.0;
 
     default:
-      return (n * LegendrePolynomial(n - 1, x) -
-              n * x * LegendrePolynomial(n, x)) /
+      return (static_cast<double>(n) * LegendrePolynomial(n - 1, x) -
+              static_cast<double>(n) * x * LegendrePolynomial(n, x)) /
              (1.0 - x * x);
   }
 }
