@@ -3,8 +3,9 @@ channels:
   - conda-forge
   - defaults
 dependencies:
-  - gtest
-  - armadillo
-  - pugixml
-  - doxygen
+  - gtest>=1.17
+  - armadillo=15.4.1
+  - pugixml=1.15
+  - doxygen>=1.17.0
+  - graphviz>=14.1.2
 prefix: /Users/lipohlmann/anaconda3/envs/hummingbird
