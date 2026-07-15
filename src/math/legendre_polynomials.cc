@@ -1,35 +1,43 @@
 #include "math/legendre_polynomials.h"
 
+#include <cmath>
+
+#include "utils/misc.h"
+
 namespace hummingbird::math {
 double LegendrePolynomial(const int n, const double x) {
   switch (n) {
     case 0:
-      return 0;
+      return 1.0;
 
     case 1:
       return x;
 
     default:
-      return ((2.0 * n + 1.0) * x * LegendrePolynomial(n - 1, x) -
-              n * LegendrePolynomial(n - 2, x)) /
-             (n + 1.0);
+      int j = n - 1;
+      return ((2.0 * j + 1.0) * x * LegendrePolynomial(j, x) -
+              j * LegendrePolynomial(j - 1, x)) /
+             (j + 1.0);
   }
 }
 
 double LegendrePolynomialDerivative(const int n, const double x) {
-  double denominator = 1.0 - x * x;
-  double numerator = 0;
+  if (utils::DoubleEqual(x, -1.0))
+    return std::pow(-1, n - 1) * n * (n + 1) / 2.0;
+  else if (utils::DoubleEqual(x, 1.0))
+    return n * (n + 1) / 2.0;
+
   switch (n) {
     case 0:
-      numerator = 0;
+      return 0;
 
     case 1:
-      numerator = 1.0;
+      return 1.0;
 
     default:
-      numerator =
-          n * LegendrePolynomial(n - 1, x) - n * x * LegendrePolynomial(n, x);
+      return (n * LegendrePolynomial(n - 1, x) -
+              n * x * LegendrePolynomial(n, x)) /
+             (1.0 - x * x);
   }
-  return numerator / denominator;
 }
 }  // namespace hummingbird::math
