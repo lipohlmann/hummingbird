@@ -3,8 +3,8 @@
 #include "math/legendre_polynomials.h"
 
 namespace hummingbird::quadrature {
-GLQuadrature::GLQuadrature(const unsigned int n)
-    : Quadrature<double>(math::AllLegendreRoots(n)) {}
+GLQuadrature::GLQuadrature(const unsigned int n_points)
+    : Quadrature<double>(math::AllLegendreRoots(n_points)) {}
 
 void GLQuadrature::CreateWeightMap() {
   int order = abscissas_.size();

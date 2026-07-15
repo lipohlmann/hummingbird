@@ -3,9 +3,19 @@
 
 #include "quadrature/quadrature.h"
 namespace hummingbird::quadrature {
+
+/**
+ * @brief Defines a Gauss-Legendre quadrature set on the interval [-1,1]
+ *
+ */
 class GLQuadrature : public Quadrature<double> {
  public:
-  GLQuadrature(const unsigned int n_ordinates);
+  /**
+   * @brief Construct a new GLQuadrature object
+   *
+   * @param n Number of quadrature points to be created
+   */
+  GLQuadrature(const unsigned int n_points);
 
  private:
   /**
