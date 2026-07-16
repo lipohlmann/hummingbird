@@ -26,7 +26,7 @@ struct QuadraturePair {
 template <typename T>
 class Quadrature {
  public:
-  Quadrature(const std::vector<T> abscissas);
+  Quadrature(const std::vector<T> abscissas) : abscissas_(abscissas){};
 
   /**
    * @brief Get the weight value corresponding to a given abscissa value
@@ -35,7 +35,7 @@ class Quadrature {
    * @return Weight value
    */
   double GetWeight(const T& abscissa) const {
-    return weight_map_.get(abscissa);
+    return weight_map_.at(abscissa);
   };
 
   /**
@@ -45,7 +45,14 @@ class Quadrature {
    * @param quad_pairs QuadraturePair object
    * @return Approximated integral using the quadrature set
    */
-  double Integrate(const std::vector<QuadraturePair<T>>& quad_pairs);
+  double Integrate(const std::vector<QuadraturePair<T>>& quad_pairs) {
+    double sum = 0;
+    for (auto& pair : quad_pairs) {
+      auto weight = GetWeight(pair.abscissa);
+      sum += pair.function_value * weight;
+    }
+    return sum;
+  };
 
   /**
    * @brief Getter for the abscissas in the quadrature set
