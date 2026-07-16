@@ -12,9 +12,8 @@ namespace hummingbird::quadrature {
  *
  * @tparam T Data type of the abscissa
  */
-template <typename T>
 struct QuadraturePair {
-  T abscissa;
+  int abscissa_index;
   double function_value;
 };
 
@@ -34,9 +33,13 @@ class Quadrature {
    * @param abscissa Abscissa value
    * @return Weight value
    */
-  double GetWeight(const T& abscissa) const {
-    return weight_map_.at(abscissa);
+  double GetWeight(const unsigned int abscissa_index) const {
+    return weight_map_.at(abscissa_index);
   };
+
+  double GetAbscissa(const unsigned int index) const {
+    return abscissas_.at(index);
+  }
 
   /**
    * @brief Integrate the function using the function value and its location on
@@ -45,10 +48,10 @@ class Quadrature {
    * @param quad_pairs QuadraturePair object
    * @return Approximated integral using the quadrature set
    */
-  double Integrate(const std::vector<QuadraturePair<T>>& quad_pairs) {
+  double Integrate(const std::vector<QuadraturePair>& quad_pairs) {
     double sum = 0;
     for (auto& pair : quad_pairs) {
-      auto weight = GetWeight(pair.abscissa);
+      auto weight = GetWeight(pair.abscissa_index);
       sum += pair.function_value * weight;
     }
     return sum;
@@ -66,8 +69,8 @@ class Quadrature {
   const std::vector<T> abscissas_;
 
   /// @brief Map to store the weights of the quadrature set where the keys are
-  /// their corresponding ordinates
-  std::map<T, double> weight_map_;
+  /// the indices corresponding to abscissa values
+  std::map<unsigned int, double> weight_map_;
 };
 }  // namespace hummingbird::quadrature
 

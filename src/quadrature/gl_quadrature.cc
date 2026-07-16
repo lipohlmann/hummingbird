@@ -12,7 +12,7 @@ void GLQuadrature::CreateWeightMap() {
   int order = abscissas_.size();
   for (auto i = 0; i < order; i++) {
     double weight = ComputeWeight(i, order);
-    weight_map_.insert({abscissas_[i], weight});
+    weight_map_.insert({i, weight});
   }
 }
 

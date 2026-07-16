@@ -15,12 +15,12 @@ namespace hummingbird::quadrature {
 
 // Builds the QuadraturePair vector required by Integrate() by evaluating
 // `f` at every abscissa of `quad`.
-std::vector<QuadraturePair<double>> EvaluateAt(
-    const GLQuadrature& quad, const std::function<double(double)>& f) {
-  std::vector<QuadraturePair<double>> pairs;
+std::vector<QuadraturePair> EvaluateAt(const GLQuadrature& quad,
+                                       const std::function<double(double)>& f) {
+  std::vector<QuadraturePair> pairs;
   pairs.reserve(quad.abscissas().size());
-  for (const double x : quad.abscissas()) {
-    pairs.push_back(QuadraturePair<double>{x, f(x)});
+  for (auto i = 0; i < quad.abscissas().size(); i++) {
+    pairs.push_back(QuadraturePair{i, f(quad.GetAbscissa(i))});
   }
   return pairs;
 }
