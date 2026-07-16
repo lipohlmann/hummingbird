@@ -4,7 +4,9 @@
 
 namespace hummingbird::quadrature {
 GLQuadrature::GLQuadrature(const unsigned int n_points)
-    : Quadrature<double>(math::AllLegendreRoots(n_points)) {}
+    : Quadrature<double>(math::AllLegendreRoots(n_points)) {
+  CreateWeightMap();
+}
 
 void GLQuadrature::CreateWeightMap() {
   int order = abscissas_.size();
