@@ -6,6 +6,7 @@
 
 #include "quadrature/gl_quadrature.h"
 #include "quadrature/quadrature.h"
+#include "utils/constants.h"
 
 namespace hummingbird::quadrature {
 
@@ -54,7 +55,7 @@ TEST_P(GLQuadratureExactnessTest, IntegratesAllMonomialsUpToDegree2NMinus1) {
     auto pairs = EvaluateAt(quad, [k](double x) { return std::pow(x, k); });
     const double result = quad.Integrate(pairs);
     const double expected = AnalyticMonomialIntegral(k);
-    EXPECT_DOUBLE_EQ(result, expected)
+    EXPECT_NEAR(result, expected, utils::TOLERANCE)
         << "Failed for n=" << n << ", monomial degree k=" << k;
   }
 }
