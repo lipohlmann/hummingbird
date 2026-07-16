@@ -25,12 +25,17 @@ struct QuadraturePair {
 template <typename T>
 class Quadrature {
  public:
+  /**
+   * @brief Construct a new Quadrature object
+   *
+   * @param abscissas Vector of abscissa values for the quadrature
+   */
   Quadrature(const std::vector<T> abscissas) : abscissas_(abscissas){};
 
   /**
    * @brief Get the weight value corresponding to a given abscissa value
    *
-   * @param abscissa Abscissa value
+   * @param abscissa_index Abscissa index
    * @return Weight value
    */
   double GetWeight(const unsigned int abscissa_index) const {

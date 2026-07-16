@@ -13,7 +13,7 @@ class GLQuadrature : public Quadrature<double> {
   /**
    * @brief Construct a new GLQuadrature object
    *
-   * @param n Number of quadrature points to be created
+   * @param n_points Number of quadrature points to be created
    */
   GLQuadrature(const unsigned int n_points);
 
