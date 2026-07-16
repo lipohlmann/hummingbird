@@ -37,9 +37,13 @@ class Quadrature {
     return weight_map_.at(abscissa_index);
   };
 
-  double GetAbscissa(const unsigned int index) const {
-    return abscissas_.at(index);
-  }
+  /**
+   * @brief Get the abscissa corresponding to the index
+   *
+   * @param index Abscissa index
+   * @return T Abscissa object at index
+   */
+  T GetAbscissa(const unsigned int index) const { return abscissas_.at(index); }
 
   /**
    * @brief Integrate the function using the function value and its location on
