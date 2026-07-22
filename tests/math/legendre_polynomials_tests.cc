@@ -96,12 +96,12 @@ TEST(LegendrePolynomial, ParitySymmetry) {
 }
 
 // =======================================================================
-// LegendrePolynomialDerivative(n, x)
+// LegendrePolynomialPrime(n, x)
 // =======================================================================
 
-TEST(LegendrePolynomialDerivative, D0IsZero) {
+TEST(LegendrePolynomialPrime, D0IsZero) {
   for (double x : kAllX) {
-    EXPECT_DOUBLE_EQ(LegendrePolynomialDerivative(0, x), 0.0);
+    EXPECT_DOUBLE_EQ(LegendrePolynomialPrime(0, x), 0.0);
   }
 }
 
@@ -110,29 +110,29 @@ TEST(LegendrePolynomialDerivative, D0IsZero) {
 // against the current implementation, which hardcodes the n==1 case as
 // 1.0 / (1.0 - x * x) instead of falling through to the general formula
 // (which itself simplifies to 1 for n=1).
-TEST(LegendrePolynomialDerivative, D1IsOne) {
+TEST(LegendrePolynomialPrime, D1IsOne) {
   for (double x : kInteriorX) {
-    EXPECT_DOUBLE_EQ(LegendrePolynomialDerivative(1, x), 1.0);
+    EXPECT_DOUBLE_EQ(LegendrePolynomialPrime(1, x), 1.0);
   }
 }
 
-TEST(LegendrePolynomialDerivative, D2ClosedForm) {
+TEST(LegendrePolynomialPrime, D2ClosedForm) {
   for (double x : kInteriorX) {
-    EXPECT_DOUBLE_EQ(LegendrePolynomialDerivative(2, x), 3.0 * x);
+    EXPECT_DOUBLE_EQ(LegendrePolynomialPrime(2, x), 3.0 * x);
   }
 }
 
-TEST(LegendrePolynomialDerivative, D3ClosedForm) {
+TEST(LegendrePolynomialPrime, D3ClosedForm) {
   for (double x : kInteriorX) {
     double expected = 0.5 * (15.0 * x * x - 3.0);
-    EXPECT_DOUBLE_EQ(LegendrePolynomialDerivative(3, x), expected);
+    EXPECT_DOUBLE_EQ(LegendrePolynomialPrime(3, x), expected);
   }
 }
 
-TEST(LegendrePolynomialDerivative, D4ClosedForm) {
+TEST(LegendrePolynomialPrime, D4ClosedForm) {
   for (double x : kInteriorX) {
     double expected = 0.5 * (35.0 * x * x * x - 15.0 * x);
-    EXPECT_DOUBLE_EQ(LegendrePolynomialDerivative(4, x), expected);
+    EXPECT_DOUBLE_EQ(LegendrePolynomialPrime(4, x), expected);
   }
 }
 
@@ -140,14 +140,14 @@ TEST(LegendrePolynomialDerivative, D4ClosedForm) {
 // LegendrePolynomial itself. Restricted to the interior since the
 // closed-form recurrence divides by (1 - x^2), which is singular at the
 // endpoints.
-TEST(LegendrePolynomialDerivative, MatchesFiniteDifference) {
+TEST(LegendrePolynomialPrime, MatchesFiniteDifference) {
   const double h = 1e-6;
   for (int n = 0; n <= 8; ++n) {
     for (double x : kInteriorX) {
       double numerical =
           (LegendrePolynomial(n, x + h) - LegendrePolynomial(n, x - h)) /
           (2.0 * h);
-      double analytic = LegendrePolynomialDerivative(n, x);
+      double analytic = LegendrePolynomialPrime(n, x);
       EXPECT_NEAR(analytic, numerical, 1e-9);
     }
   }
@@ -156,13 +156,13 @@ TEST(LegendrePolynomialDerivative, MatchesFiniteDifference) {
 // Legendre's differential equation:
 //   (1 - x^2) P_n''(x) - 2x P_n'(x) + n(n+1) P_n(x) = 0
 // P_n'' is approximated via a central finite difference of
-// LegendrePolynomialDerivative, so this also cross-validates the two
+// LegendrePolynomialPrime, so this also cross-validates the two
 // functions against each other through an independent identity.
-TEST(LegendrePolynomialDerivative, SatisfiesLegendreODE) {
+TEST(LegendrePolynomialPrime, SatisfiesLegendreODE) {
   const double h = 1e-4;
   for (int n = 0; n <= 6; ++n) {
     for (double x : kInteriorX) {
-      double d1 = LegendrePolynomialDerivative(n, x);
+      double d1 = LegendrePolynomialPrime(n, x);
       double d2 =
           (LegendrePolynomial(n, x + h) - 2.0 * LegendrePolynomial(n, x) +
            LegendrePolynomial(n, x - h)) /
@@ -176,20 +176,18 @@ TEST(LegendrePolynomialDerivative, SatisfiesLegendreODE) {
 
 // Endpoint derivative values: P_n'(1) = n(n+1)/2, P_n'(-1) = (-1)^(n+1) *
 // n(n+1)/2.
-TEST(LegendrePolynomialDerivative, EndpointDerivativeAtPlusOne) {
+TEST(LegendrePolynomialPrime, EndpointDerivativeAtPlusOne) {
   for (int n = 0; n <= 10; ++n) {
     double expected = n * (n + 1) / 2.0;
-    EXPECT_DOUBLE_EQ(LegendrePolynomialDerivative(n, 1.0), expected)
-        << "n=" << n;
+    EXPECT_DOUBLE_EQ(LegendrePolynomialPrime(n, 1.0), expected) << "n=" << n;
   }
 }
 
-TEST(LegendrePolynomialDerivative, EndpointDerivativeAtMinusOne) {
+TEST(LegendrePolynomialPrime, EndpointDerivativeAtMinusOne) {
   for (int n = 0; n <= 10; ++n) {
     double sign = (n % 2 == 0) ? -1.0 : 1.0;
     double expected = sign * n * (n + 1) / 2.0;
-    EXPECT_DOUBLE_EQ(LegendrePolynomialDerivative(n, -1.0), expected)
-        << "n=" << n;
+    EXPECT_DOUBLE_EQ(LegendrePolynomialPrime(n, -1.0), expected) << "n=" << n;
   }
 }
 

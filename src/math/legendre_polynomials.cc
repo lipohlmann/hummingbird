@@ -29,7 +29,7 @@ double LegendrePolynomial(const int n, const double x) {
   }
 }
 
-double LegendrePolynomialDerivative(const int n, const double x) {
+double LegendrePolynomialPrime(const int n, const double x) {
   if (utils::DoubleEqual(x, -1.0))
     return std::pow(-1, n - 1) * n * (n + 1) / 2.0;
   else if (utils::DoubleEqual(x, 1.0))
@@ -48,6 +48,8 @@ double LegendrePolynomialDerivative(const int n, const double x) {
              (1.0 - x * x);
   }
 }
+
+double LegendrePolynomialPrimePrime(const int n, const double x) {}
 
 std::vector<double> AllLegendreRoots(const int n) {
   unsigned int n_even =
@@ -69,11 +71,13 @@ double LegendreRoot(const int n, const int k) {
   unsigned int safety = 100;
   for (auto i = 0; i < safety; i++) {
     double x_new = x_old - LegendrePolynomial(n, x_old) /
-                               LegendrePolynomialDerivative(n, x_old);
+                               LegendrePolynomialPrime(n, x_old);
     error = std::abs((x_new - x_old) / x_new);
     if (error < utils::TOLERANCE) return x_new;
     x_old = x_new;
   }
   throw std::runtime_error("LegendreRoot did not converge.");
 }
+
+double LegendrePrimeRoot(const int n, const int k) {}
 }  // namespace hummingbird::math

@@ -58,7 +58,9 @@ double LegendrePolynomial(const int n, const double x);
  * @param x
  * @return double
  */
-double LegendrePolynomialDerivative(const int n, const double x);
+double LegendrePolynomialPrime(const int n, const double x);
+
+double LegendrePolynomialPrimePrime(const int n, const double x);
 
 /**
  * @brief Compute all roots of the Legendre polynomial of order n
@@ -82,6 +84,8 @@ std::vector<double> AllLegendreRoots(const int n);
  * @return double
  */
 double LegendreRoot(const int n, const int k);
+
+double LegendrePrimeRoot(const int n, const int k);
 
 }  // namespace hummingbird::math
 
