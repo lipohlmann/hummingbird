@@ -84,25 +84,14 @@ std::vector<double> AllLegendreRoots(const int n);
 
 /**
  * @brief Computes the k-th root of the n-th order Legendre polynomial by first
- * approximating the root with ApproximateRoot, then using Newton's method to
- * converge to the root.
+ * approximating the root with ApproximateLegendreRoot, then using Newton's
+ * method to converge to the root.
  *
  * @param n Order of the polynomial
  * @param k Root to find
  * @return double
  */
 double LegendreRoot(const int n, const int k);
-
-/**
- * @brief Computes the k-th root of the n-th order first derivative of the
- * Legendre polynomial by first approximating with ApproximateRoot, then using
- * Newton's method to converge
- *
- * @param n Order
- * @param k Root number
- * @return double
- */
-double LegendrePrimeRoot(const int n, const int k);
 
 /**
  * @brief Approximates the k-th root of the n-th order Legendre polynomial with:
@@ -116,7 +105,18 @@ double LegendrePrimeRoot(const int n, const int k);
  * @return double
  * @throw std::invalid_argument Root number must be less than polynomial order
  */
-double ApproximateRoot(const int n, const int k);
+double ApproximateLegendreRoot(const int n, const int k);
+
+/**
+ * @brief Computes the k-th root of the n-th order first derivative of the
+ * Legendre polynomial by first approximating with ApproximateLegendreRoot, then
+ * using Newton's method to converge
+ *
+ * @param n Order
+ * @param k Root number
+ * @return double
+ */
+double LegendrePrimeRoot(const int n, const int k);
 
 }  // namespace hummingbird::math
 
