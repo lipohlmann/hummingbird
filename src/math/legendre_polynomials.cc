@@ -74,7 +74,7 @@ double LegendreRoot(const int n, const int k) {
   for (auto i = 0; i < safety; i++) {
     double x_new = x_old - LegendrePolynomial(n, x_old) /
                                LegendrePolynomialPrime(n, x_old);
-    error = std::abs((x_new - x_old) / x_new);
+    error = std::abs((x_new - x_old) / std::max(1.0, x_new));
     if (error < utils::TOLERANCE) return x_new;
     x_old = x_new;
   }
@@ -91,10 +91,10 @@ double ApproximateLegendreRoot(const int n, const int k) {
 std::vector<double> AllLegendrePrimeRoots(const int n) {
   unsigned int n_even =
       static_cast<unsigned int>(std::floor(static_cast<double>(n - 1) / 2.0));
-  std::vector<double> computed_roots(n);
+  std::vector<double> computed_roots(n - 1);
 
   for (auto i = 0; i < n_even; i++) {
-    computed_roots[n - 1 - i] = LegendrePrimeRoot(n, i);
+    computed_roots[n - 2 - i] = LegendrePrimeRoot(n, i);
     computed_roots[i] = -computed_roots[n - 1 - i];
   }
   return computed_roots;
@@ -107,7 +107,7 @@ double LegendrePrimeRoot(const int n, const int k) {
   for (auto i = 0; i < safety; i++) {
     double x_new = x_old - LegendrePolynomialPrime(n, x_old) /
                                LegendrePolynomialPrimePrime(n, x_old);
-    error = std::abs((x_new - x_old) / x_new);
+    error = std::abs((x_new - x_old) / std::max(1.0, x_new));
     if (error < utils::TOLERANCE) return x_new;
     x_old = x_new;
   }
@@ -115,7 +115,7 @@ double LegendrePrimeRoot(const int n, const int k) {
 }
 
 double ApproximateLegendrePrimeRoot(const int n, const int k) {
-  if (k > n - 1) throw std::invalid_argument("k must be less than n-1.");
+  if (k >= n - 1) throw std::invalid_argument("k must be less than n-1.");
   return std::cos((static_cast<double>(k) + 1.0) * M_PI /
                   static_cast<double>(n));
 }

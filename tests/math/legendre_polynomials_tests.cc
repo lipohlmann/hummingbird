@@ -311,4 +311,149 @@ TEST(LegendrePolynomialRootFinding, P64) {
   TestRoots(p64_roots);
 }
 
+// =======================================================================
+// ApproximateLegendrePrimeRoot(n, k)
+// =======================================================================
+// This is a direct closed-form formula (no iteration), so exact equality
+// against an independently-computed cosine is a meaningful check.
+
+TEST(ApproximateLegendrePrimeRoot, MatchesFormulaDirectly) {
+  const double pi = std::acos(-1.0);
+  for (int n = 2; n <= 10; ++n) {
+    for (int k = 0; k <= n - 2; ++k) {
+      double expected = std::cos((k + 1) * pi / n);
+      EXPECT_DOUBLE_EQ(ApproximateLegendrePrimeRoot(n, k), expected)
+          << "n=" << n << " k=" << k;
+    }
+  }
+}
+
+// k=0 should approximate the largest root (closest to +1), and k=n-2
+// should approximate the smallest root (closest to -1), since cos is
+// monotonically decreasing over (0, pi).
+TEST(ApproximateLegendrePrimeRoot, DecreasingInK) {
+  for (int n = 3; n <= 10; ++n) {
+    for (int k = 0; k <= n - 3; ++k) {
+      EXPECT_GT(ApproximateLegendrePrimeRoot(n, k),
+                ApproximateLegendrePrimeRoot(n, k + 1))
+          << "n=" << n << " k=" << k;
+    }
+  }
+}
+
+TEST(ApproximateLegendrePrimeRoot, P4ExplicitDocstringExample) {
+  // Explicitly matches the example given in the docstring for P'_4(x).
+  EXPECT_DOUBLE_EQ(ApproximateLegendrePrimeRoot(4, 0),
+                   std::cos(1.0 * M_PI / 4.0));
+  EXPECT_DOUBLE_EQ(ApproximateLegendrePrimeRoot(4, 1),
+                   std::cos(2.0 * M_PI / 4.0));
+  EXPECT_DOUBLE_EQ(ApproximateLegendrePrimeRoot(4, 2),
+                   std::cos(3.0 * M_PI / 4.0));
+}
+
+// =======================================================================
+// LegendrePrimeRoot(n, k) / AllLegendrePrimeRoots(n)
+// =======================================================================
+// Reference values below are analytic roots of P'_n(x), solved by hand
+// from the closed-form derivative polynomials, ordered descending in k
+// (k=0 is the root nearest +1), consistent with the ordering implied by
+// ApproximateLegendrePrimeRoot's docstring example.
+
+void TestPrimeRoots(const std::vector<double>& expected_roots) {
+  int order = expected_roots.size() + 1;  // n-1 roots for order n
+  auto computed_roots = AllLegendrePrimeRoots(order);
+  ASSERT_EQ(computed_roots.size(), expected_roots.size());
+  for (size_t i = 0; i < expected_roots.size(); ++i) {
+    EXPECT_DOUBLE_EQ(computed_roots[i], expected_roots[i])
+        << "order=" << order << " index=" << i;
+  }
+}
+
+TEST(LegendrePrimeRootFinding, P2) {
+  std::vector<double> p2_prime_roots = {0.0};
+  TestPrimeRoots(p2_prime_roots);
+}
+
+TEST(LegendrePrimeRootFinding, P3) {
+  std::vector<double> p3_prime_roots = {0.4472135954999581,
+                                        -0.4472135954999581};
+  TestPrimeRoots(p3_prime_roots);
+}
+
+TEST(LegendrePrimeRootFinding, P4) {
+  std::vector<double> p4_prime_roots = {0.6546536707079771, 0.0,
+                                        -0.6546536707079771};
+  TestPrimeRoots(p4_prime_roots);
+}
+
+TEST(LegendrePrimeRootFinding, P5) {
+  std::vector<double> p5_prime_roots = {0.7650553239294653, -0.2852315164806453,
+                                        0.0, -0.2852315164806453,
+                                        -0.7650553239294653};
+  TestPrimeRoots(p5_prime_roots);
+}
+
+TEST(LegendrePrimeRootFinding, P6) {
+  std::vector<double> p6_prime_roots = {0.8302238962785675, 0.46884879347071423,
+                                        0.0, -0.46884879347071423,
+                                        -0.8302238962785675};
+  TestPrimeRoots(p6_prime_roots);
+}
+
+// LegendrePrimeRoot should agree with the corresponding entry of
+// AllLegendrePrimeRoots for the same (n, k).
+TEST(LegendrePrimeRoot, ConsistentWithAllLegendrePrimeRoots) {
+  for (int n = 2; n <= 8; ++n) {
+    auto all_roots = AllLegendrePrimeRoots(n);
+    for (int k = 0; k <= n - 2; ++k) {
+      EXPECT_DOUBLE_EQ(LegendrePrimeRoot(n, k), all_roots[k])
+          << "n=" << n << " k=" << k;
+    }
+  }
+}
+
+// P_n' evaluated at each computed root should be (numerically) zero.
+TEST(LegendrePrimeRoot, IsActuallyARootOfDerivative) {
+  for (int n = 2; n <= 10; ++n) {
+    for (int k = 0; k <= n - 2; ++k) {
+      double root = LegendrePrimeRoot(n, k);
+      EXPECT_NEAR(LegendrePolynomialPrime(n, root), 0.0, 1e-15)
+          << "n=" << n << " k=" << k;
+    }
+  }
+}
+
+// The Newton iterate should end up close to its Chebyshev starting guess
+// (sanity check that the two functions are actually related).
+TEST(LegendrePrimeRoot, CloseToApproximation) {
+  for (int n = 3; n <= 10; ++n) {
+    for (int k = 0; k <= n - 2; ++k) {
+      double approx = ApproximateLegendrePrimeRoot(n, k);
+      double exact = LegendrePrimeRoot(n, k);
+      EXPECT_NEAR(exact, approx, 0.05) << "n=" << n << " k=" << k;
+    }
+  }
+}
+
+TEST(AllLegendrePrimeRoots, ReturnsNMinusOneRoots) {
+  for (int n = 2; n <= 12; ++n) {
+    EXPECT_EQ(AllLegendrePrimeRoots(n).size(), static_cast<size_t>(n - 1))
+        << "n=" << n;
+  }
+}
+
+// Roots of P_n' are symmetric about 0 (same parity argument as P_n
+// itself, since differentiation flips/preserves parity but roots of an
+// even function's derivative are still symmetric about the origin).
+TEST(AllLegendrePrimeRoots, SymmetricAboutZero) {
+  for (int n = 2; n <= 12; ++n) {
+    auto roots = AllLegendrePrimeRoots(n);
+    int count = roots.size();
+    for (int i = 0; i < count; ++i) {
+      EXPECT_DOUBLE_EQ(roots[i], -roots[count - 1 - i])
+          << "n=" << n << " i=" << i;
+    }
+  }
+}
+
 }  // namespace hummingbird::math
