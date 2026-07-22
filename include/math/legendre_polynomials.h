@@ -118,6 +118,22 @@ double ApproximateLegendreRoot(const int n, const int k);
  */
 double LegendrePrimeRoot(const int n, const int k);
 
+/**
+ * @brief Approximates the k-th root of the first derivative of the n-th degree
+ * Legendre polynomial using a Gauss-Chebyshev abscissa formula. Note that
+ * zero-indexing is used, so the roots of the \f$P'_4 (x)\f$ polynomial are
+ * \f$k=0,1,2\f$. The approximations of these are given by:
+ *
+ * \f[
+ * x_k\approx\cos \left(\frac{(k+1)\pi}{n})
+ * \f]
+ *
+ * @param n Order
+ * @param k Root number (zero-indexed)
+ * @return double
+ */
+double ApproximateLegendrePrimeRoot(const int n, const int k);
+
 }  // namespace hummingbird::math
 
 #endif  // HUMMINGBIRD_MATH_LEGENDRE_POLYNOMIALS_H

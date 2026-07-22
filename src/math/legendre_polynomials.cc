@@ -89,8 +89,7 @@ double ApproximateLegendreRoot(const int n, const int k) {
 }
 
 double LegendrePrimeRoot(const int n, const int k) {
-  if (k > n - 1) throw std::invalid_argument("k must be less than n-1.");
-  double x_old = ApproximateLegendreRoot(n, k);
+  double x_old = ApproximateLegendrePrimeRoot(n, k);
   double error = std::numeric_limits<double>::infinity();
   unsigned int safety = 100;
   for (auto i = 0; i < safety; i++) {
@@ -101,6 +100,12 @@ double LegendrePrimeRoot(const int n, const int k) {
     x_old = x_new;
   }
   throw std::runtime_error("LegendrePrimeRoot did not converge.");
+}
+
+double ApproximateLegendrePrimeRoot(const int n, const int k) {
+  if (k > n - 1) throw std::invalid_argument("k must be less than n-1.");
+  return std::cos((static_cast<double>(k) + 1.0) * M_PI /
+                  static_cast<double>(n));
 }
 
 }  // namespace hummingbird::math
