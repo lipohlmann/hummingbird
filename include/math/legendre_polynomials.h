@@ -109,8 +109,8 @@ double ApproximateLegendreRoot(const int n, const int k);
 
 /**
  * @brief Computes the k-th root of the n-th order first derivative of the
- * Legendre polynomial by first approximating with ApproximateLegendreRoot, then
- * using Newton's method to converge
+ * Legendre polynomial by first approximating with ApproximateLegendrePrimeRoot,
+ * then using Newton's method to converge
  *
  * @param n Order
  * @param k Root number
