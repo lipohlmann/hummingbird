@@ -81,7 +81,20 @@ double LegendreRoot(const int n, const int k) {
   throw std::runtime_error("LegendreRoot did not converge.");
 }
 
-double LegendrePrimeRoot(const int n, const int k) {}
+double LegendrePrimeRoot(const int n, const int k) {
+  if (k > n - 1) throw std::invalid_argument("k must be less than n-1.");
+  double x_old = ApproximateRoot(n, k);
+  double error = std::numeric_limits<double>::infinity();
+  unsigned int safety = 100;
+  for (auto i = 0; i < safety; i++) {
+    double x_new = x_old - LegendrePolynomialPrime(n, x_old) /
+                               LegendrePolynomialPrimePrime(n, x_old);
+    error = std::abs((x_new - x_old) / x_new);
+    if (error < utils::TOLERANCE) return x_new;
+    x_old = x_new;
+  }
+  throw std::runtime_error("LegendrePrimeRoot did not converge.");
+}
 
 double ApproximateRoot(const int n, const int k) {
   if (k > n) throw std::invalid_argument("k must be less than n.");

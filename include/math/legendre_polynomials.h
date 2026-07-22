@@ -84,12 +84,8 @@ std::vector<double> AllLegendreRoots(const int n);
 
 /**
  * @brief Computes the k-th root of the n-th order Legendre polynomial by first
- * approximating the root with
- *
- * \f[
- * x_k^{(0)}\approx \cos \left(\frac{4k+3}{4n+2}\pi\right)
- * \f]
- * then using Newton's method to converge to the root.
+ * approximating the root with ApproximateRoot, then using Newton's method to
+ * converge to the root.
  *
  * @param n Order of the polynomial
  * @param k Root to find
@@ -97,10 +93,23 @@ std::vector<double> AllLegendreRoots(const int n);
  */
 double LegendreRoot(const int n, const int k);
 
+/**
+ * @brief Computes the k-th root of the n-th order first derivative of the
+ * Legendre polynomial by first approximating with ApproximateRoot, then using
+ * Newton's method to converge
+ *
+ * @param n Order
+ * @param k Root number
+ * @return double
+ */
 double LegendrePrimeRoot(const int n, const int k);
 
 /**
- * @brief Approximates the k-th root of the n-th order Legendre polynomial
+ * @brief Approximates the k-th root of the n-th order Legendre polynomial with:
+ *
+ * \f[
+ * x_k^{(0)}\approx \cos \left(\frac{4k+3}{4n+2}\pi\right)
+ * \f]
  *
  * @param n Order
  * @param k Root number
