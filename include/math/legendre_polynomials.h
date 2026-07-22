@@ -60,6 +60,18 @@ double LegendrePolynomial(const int n, const double x);
  */
 double LegendrePolynomialPrime(const int n, const double x);
 
+/**
+ * @brief Computes the second derivative of the Legendre polynomial of degree n
+ * using Legendre's differential equation:
+ *
+ * \f[
+ * (1-x^2)P_n''(x)-2xP_n'(x)+n(n+1)P_n(x)=0
+ * \f]
+ *
+ * @param n Order
+ * @param x Location to evaluate at
+ * @return double
+ */
 double LegendrePolynomialPrimePrime(const int n, const double x);
 
 /**

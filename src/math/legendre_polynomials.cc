@@ -49,7 +49,11 @@ double LegendrePolynomialPrime(const int n, const double x) {
   }
 }
 
-double LegendrePolynomialPrimePrime(const int n, const double x) {}
+double LegendrePolynomialPrimePrime(const int n, const double x) {
+  return (2 * x * LegendrePolynomialPrime(n, x) -
+          n * (n + 1) * LegendrePolynomial(n, x)) /
+         (1.0 - x * x);
+}
 
 std::vector<double> AllLegendreRoots(const int n) {
   unsigned int n_even =
