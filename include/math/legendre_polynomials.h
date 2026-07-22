@@ -125,7 +125,7 @@ double LegendrePrimeRoot(const int n, const int k);
  * \f$k=0,1,2\f$. The approximations of these are given by:
  *
  * \f[
- * x_k\approx\cos \left(\frac{(k+1)\pi}{n})
+ * x_k\approx\cos \left( \frac{(k+1)\pi}{n} \right)
  * \f]
  *
  * @param n Order
