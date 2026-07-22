@@ -108,6 +108,15 @@ double LegendreRoot(const int n, const int k);
 double ApproximateLegendreRoot(const int n, const int k);
 
 /**
+ * @brief Computes all roots of the \f$P'_n(x)\f$ polynomial. A total of n-1
+ * roots will be computed and returned
+ *
+ * @param n Order
+ * @return std::vector<double>
+ */
+std::vector<double> AllLegendrePrimeRoots(const int n);
+
+/**
  * @brief Computes the k-th root of the n-th order first derivative of the
  * Legendre polynomial by first approximating with ApproximateLegendrePrimeRoot,
  * then using Newton's method to converge

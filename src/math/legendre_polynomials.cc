@@ -88,6 +88,18 @@ double ApproximateLegendreRoot(const int n, const int k) {
                   (4.0 * static_cast<double>(n) + 2.0) * M_PI);
 }
 
+std::vector<double> AllLegendrePrimeRoots(const int n) {
+  unsigned int n_even =
+      static_cast<unsigned int>(std::floor(static_cast<double>(n - 1) / 2.0));
+  std::vector<double> computed_roots(n);
+
+  for (auto i = 0; i < n_even; i++) {
+    computed_roots[n - 1 - i] = LegendrePrimeRoot(n, i);
+    computed_roots[i] = -computed_roots[n - 1 - i];
+  }
+  return computed_roots;
+}
+
 double LegendrePrimeRoot(const int n, const int k) {
   double x_old = ApproximateLegendrePrimeRoot(n, k);
   double error = std::numeric_limits<double>::infinity();
