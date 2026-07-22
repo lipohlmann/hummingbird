@@ -68,9 +68,7 @@ std::vector<double> AllLegendreRoots(const int n) {
 }
 
 double LegendreRoot(const int n, const int k) {
-  if (k > n) throw std::invalid_argument("k must be less than or equal to n.");
-  double x_old = std::cos((4.0 * static_cast<double>(k) + 3.0) /
-                          (4.0 * static_cast<double>(n) + 2.0) * M_PI);
+  double x_old = ApproximateRoot(n, k);
   double error = std::numeric_limits<double>::infinity();
   unsigned int safety = 100;
   for (auto i = 0; i < safety; i++) {
@@ -84,4 +82,11 @@ double LegendreRoot(const int n, const int k) {
 }
 
 double LegendrePrimeRoot(const int n, const int k) {}
+
+double ApproximateRoot(const int n, const int k) {
+  if (k > n) throw std::invalid_argument("k must be less than n.");
+
+  return std::cos((4.0 * static_cast<double>(k) + 3.0) /
+                  (4.0 * static_cast<double>(n) + 2.0) * M_PI);
+}
 }  // namespace hummingbird::math

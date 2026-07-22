@@ -99,6 +99,16 @@ double LegendreRoot(const int n, const int k);
 
 double LegendrePrimeRoot(const int n, const int k);
 
+/**
+ * @brief Approximates the k-th root of the n-th order Legendre polynomial
+ *
+ * @param n Order
+ * @param k Root number
+ * @return double
+ * @throw std::invalid_argument Root number must be less than polynomial order
+ */
+double ApproximateRoot(const int n, const int k);
+
 }  // namespace hummingbird::math
 
 #endif  // HUMMINGBIRD_MATH_LEGENDRE_POLYNOMIALS_H
