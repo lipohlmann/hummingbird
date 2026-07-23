@@ -11,7 +11,7 @@ fi
 NAME="$1"
 
 # Convert filename to a header guard
-GUARD=$(printf "HUMMINGBIRD_%s_H" "$NAME" \
+GUARD=$(printf "HUMMINGBIRD_%s_H_" "$NAME" \
     | tr '/[:lower:]-' '_[:upper:]_')
 
 mkdir -p \
