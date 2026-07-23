@@ -39,6 +39,19 @@ class GaussLegendreLobatto : public QuadratureBase<double> {
    * @return std::vector<double>
    */
   std::vector<double> ComputeAbscissas(const size_t n_points);
+
+  /**
+   * @brief Computes the weights for a Gauss-Legendre-Lobatto quadrature scheme
+   * using:
+   *
+   * \f[
+   * w_k=\frac{2}{(N-1)N}\frac{1}{[P_{N-1}(\xi_k)]^2}
+   * \f]
+   *
+   * @param k Abscissa index
+   * @param n Total number of points
+   * @return Quadrature weight associated with abscissa k
+   */
   double ComputeWeight(const size_t k, const size_t n) override;
 };
 }  // namespace hummingbird::quadrature
