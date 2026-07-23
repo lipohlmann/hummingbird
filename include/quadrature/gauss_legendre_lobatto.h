@@ -4,6 +4,21 @@
 #include "quadrature/quadrature_base.h"
 
 namespace hummingbird::quadrature {
+
+/**
+ * @brief Class defining a 1D Gauss-Legendre-Lobatto quadrature set on [-1,1].
+ * The quadrature set approximates the integral using a set of weights
+ * (\f$w_k\f$) and abscissas (\f$\xi_k\f$):
+ *
+ * \f[
+ * \int_{-1}^{1}u(x)dx \approx \sum_{i=0}^{N-1}w_k u(\xi_k).
+ * \f]
+ *
+ * Formulae for this class was taken from the textbook "High-Order Methods for
+ * Incompressible Fluid Flow" by Deville, Fischer, and Mund.
+ * https://doi.org/10.1017/CBO9780511546792
+ *
+ */
 class GaussLegendreLobatto : public QuadratureBase<double> {
  public:
   GaussLegendreLobatto(const size_t n_points);
