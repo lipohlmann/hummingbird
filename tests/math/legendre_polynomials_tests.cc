@@ -311,13 +311,10 @@ TEST(LegendrePolynomialRootFinding, P64) {
   TestRoots(p64_roots);
 }
 
-// k=0 should approximate the largest root (closest to +1), and k=n-2
-// should approximate the smallest root (closest to -1), since cos is
-// monotonically decreasing over (0, pi).
-TEST(ApproximateLegendrePrimeRoot, DecreasingInK) {
+TEST(ApproximateLegendrePrimeRoot, IncreasingInK) {
   for (int n = 3; n <= 10; ++n) {
     for (int k = 0; k <= n - 3; ++k) {
-      EXPECT_GT(ApproximateLegendrePrimeRoot(n, k),
+      EXPECT_LT(ApproximateLegendrePrimeRoot(n, k),
                 ApproximateLegendrePrimeRoot(n, k + 1))
           << "n=" << n << " k=" << k;
     }
@@ -348,28 +345,28 @@ TEST(LegendrePrimeRootFinding, P2) {
 }
 
 TEST(LegendrePrimeRootFinding, P3) {
-  std::vector<double> p3_prime_roots = {0.4472135954999581,
-                                        -0.4472135954999581};
+  std::vector<double> p3_prime_roots = {-0.4472135954999581,
+                                        0.4472135954999581};
   TestPrimeRoots(p3_prime_roots);
 }
 
 TEST(LegendrePrimeRootFinding, P4) {
-  std::vector<double> p4_prime_roots = {0.6546536707079771, 0.0,
-                                        -0.6546536707079771};
+  std::vector<double> p4_prime_roots = {-0.6546536707079771, 0.0,
+                                        0.6546536707079771};
   TestPrimeRoots(p4_prime_roots);
 }
 
 TEST(LegendrePrimeRootFinding, P5) {
-  std::vector<double> p5_prime_roots = {0.76505532392946474, 0.2852315164806451,
-                                        -0.2852315164806451,
-                                        -0.76505532392946474};
+  std::vector<double> p5_prime_roots = {-0.76505532392946474,
+                                        -0.2852315164806451, 0.2852315164806451,
+                                        0.76505532392946474};
   TestPrimeRoots(p5_prime_roots);
 }
 
 TEST(LegendrePrimeRootFinding, P6) {
   std::vector<double> p6_prime_roots = {
-      0.83022389627856696, 0.46884879347071423, 0.0, -0.46884879347071423,
-      -0.83022389627856696};
+      -0.83022389627856696, -0.46884879347071423, 0.0, 0.46884879347071423,
+      0.83022389627856696};
   TestPrimeRoots(p6_prime_roots);
 }
 
