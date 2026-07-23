@@ -3,12 +3,15 @@
 
 #include <cstdint>
 
+#include "enums.h"
+
 namespace hummingbird::mesh {
 struct Node {
   uint32_t id;
   double x;
   double y;
   double z;
+  Boundary boundary;
 };
 }  // namespace hummingbird::mesh
 
