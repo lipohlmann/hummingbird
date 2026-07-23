@@ -8,7 +8,7 @@ namespace hummingbird::quadrature {
  * @brief Defines a Gauss-Legendre quadrature set on the interval [-1,1]
  *
  */
-class GaussLegendre : public Quadrature<double> {
+class GaussLegendre : public QuadratureBase<double> {
  public:
   /**
    * @brief Construct a new GaussLegendre object

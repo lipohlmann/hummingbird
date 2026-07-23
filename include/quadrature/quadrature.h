@@ -1,5 +1,5 @@
-#ifndef HUMMINGBIRD_QUADRATURE_QUADRATURE_H_
-#define HUMMINGBIRD_QUADRATURE_QUADRATURE_H_
+#ifndef HUMMINGBIRD_QUADRATURE_QUADRATURE_BASE_H_
+#define HUMMINGBIRD_QUADRATURE_QUADRATURE_BASE_H_
 
 #include <map>
 #include <vector>
@@ -23,14 +23,14 @@ struct QuadraturePair {
  * @tparam T Type of ordinates to be used
  */
 template <typename T>
-class Quadrature {
+class QuadratureBase {
  public:
   /**
    * @brief Construct a new Quadrature object
    *
    * @param abscissas Vector of abscissa values for the quadrature
    */
-  Quadrature(const std::vector<T> abscissas) : abscissas_(abscissas){};
+  QuadratureBase(const std::vector<T> abscissas) : abscissas_(abscissas) {};
 
   /**
    * @brief Get the weight value corresponding to a given abscissa value
@@ -80,6 +80,10 @@ class Quadrature {
   /// @brief Map to store the weights of the quadrature set where the keys are
   /// the indices corresponding to abscissa values
   std::map<unsigned int, double> weight_map_;
+
+  void CreateWeightMap();
+
+  virtual double ComputeWeight(const size_t k, const size_t n) = 0;
 };
 }  // namespace hummingbird::quadrature
 
