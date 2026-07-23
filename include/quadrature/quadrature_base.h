@@ -81,10 +81,20 @@ class QuadratureBase {
   /// the indices corresponding to abscissa values
   std::map<unsigned int, double> weight_map_;
 
-  void CreateWeightMap();
+  /**
+   * @brief Create the weight map
+   *
+   */
+  void CreateWeightMap() {
+    int order = abscissas_.size();
+    for (auto i = 0; i < order; i++) {
+      double weight = ComputeWeight(i, order);
+      weight_map_.insert({i, weight});
+    }
+  }
 
   virtual double ComputeWeight(const size_t k, const size_t n) = 0;
 };
 }  // namespace hummingbird::quadrature
 
-#endif  // HUMMINGBIRD_QUADRATURE_QUADRATURE_H_
+#endif  // HUMMINGBIRD_QUADRATURE_QUADRATURE_BASE_H_
