@@ -12,6 +12,10 @@ namespace hummingbird::quadrature {
  * \int^{1}_{-1}\frac{u(x)}{\sqrt{1-x^2}}dx\approx \sum_{k=0}^{N-1}w_k u(\xi_k)
  * \f]
  *
+ * Formulae for this class were taken from the textbook "High-Order Methods for
+ * Incompressible Fluid Flow" by Deville, Fischer, and Mund.
+ * https://doi.org/10.1017/CBO9780511546792 and
+ * https://mathworld.wolfram.com/Chebyshev-GaussQuadrature.html
  */
 class GaussChebyshev : public QuadratureBase<double> {
  public:
