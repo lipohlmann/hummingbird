@@ -1,5 +1,5 @@
-#ifndef HUMMINGBIRD_QUADRATURE_GL_QUADRATURE_H_
-#define HUMMINGBIRD_QUADRATURE_GL_QUADRATURE_H_
+#ifndef HUMMINGBIRD_QUADRATURE_GAUSS_LEGENDRE_H_
+#define HUMMINGBIRD_QUADRATURE_GAUSS_LEGENDRE_H_
 
 #include "quadrature/quadrature.h"
 namespace hummingbird::quadrature {
@@ -8,14 +8,14 @@ namespace hummingbird::quadrature {
  * @brief Defines a Gauss-Legendre quadrature set on the interval [-1,1]
  *
  */
-class GaussLegendreQuadrature : public Quadrature<double> {
+class GaussLegendre : public Quadrature<double> {
  public:
   /**
-   * @brief Construct a new GaussLegendreQuadrature object
+   * @brief Construct a new GaussLegendre object
    *
    * @param n_points Number of quadrature points to be created
    */
-  GaussLegendreQuadrature(const unsigned int n_points);
+  GaussLegendre(const unsigned int n_points);
 
  private:
   /**
@@ -36,4 +36,4 @@ class GaussLegendreQuadrature : public Quadrature<double> {
 };
 }  // namespace hummingbird::quadrature
 
-#endif  // HUMMINGBIRD_QUADRATURE_GL_QUADRATURE_H_
+#endif  // HUMMINGBIRD_QUADRATURE_GAUSS_LEGENDRE_H_
