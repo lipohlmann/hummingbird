@@ -1,5 +1,5 @@
-#ifndef HUMMINGBIRD_MESH_SEGMENT_H
-#define HUMMINGBIRD_MESH_SEGMENT_H
+#ifndef HUMMINGBIRD_MESH_SEGMENT_H_
+#define HUMMINGBIRD_MESH_SEGMENT_H_
 
 #include <array>
 
@@ -12,4 +12,4 @@ class Segment : public Element {
 };
 }  // namespace hummingbird::mesh
 
-#endif  // HUMMINGBIRD_MESH_SEGMENT_H
+#endif  // HUMMINGBIRD_MESH_SEGMENT_H_

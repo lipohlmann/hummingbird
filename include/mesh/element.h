@@ -1,5 +1,5 @@
-#ifndef HUMMINGBIRD_MESH_ELEMENT_H
-#define HUMMINGBIRD_MESH_ELEMENT_H
+#ifndef HUMMINGBIRD_MESH_ELEMENT_H_
+#define HUMMINGBIRD_MESH_ELEMENT_H_
 
 #include <memory>
 #include <vector>
@@ -17,4 +17,4 @@ class Element {
 };
 }  // namespace hummingbird::mesh
 
-#endif  // HUMMINGBIRD_MESH_ELEMENT_H
+#endif  // HUMMINGBIRD_MESH_ELEMENT_H_

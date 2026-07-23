@@ -1,5 +1,5 @@
-#ifndef HUMMINGBIRD_ORDINATE_H
-#define HUMMINGBIRD_ORDINATE_H
+#ifndef HUMMINGBIRD_ORDINATE_H_
+#define HUMMINGBIRD_ORDINATE_H_
 
 namespace hummingbird {
 
@@ -55,4 +55,4 @@ class Ordinate {
 };
 }  // namespace hummingbird
 
-#endif  // HUMMINGBIRD_ORDINATE_H
+#endif  // HUMMINGBIRD_ORDINATE_H_

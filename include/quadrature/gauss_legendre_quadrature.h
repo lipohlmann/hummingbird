@@ -1,5 +1,5 @@
-#ifndef HUMMINGBIRD_QUADRATURE_GL_QUADRATURE_H
-#define HUMMINGBIRD_QUADRATURE_GL_QUADRATURE_H
+#ifndef HUMMINGBIRD_QUADRATURE_GL_QUADRATURE_H_
+#define HUMMINGBIRD_QUADRATURE_GL_QUADRATURE_H_
 
 #include "quadrature/quadrature.h"
 namespace hummingbird::quadrature {
@@ -36,4 +36,4 @@ class GaussLegendreQuadrature : public Quadrature<double> {
 };
 }  // namespace hummingbird::quadrature
 
-#endif  // HUMMINGBIRD_QUADRATURE_GL_QUADRATURE_H
+#endif  // HUMMINGBIRD_QUADRATURE_GL_QUADRATURE_H_

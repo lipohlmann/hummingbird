@@ -1,5 +1,5 @@
-#ifndef HUMMINGBIRD_MATERIAL_H
-#define HUMMINGBIRD_MATERIAL_H
+#ifndef HUMMINGBIRD_MATERIAL_H_
+#define HUMMINGBIRD_MATERIAL_H_
 
 namespace hummingbird {
 
@@ -26,4 +26,4 @@ struct Material {
 
 }  // namespace hummingbird
 
-#endif  // HUMMINGBIRD_MATERIAL_H
+#endif  // HUMMINGBIRD_MATERIAL_H_

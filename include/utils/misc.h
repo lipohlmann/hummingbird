@@ -1,5 +1,5 @@
-#ifndef HUMMINGBIRD_UTILS_MISC_H
-#define HUMMINGBIRD_UTILS_MISC_H
+#ifndef HUMMINGBIRD_UTILS_MISC_H_
+#define HUMMINGBIRD_UTILS_MISC_H_
 
 namespace hummingbird::utils {
 /**
@@ -14,4 +14,4 @@ namespace hummingbird::utils {
 bool DoubleEqual(const double first, const double second);
 }  // namespace hummingbird::utils
 
-#endif  // HUMMINGBIRD_UTILS_MISC_H
+#endif  // HUMMINGBIRD_UTILS_MISC_H_

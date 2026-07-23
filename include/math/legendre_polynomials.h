@@ -3,8 +3,8 @@
  * Gezerlis. For more information on this text, please see
  * https://numphyspy.org/. */
 
-#ifndef HUMMINGBIRD_MATH_LEGENDRE_POLYNOMIALS_H
-#define HUMMINGBIRD_MATH_LEGENDRE_POLYNOMIALS_H
+#ifndef HUMMINGBIRD_MATH_LEGENDRE_POLYNOMIALS_H_
+#define HUMMINGBIRD_MATH_LEGENDRE_POLYNOMIALS_H_
 
 #include <vector>
 
@@ -147,4 +147,4 @@ double ApproximateLegendrePrimeRoot(const int n, const int k);
 
 }  // namespace hummingbird::math
 
-#endif  // HUMMINGBIRD_MATH_LEGENDRE_POLYNOMIALS_H
+#endif  // HUMMINGBIRD_MATH_LEGENDRE_POLYNOMIALS_H_
