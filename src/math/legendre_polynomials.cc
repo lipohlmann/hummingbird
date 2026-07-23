@@ -94,21 +94,21 @@ std::vector<double> AllLegendrePrimeRoots(const int n) {
   std::vector<double> computed_roots(n - 1);
 
   for (auto i = 0; i < n_even; i++) {
-    computed_roots[n - 2 - i] = LegendrePrimeRoot(n, i);
-    computed_roots[i] = -computed_roots[n - 1 - i];
+    computed_roots[i] = LegendrePrimeRoot(n, i);
+    computed_roots[n - 2 - i] = -computed_roots[i];
   }
   return computed_roots;
 }
 
 double LegendrePrimeRoot(const int n, const int k) {
   double x_old = ApproximateLegendrePrimeRoot(n, k);
-  double error = std::numeric_limits<double>::infinity();
   unsigned int safety = 100;
   for (auto i = 0; i < safety; i++) {
     double x_new = x_old - LegendrePolynomialPrime(n, x_old) /
                                LegendrePolynomialPrimePrime(n, x_old);
-    error = std::abs((x_new - x_old) / std::max(1.0, x_new));
-    if (error < utils::TOLERANCE) return x_new;
+    double error = std::abs((x_new - x_old) / std::max(1.0, x_new));
+    double backward_error = std::abs(LegendrePolynomialPrime(n, x_new));
+    if (backward_error < 1e-13 && error < utils::TOLERANCE) return x_new;
     x_old = x_new;
   }
   throw std::runtime_error("LegendrePrimeRoot did not converge.");
@@ -116,8 +116,10 @@ double LegendrePrimeRoot(const int n, const int k) {
 
 double ApproximateLegendrePrimeRoot(const int n, const int k) {
   if (k >= n - 1) throw std::invalid_argument("k must be less than n-1.");
-  return std::cos((static_cast<double>(k) + 1.0) * M_PI /
-                  static_cast<double>(n));
+  // return std::cos((static_cast<double>(k) + 1.0) * M_PI /
+  //                 static_cast<double>(n));
+  return (ApproximateLegendreRoot(n, k) + ApproximateLegendreRoot(n, k + 1)) /
+         2.0;
 }
 
 }  // namespace hummingbird::math
