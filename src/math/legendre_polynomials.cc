@@ -116,8 +116,6 @@ double LegendrePrimeRoot(const int n, const int k) {
 
 double ApproximateLegendrePrimeRoot(const int n, const int k) {
   if (k >= n - 1) throw std::invalid_argument("k must be less than n-1.");
-  // return std::cos((static_cast<double>(k) + 1.0) * M_PI /
-  //                 static_cast<double>(n));
   return (ApproximateLegendreRoot(n, k) + ApproximateLegendreRoot(n, k + 1)) /
          2.0;
 }

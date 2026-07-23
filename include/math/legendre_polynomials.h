@@ -129,13 +129,15 @@ double LegendrePrimeRoot(const int n, const int k);
 
 /**
  * @brief Approximates the k-th root of the first derivative of the n-th degree
- * Legendre polynomial using a Gauss-Chebyshev abscissa formula. Note that
- * zero-indexing is used, so the roots of the \f$P'_4 (x)\f$ polynomial are
- * \f$k=0,1,2\f$. The approximations of these are given by:
+ * Legendre polynomial using the average of the approximations
+ * (ApproximateLegendreRoot()) of the surrounding roots of the n-th degree
+ * Legendre polynomial. Note that zero-indexing is used, so the roots of the
+ * \f$P'_4 (x)\f$ polynomial are \f$k=0,1,2\f$. The approximations of these are
+ * given by:
  *
  * \f[
- * x_k\approx\cos \left( \frac{(k+1)\pi}{n} \right)
- * \f]
+ * x_k\approx \frac{1}{2} \left( \cos \left(\frac{4k+3}{4n+2}\pi\right) + \cos
+ * \left(\frac{4(k+1)+3}{4n+2}\pi\right) \right) \f]
  *
  * @param n Order
  * @param k Root number (zero-indexed)
