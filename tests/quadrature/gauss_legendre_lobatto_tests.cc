@@ -72,7 +72,7 @@ TEST_P(GLLQuadratureExactnessTest, WeightsSumToTwo) {
 
   auto pairs = GLLEvaluateAt(quad, [](double) { return 1.0; });
   const double result = quad.Integrate(pairs);
-  EXPECT_NEAR(result, 2.0, utils::TOLERANCE);
+  EXPECT_DOUBLE_EQ(result, 2.0);
 }
 
 TEST_P(GLLQuadratureExactnessTest, WeightsArePositive) {
@@ -103,7 +103,7 @@ TEST_P(GLLQuadratureExactnessTest, AbscissasLieWithinIntervalAndAreSymmetric) {
   // GLL nodes are symmetric about 0: x_i == -x_{n-1-i}.
   for (std::size_t i = 0; i < sorted.size(); ++i) {
     const double mirrored = sorted[sorted.size() - 1 - i];
-    EXPECT_NEAR(sorted[i], -mirrored, 1e-12);
+    EXPECT_DOUBLE_EQ(sorted[i], -mirrored);
   }
 }
 
@@ -117,8 +117,8 @@ TEST_P(GLLQuadratureExactnessTest, EndpointsAreFixedAtPlusMinusOne) {
   const double min_val = *std::min_element(abscissas.begin(), abscissas.end());
   const double max_val = *std::max_element(abscissas.begin(), abscissas.end());
 
-  EXPECT_NEAR(min_val, -1.0, 1e-12);
-  EXPECT_NEAR(max_val, 1.0, 1e-12);
+  EXPECT_DOUBLE_EQ(min_val, -1.0);
+  EXPECT_DOUBLE_EQ(max_val, 1.0);
 }
 
 INSTANTIATE_TEST_SUITE_P(VariousPointCounts, GLLQuadratureExactnessTest,
@@ -134,7 +134,7 @@ TEST(GLLQuadratureTwoPointTest, DegeneratesToTrapezoidalRule) {
   ASSERT_EQ(quad.abscissas().size(), 2u);
 
   for (unsigned int i = 0; i < 2; ++i) {
-    EXPECT_NEAR(quad.GetWeight(i), 1.0, utils::TOLERANCE);
+    EXPECT_DOUBLE_EQ(quad.GetWeight(i), 1.0);
   }
 }
 
@@ -175,7 +175,7 @@ TEST(GLLQuadratureNonPolynomialTest,
   auto pairs = GLLEvaluateAt(quad, [](double x) { return std::exp(x); });
   const double result = quad.Integrate(pairs);
 
-  EXPECT_NEAR(result, expected, 1e-10);
+  EXPECT_DOUBLE_EQ(result, expected);
 }
 
 TEST(GLLQuadratureNonPolynomialTest,
