@@ -14,7 +14,7 @@ namespace hummingbird::quadrature {
  * \int_{-1}^{1}u(x)dx \approx \sum_{i=0}^{N-1}w_k u(\xi_k).
  * \f]
  *
- * Formulae for this class was taken from the textbook "High-Order Methods for
+ * Formulae for this class were taken from the textbook "High-Order Methods for
  * Incompressible Fluid Flow" by Deville, Fischer, and Mund.
  * https://doi.org/10.1017/CBO9780511546792
  *
