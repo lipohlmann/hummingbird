@@ -69,13 +69,14 @@ std::vector<double> AllLegendreRoots(const int n) {
 
 double LegendreRoot(const int n, const int k) {
   double x_old = ApproximateLegendreRoot(n, k);
-  double error = std::numeric_limits<double>::infinity();
   unsigned int safety = 100;
   for (auto i = 0; i < safety; i++) {
     double x_new = x_old - LegendrePolynomial(n, x_old) /
                                LegendrePolynomialPrime(n, x_old);
-    error = std::abs((x_new - x_old) / std::max(1.0, x_new));
-    if (error < utils::TOLERANCE) return x_new;
+    double error = std::abs((x_new - x_old) / std::max(1.0, x_new));
+    double backward_error = std::abs(LegendrePolynomial(n, x_new));
+
+    if (backward_error < 1e-13 && error < utils::TOLERANCE) return x_new;
     x_old = x_new;
   }
   throw std::runtime_error("LegendreRoot did not converge.");
@@ -108,6 +109,7 @@ double LegendrePrimeRoot(const int n, const int k) {
                                LegendrePolynomialPrimePrime(n, x_old);
     double error = std::abs((x_new - x_old) / std::max(1.0, x_new));
     double backward_error = std::abs(LegendrePolynomialPrime(n, x_new));
+
     if (backward_error < 1e-13 && error < utils::TOLERANCE) return x_new;
     x_old = x_new;
   }
