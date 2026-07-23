@@ -16,7 +16,7 @@ namespace hummingbird::quadrature {
 
 // Builds the QuadraturePair vector required by Integrate() by evaluating
 // `f` at every abscissa of `quad`.
-std::vector<QuadraturePair> EvaluateAt(const GLQuadrature& quad,
+std::vector<QuadraturePair> EvaluateAt(const GaussLegendreQuadrature& quad,
                                        const std::function<double(double)>& f) {
   std::vector<QuadraturePair> pairs;
   pairs.reserve(quad.abscissas().size());
@@ -44,7 +44,7 @@ class GLQuadratureExactnessTest
 
 TEST_P(GLQuadratureExactnessTest, IntegratesAllMonomialsUpToDegree2NMinus1) {
   const unsigned int n = GetParam();
-  GLQuadrature quad(n);
+  GaussLegendreQuadrature quad(n);
 
   ASSERT_EQ(quad.abscissas().size(), n);
 
@@ -62,7 +62,7 @@ TEST_P(GLQuadratureExactnessTest, IntegratesAllMonomialsUpToDegree2NMinus1) {
 
 TEST_P(GLQuadratureExactnessTest, IntegratesArbitraryPolynomialInRange) {
   const unsigned int n = GetParam();
-  GLQuadrature quad(n);
+  GaussLegendreQuadrature quad(n);
 
   // Build a polynomial that uses every degree from 0 up to the max exact
   // degree, e.g. p(x) = sum_{k=0}^{2n-1} (k + 1) * x^k
@@ -88,7 +88,7 @@ TEST_P(GLQuadratureExactnessTest, IntegratesArbitraryPolynomialInRange) {
 TEST_P(GLQuadratureExactnessTest, WeightsSumToTwo) {
   // \int_{-1}^{1} 1 dx = 2, i.e. sum of all weights must equal 2.
   const unsigned int n = GetParam();
-  GLQuadrature quad(n);
+  GaussLegendreQuadrature quad(n);
 
   auto pairs = EvaluateAt(quad, [](double) { return 1.0; });
   const double result = quad.Integrate(pairs);
@@ -97,7 +97,7 @@ TEST_P(GLQuadratureExactnessTest, WeightsSumToTwo) {
 
 TEST_P(GLQuadratureExactnessTest, WeightsArePositive) {
   const unsigned int n = GetParam();
-  GLQuadrature quad(n);
+  GaussLegendreQuadrature quad(n);
 
   for (const double x : quad.abscissas()) {
     EXPECT_GT(quad.GetWeight(x), 0.0)
@@ -107,7 +107,7 @@ TEST_P(GLQuadratureExactnessTest, WeightsArePositive) {
 
 TEST_P(GLQuadratureExactnessTest, AbscissasLieWithinIntervalAndAreSymmetric) {
   const unsigned int n = GetParam();
-  GLQuadrature quad(n);
+  GaussLegendreQuadrature quad(n);
   const auto& abscissas = quad.abscissas();
 
   std::vector<double> sorted(abscissas.begin(), abscissas.end());
@@ -136,7 +136,7 @@ INSTANTIATE_TEST_SUITE_P(VariousPointCounts, GLQuadratureExactnessTest,
 TEST(GLQuadratureBoundaryTest,
      DoesNotExactlyIntegratePolynomialAboveDegreeBound) {
   const unsigned int n = 3;
-  GLQuadrature quad(n);
+  GaussLegendreQuadrature quad(n);
 
   // Degree 2n = 6 is one past the exactness bound (2n - 1 = 5).
   const unsigned int degree = 2 * n;
@@ -160,7 +160,7 @@ TEST(GLQuadratureNonPolynomialTest,
   const double expected = std::exp(1.0) - std::exp(-1.0);
 
   const unsigned int n = 20;  // enough points for e^x to converge tightly
-  GLQuadrature quad(n);
+  GaussLegendreQuadrature quad(n);
 
   auto pairs = EvaluateAt(quad, [](double x) { return std::exp(x); });
   const double result = quad.Integrate(pairs);
@@ -174,7 +174,7 @@ TEST(GLQuadratureNonPolynomialTest,
 
   double previous_error = std::numeric_limits<double>::max();
   for (unsigned int n : {2u, 4u, 6u, 8u, 10u}) {
-    GLQuadrature quad(n);
+    GaussLegendreQuadrature quad(n);
     auto pairs = EvaluateAt(quad, [](double x) { return std::exp(x); });
     const double result = quad.Integrate(pairs);
     const double error = std::abs(result - expected);

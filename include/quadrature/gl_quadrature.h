@@ -8,14 +8,14 @@ namespace hummingbird::quadrature {
  * @brief Defines a Gauss-Legendre quadrature set on the interval [-1,1]
  *
  */
-class GLQuadrature : public Quadrature<double> {
+class GaussLegendreQuadrature : public Quadrature<double> {
  public:
   /**
-   * @brief Construct a new GLQuadrature object
+   * @brief Construct a new GaussLegendreQuadrature object
    *
    * @param n_points Number of quadrature points to be created
    */
-  GLQuadrature(const unsigned int n_points);
+  GaussLegendreQuadrature(const unsigned int n_points);
 
  private:
   /**
