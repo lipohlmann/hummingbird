@@ -93,6 +93,13 @@ class QuadratureBase {
     }
   }
 
+  /**
+   * @brief Compute the weight for the k-th abscissa for n total points
+   *
+   * @param k Abscissa index
+   * @param n Total number of points
+   * @return Quadrature weight
+   */
   virtual double ComputeWeight(const size_t k, const size_t n) = 0;
 };
 }  // namespace hummingbird::quadrature
