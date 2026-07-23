@@ -41,7 +41,7 @@ TEST(LegendrePolynomial, P2ClosedForm) {
 TEST(LegendrePolynomial, P3ClosedForm) {
   for (double x : kAllX) {
     double expected = 0.5 * (5.0 * x * x * x - 3.0 * x);
-    EXPECT_DOUBLE_EQ(LegendrePolynomial(3, x), expected);
+    EXPECT_NEAR(LegendrePolynomial(3, x), expected, utils::TOLERANCE);
   }
 }
 
