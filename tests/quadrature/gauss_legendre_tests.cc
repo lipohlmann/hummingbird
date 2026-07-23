@@ -5,7 +5,7 @@
 #include <vector>
 
 #include "quadrature/gauss_legendre.h"
-#include "quadrature/quadrature.h"
+#include "quadrature/quadrature_base.h"
 #include "utils/constants.h"
 
 namespace hummingbird::quadrature {
