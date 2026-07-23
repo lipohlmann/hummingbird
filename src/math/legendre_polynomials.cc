@@ -73,10 +73,11 @@ double LegendreRoot(const int n, const int k) {
   for (auto i = 0; i < safety; i++) {
     double x_new = x_old - LegendrePolynomial(n, x_old) /
                                LegendrePolynomialPrime(n, x_old);
-    double error = std::abs((x_new - x_old) / std::max(1.0, x_new));
+    double relative_error = std::abs((x_new - x_old) / std::max(1.0, x_new));
     double backward_error = std::abs(LegendrePolynomial(n, x_new));
 
-    if (backward_error < 1e-13 && error < utils::TOLERANCE) return x_new;
+    if (backward_error < 1e-13 && relative_error < utils::TOLERANCE)
+      return x_new;
     x_old = x_new;
   }
   throw std::runtime_error("LegendreRoot did not converge.");
@@ -107,10 +108,11 @@ double LegendrePrimeRoot(const int n, const int k) {
   for (auto i = 0; i < safety; i++) {
     double x_new = x_old - LegendrePolynomialPrime(n, x_old) /
                                LegendrePolynomialPrimePrime(n, x_old);
-    double error = std::abs((x_new - x_old) / std::max(1.0, x_new));
+    double relative_error = std::abs((x_new - x_old) / std::max(1.0, x_new));
     double backward_error = std::abs(LegendrePolynomialPrime(n, x_new));
 
-    if (backward_error < 1e-12 && error < utils::TOLERANCE) return x_new;
+    if (backward_error < 1e-12 && relative_error < utils::TOLERANCE)
+      return x_new;
     x_old = x_new;
   }
   throw std::runtime_error("LegendrePrimeRoot did not converge.");
