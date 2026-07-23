@@ -114,8 +114,8 @@ TEST_P(GLLQuadratureExactnessTest, EndpointsAreFixedAtPlusMinusOne) {
   GaussLegendreLobatto quad(n);
   const auto& abscissas = quad.abscissas();
 
-  const double min_val = *std::min_element(abscissas.begin(), abscissas.end());
-  const double max_val = *std::max_element(abscissas.begin(), abscissas.end());
+  const double min_val = abscissas.front();
+  const double max_val = abscissas.back();
 
   EXPECT_DOUBLE_EQ(min_val, -1.0);
   EXPECT_DOUBLE_EQ(max_val, 1.0);
