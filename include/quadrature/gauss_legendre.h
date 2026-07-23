@@ -1,7 +1,7 @@
 #ifndef HUMMINGBIRD_QUADRATURE_GAUSS_LEGENDRE_H_
 #define HUMMINGBIRD_QUADRATURE_GAUSS_LEGENDRE_H_
 
-#include "quadrature/quadrature.h"
+#include "quadrature/quadrature_base.h"
 namespace hummingbird::quadrature {
 
 /**
@@ -26,13 +26,7 @@ class GaussLegendre : public QuadratureBase<double> {
    * @param n Order of Gauss-Legendre polynomial
    * @return Weight corresponding to the k-th abscissa values
    */
-  double ComputeWeight(const auto k, const auto n);
-
-  /**
-   * @brief Create the weight map
-   *
-   */
-  void CreateWeightMap();
+  double ComputeWeight(const size_t k, const size_t n) override;
 };
 }  // namespace hummingbird::quadrature
 
