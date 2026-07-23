@@ -1,4 +1,13 @@
 #ifndef HUMMINGBIRD_QUADRATURE_GAUSS_LOBATTO_QUADRATURE_H
 #define HUMMINGBIRD_QUADRATURE_GAUSS_LOBATTO_QUADRATURE_H
 
-#endif // HUMMINGBIRD_QUADRATURE_GAUSS_LOBATTO_QUADRATURE_H
+#include "quadrature/quadrature.h"
+
+namespace hummingbird::quadrature {
+class GaussLobattoQuadrature : public Quadrature<double> {
+ public:
+ private:
+};
+}  // namespace hummingbird::quadrature
+
+#endif  // HUMMINGBIRD_QUADRATURE_GAUSS_LOBATTO_QUADRATURE_H
