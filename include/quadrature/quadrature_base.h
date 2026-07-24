@@ -25,12 +25,14 @@ struct QuadraturePair {
 template <typename T>
 class QuadratureBase {
  public:
+  QuadratureBase() = default;
+
   /**
    * @brief Construct a new Quadrature object
    *
    * @param abscissas Vector of abscissa values for the quadrature
    */
-  QuadratureBase(const std::vector<T> abscissas) : abscissas_(abscissas) {};
+  QuadratureBase(const std::vector<T> abscissas) : abscissas_(abscissas){};
 
   /**
    * @brief Get the weight value corresponding to a given abscissa value
@@ -73,9 +75,24 @@ class QuadratureBase {
    */
   const std::vector<T>& abscissas() const { return abscissas_; }
 
+  /**
+   * @brief Return the abscissa at index
+   *
+   * @param index Index
+   * @return Abscissa
+   */
+  T abscissa(const size_t index) const { return abscissas_.at(index); }
+
+  /**
+   * @brief Get total number of abscissas
+   *
+   * @return size_t
+   */
+  size_t n_points() const { return abscissas_.size(); }
+
  protected:
   /// @brief Abscissa values
-  const std::vector<T> abscissas_;
+  std::vector<T> abscissas_;
 
   /// @brief Map to store the weights of the quadrature set where the keys are
   /// the indices corresponding to abscissa values
@@ -100,7 +117,7 @@ class QuadratureBase {
    * @param n Total number of points
    * @return Quadrature weight
    */
-  virtual double ComputeWeight(const size_t k, const size_t n) = 0;
+  virtual double ComputeWeight(const size_t k, const size_t n) { return 0 };
 };
 }  // namespace hummingbird::quadrature
 
