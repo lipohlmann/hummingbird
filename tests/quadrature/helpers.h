@@ -4,17 +4,20 @@
 #include <functional>
 #include <vector>
 
-#include "quadrature/gauss_legendre.h"
-#include "quadrature/gauss_legendre_lobatto.h"
 #include "quadrature/quadrature_base.h"
 
 namespace hummingbird::quadrature {
 
-std::vector<QuadraturePair> GLEvaluateAt(
-    const GaussLegendre& quad, const std::function<double(double)>& f);
-
-std::vector<QuadraturePair> GLLEvaluateAt(
-    const GaussLegendreLobatto& quad, const std::function<double(double)>& f);
+template <typename Q>
+std::vector<QuadraturePair> EvaluateAt(const Q& quad,
+                                       const std::function<double(double)>& f) {
+  std::vector<QuadraturePair> pairs;
+  pairs.reserve(quad.abscissas().size());
+  for (auto i = 0; i < quad.abscissas().size(); i++) {
+    pairs.push_back(QuadraturePair{i, f(quad.GetAbscissa(i))});
+  }
+  return pairs;
+}
 
 double AnalyticMonomialIntegral(const unsigned int k);
 }  // namespace hummingbird::quadrature

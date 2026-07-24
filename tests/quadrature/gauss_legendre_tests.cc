@@ -29,7 +29,8 @@ TEST_P(GLQuadratureExactnessTest, IntegratesAllMonomialsUpToDegree2NMinus1) {
   // <= 2n - 1, so every monomial x^k in that range must integrate exactly.
   const unsigned int max_exact_degree = 2 * n - 1;
   for (unsigned int k = 0; k <= max_exact_degree; ++k) {
-    auto pairs = GLEvaluateAt(quad, [k](double x) { return std::pow(x, k); });
+    auto pairs = EvaluateAt<GaussLegendre>(
+        quad, [k](double x) { return std::pow(x, k); });
     const double result = quad.Integrate(pairs);
     const double expected = AnalyticMonomialIntegral(k);
     EXPECT_NEAR(result, expected, utils::TOLERANCE)
@@ -57,7 +58,7 @@ TEST_P(GLQuadratureExactnessTest, IntegratesArbitraryPolynomialInRange) {
     expected += static_cast<double>(k + 1) * AnalyticMonomialIntegral(k);
   }
 
-  auto pairs = GLEvaluateAt(quad, poly);
+  auto pairs = EvaluateAt<GaussLegendre>(quad, poly);
   const double result = quad.Integrate(pairs);
   EXPECT_DOUBLE_EQ(result, expected);
 }
@@ -67,7 +68,7 @@ TEST_P(GLQuadratureExactnessTest, WeightsSumToTwo) {
   const unsigned int n = GetParam();
   GaussLegendre quad(n);
 
-  auto pairs = GLEvaluateAt(quad, [](double) { return 1.0; });
+  auto pairs = EvaluateAt<GaussLegendre>(quad, [](double) { return 1.0; });
   const double result = quad.Integrate(pairs);
   EXPECT_DOUBLE_EQ(result, 2.0);
 }
@@ -117,8 +118,8 @@ TEST(GLQuadratureBoundaryTest,
 
   // Degree 2n = 6 is one past the exactness bound (2n - 1 = 5).
   const unsigned int degree = 2 * n;
-  auto pairs =
-      GLEvaluateAt(quad, [degree](double x) { return std::pow(x, degree); });
+  auto pairs = EvaluateAt<GaussLegendre>(
+      quad, [degree](double x) { return std::pow(x, degree); });
   const double result = quad.Integrate(pairs);
   const double expected = AnalyticMonomialIntegral(degree);
 
@@ -139,7 +140,8 @@ TEST(GLQuadratureNonPolynomialTest,
   const unsigned int n = 20;  // enough points for e^x to converge tightly
   GaussLegendre quad(n);
 
-  auto pairs = GLEvaluateAt(quad, [](double x) { return std::exp(x); });
+  auto pairs =
+      EvaluateAt<GaussLegendre>(quad, [](double x) { return std::exp(x); });
   const double result = quad.Integrate(pairs);
 
   EXPECT_NEAR(result, expected, 1e-10);
@@ -152,7 +154,8 @@ TEST(GLQuadratureNonPolynomialTest,
   double previous_error = std::numeric_limits<double>::max();
   for (unsigned int n : {2u, 4u, 6u, 8u}) {
     GaussLegendre quad(n);
-    auto pairs = GLEvaluateAt(quad, [](double x) { return std::exp(x); });
+    auto pairs =
+        EvaluateAt<GaussLegendre>(quad, [](double x) { return std::exp(x); });
     const double result = quad.Integrate(pairs);
     const double error = std::abs(result - expected);
 
