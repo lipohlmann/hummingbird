@@ -23,11 +23,11 @@ GaussLegendreChebyshev::GaussLegendreChebyshev(const size_t n_half_azim,
 
       Ordinate positive(std::acos(azim), std::acos(polar));
       abscissas_.push_back(std::move(positive));
-      double weight = GetWeight(i) * GetWeight(j);
+      double weight = gl_polar_quad.GetWeight(i) * gc_azim_quad.GetWeight(j);
       weight_map_.insert({counter, weight});
       counter++;
 
-      Ordinate negative(2.0 * M_PI - std::acos(azim), std::acos(polar));
+      Ordinate negative(std::acos(azim), std::acos(polar));
       abscissas_.push_back(std::move(negative));
       weight_map_.insert({counter, weight});
     }
