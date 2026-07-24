@@ -109,7 +109,7 @@ class QuadratureBase {
    * @param n Total number of points
    * @return Quadrature weight
    */
-  virtual double ComputeWeight(const size_t k, const size_t n) { return 0 };
+  virtual double ComputeWeight(const size_t k, const size_t n) { return 0; }
 };
 }  // namespace hummingbird::quadrature
 
