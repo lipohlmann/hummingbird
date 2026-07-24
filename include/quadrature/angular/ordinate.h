@@ -1,7 +1,7 @@
 #ifndef HUMMINGBIRD_ORDINATE_H_
 #define HUMMINGBIRD_ORDINATE_H_
 
-namespace hummingbird {
+namespace hummingbird::quadrature::angular {
 
 /**
  * @brief Defines a solid angle, or *ordinate*, in spherical geometry
@@ -53,6 +53,6 @@ class Ordinate {
    */
   void CheckInput(const double azimuth, const double polar);
 };
-}  // namespace hummingbird
+}  // namespace hummingbird::quadrature::angular
 
 #endif  // HUMMINGBIRD_ORDINATE_H_

@@ -1,4 +1,3 @@
-#include "ordinate.h"
-
 #include <gtest/gtest.h>
 
+#include "quadrature/angular/ordinate.h"

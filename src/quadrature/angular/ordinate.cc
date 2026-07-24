@@ -1,9 +1,9 @@
-#include "ordinate.h"
+#include "quadrature/angular/ordinate.h"
 
 #include <cmath>
 #include <stdexcept>
 
-namespace hummingbird {
+namespace hummingbird::quadrature::angular {
 Ordinate::Ordinate(const double azimuth, const double polar)
     : azimuth_(azimuth), polar_(polar) {
   CheckInput(azimuth, polar);
@@ -23,4 +23,4 @@ double Ordinate::XCosine() { return std::cos(azimuth_) * std::sin(polar_); }
 double Ordinate::YCosine() { return std::sin(azimuth_) * std::sin(polar_); }
 
 double Ordinate::ZCosine() { return std::cos(polar_); }
-}  // namespace hummingbird
+}  // namespace hummingbird::quadrature::angular
