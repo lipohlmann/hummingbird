@@ -27,7 +27,7 @@ GaussLegendreChebyshev::GaussLegendreChebyshev(const size_t n_half_azim,
       weight_map_.insert({counter, weight});
       counter++;
 
-      Ordinate negative(std::acos(azim), std::acos(polar));
+      Ordinate negative(-std::acos(azim), std::acos(polar));
       abscissas_.push_back(std::move(negative));
       weight_map_.insert({counter, weight});
     }
