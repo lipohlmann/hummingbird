@@ -3,7 +3,9 @@
 #include <cmath>
 namespace hummingbird::quadrature {
 GaussChebyshev::GaussChebyshev(const size_t n_points)
-    : QuadratureBase<double>(ComputeChebyshevAbscissas(n_points)) {}
+    : QuadratureBase<double>(ComputeChebyshevAbscissas(n_points)) {
+  CreateWeightMap();
+}
 
 std::vector<double> GaussChebyshev::ComputeChebyshevAbscissas(
     const size_t n_points) {
