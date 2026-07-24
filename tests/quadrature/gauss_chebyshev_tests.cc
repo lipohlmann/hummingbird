@@ -87,7 +87,7 @@ TEST_P(GCQuadratureExactnessTest, IntegratesArbitraryPolynomialInRange) {
 
   auto pairs = EvaluateAt(quad, poly);
   const double result = quad.Integrate(pairs);
-  EXPECT_NEAR(result, expected, utils::TOLERANCE);
+  EXPECT_DOUBLE_EQ(result, expected);
 }
 
 TEST_P(GCQuadratureExactnessTest, WeightsSumToPi) {
@@ -97,7 +97,7 @@ TEST_P(GCQuadratureExactnessTest, WeightsSumToPi) {
 
   auto pairs = EvaluateAt(quad, [](double) { return 1.0; });
   const double result = quad.Integrate(pairs);
-  EXPECT_NEAR(result, M_PI, utils::TOLERANCE);
+  EXPECT_DOUBLE_EQ(result, M_PI);
 }
 
 TEST_P(GCQuadratureExactnessTest, AllWeightsAreEqualToPiOverN) {
@@ -107,7 +107,7 @@ TEST_P(GCQuadratureExactnessTest, AllWeightsAreEqualToPiOverN) {
 
   const double expected_weight = M_PI / static_cast<double>(n);
   for (unsigned int i = 0; i < n; ++i) {
-    EXPECT_NEAR(quad.GetWeight(i), expected_weight, utils::TOLERANCE)
+    EXPECT_DOUBLE_EQ(quad.GetWeight(i), expected_weight)
         << "Weight mismatch at index " << i << " for n=" << n;
   }
 }
@@ -142,7 +142,7 @@ TEST_P(GCQuadratureExactnessTest,
   // Gauss-Chebyshev nodes are symmetric about 0: x_i == -x_{n-1-i}.
   for (std::size_t i = 0; i < sorted.size(); ++i) {
     const double mirrored = sorted[sorted.size() - 1 - i];
-    EXPECT_NEAR(sorted[i], -mirrored, 1e-12);
+    EXPECT_NEAR(sorted[i], -mirrored, utils::TOLERANCE);
   }
 }
 
@@ -164,9 +164,9 @@ TEST(GCQuadratureExplicitFormulaTest, MatchesKnownThreePointAbscissas) {
   std::vector<double> sorted(quad.abscissas().begin(), quad.abscissas().end());
   std::sort(sorted.begin(), sorted.end());
 
-  EXPECT_NEAR(sorted[0], -std::sqrt(3.0) / 2.0, 1e-12);
-  EXPECT_NEAR(sorted[1], 0.0, 1e-12);
-  EXPECT_NEAR(sorted[2], std::sqrt(3.0) / 2.0, 1e-12);
+  EXPECT_DOUBLE_EQ(sorted[0], -std::sqrt(3.0) / 2.0);
+  EXPECT_NEAR(sorted[1], 0.0, utils::TOLERANCE);
+  EXPECT_DOUBLE_EQ(sorted[2], std::sqrt(3.0) / 2.0);
 }
 
 // ---------------------------------------------------------------------------
