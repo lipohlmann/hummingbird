@@ -76,14 +76,6 @@ class QuadratureBase {
   const std::vector<T>& abscissas() const { return abscissas_; }
 
   /**
-   * @brief Return the abscissa at index
-   *
-   * @param index Index
-   * @return Abscissa
-   */
-  T abscissa(const size_t index) const { return abscissas_.at(index); }
-
-  /**
    * @brief Get total number of abscissas
    *
    * @return size_t
