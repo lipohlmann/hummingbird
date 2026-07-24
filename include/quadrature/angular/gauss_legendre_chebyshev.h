@@ -7,8 +7,22 @@
 #include "quadrature/quadrature_base.h"
 
 namespace hummingbird::quadrature::angular {
+/**
+ * @brief Class defines a Gauss-Legendre-Chebyshev quadrature set on the unit
+ * sphere, where a Gauss-Legendre quadrature set is used along the polar
+ * direction, and a Gauss-Chebyshev quadrature set is used along the azimuthal
+ * direction.
+ *
+ */
 class GaussLegendreChebyshev : public quadrature::QuadratureBase<Ordinate> {
  public:
+  /**
+   * @brief Construct a new Gauss Legendre Chebyshev object
+   *
+   * @param n_half_azim Number of directions in a half-circle (directions will
+   * be mirrored, and thus doubled)
+   * @param n_polar Number of directions on the polar axis
+   */
   GaussLegendreChebyshev(const size_t n_half_azim, const size_t n_polar);
 
  private:
