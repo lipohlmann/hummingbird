@@ -1,4 +1,171 @@
-#include "quadrature/gauss_chebyshev.h"
-
 #include <gtest/gtest.h>
 
+#include <cmath>
+#include <functional>
+#include <vector>
+
+#include "../tests/quadrature/helpers.h"
+#include "quadrature/gauss_chebyshev.h"
+#include "quadrature/quadrature_base.h"
+#include "utils/constants.h"
+
+namespace hummingbird::quadrature {
+
+// ---------------------------------------------------------------------------
+// Parameterized tests: exactness on monomials / polynomials
+// ---------------------------------------------------------------------------
+
+// Parameter is the number of quadrature points, n.
+class GCQuadratureExactnessTest
+    : public ::testing::TestWithParam<unsigned int> {};
+
+TEST_P(GCQuadratureExactnessTest, IntegratesAllMonomialsUpToDegree2NMinus1) {
+  const unsigned int n = GetParam();
+  GaussChebyshev quad(n);
+
+  ASSERT_EQ(quad.abscissas().size(), n);
+
+  // An n-point Gauss-Legendre rule is exact for all polynomials of degree
+  // <= 2n - 1, so every monomial x^k in that range must integrate exactly.
+  const unsigned int max_exact_degree = 2 * n - 1;
+  for (unsigned int k = 0; k <= max_exact_degree; ++k) {
+    auto pairs = EvaluateAt<GaussChebyshev>(
+        quad, [k](double x) { return std::pow(x, k); });
+    const double result = quad.Integrate(pairs);
+    const double expected = AnalyticMonomialIntegral(k);
+    EXPECT_NEAR(result, expected, utils::TOLERANCE)
+        << "Failed for n=" << n << ", monomial degree k=" << k;
+  }
+}
+
+TEST_P(GCQuadratureExactnessTest, IntegratesArbitraryPolynomialInRange) {
+  const unsigned int n = GetParam();
+  GaussChebyshev quad(n);
+
+  // Build a polynomial that uses every degree from 0 up to the max exact
+  // degree, e.g. p(x) = sum_{k=0}^{2n-1} (k + 1) * x^k
+  const unsigned int max_exact_degree = 2 * n - 1;
+  auto poly = [max_exact_degree](double x) {
+    double sum = 0.0;
+    for (unsigned int k = 0; k <= max_exact_degree; ++k) {
+      sum += static_cast<double>(k + 1) * std::pow(x, k);
+    }
+    return sum;
+  };
+
+  double expected = 0.0;
+  for (unsigned int k = 0; k <= max_exact_degree; ++k) {
+    expected += static_cast<double>(k + 1) * AnalyticMonomialIntegral(k);
+  }
+
+  auto pairs = EvaluateAt<GaussChebyshev>(quad, poly);
+  const double result = quad.Integrate(pairs);
+  EXPECT_DOUBLE_EQ(result, expected);
+}
+
+TEST_P(GCQuadratureExactnessTest, WeightsSumToTwo) {
+  // \int_{-1}^{1} 1 dx = 2, i.e. sum of all weights must equal 2.
+  const unsigned int n = GetParam();
+  GaussChebyshev quad(n);
+
+  auto pairs = EvaluateAt<GaussChebyshev>(quad, [](double) { return 1.0; });
+  const double result = quad.Integrate(pairs);
+  EXPECT_DOUBLE_EQ(result, 2.0);
+}
+
+TEST_P(GCQuadratureExactnessTest, WeightsArePositive) {
+  const unsigned int n = GetParam();
+  GaussChebyshev quad(n);
+
+  for (const double x : quad.abscissas()) {
+    EXPECT_GT(quad.GetWeight(x), 0.0)
+        << "Gauss-Legendre weights must all be strictly positive.";
+  }
+}
+
+TEST_P(GCQuadratureExactnessTest, AbscissasLieWithinIntervalAndAreSymmetric) {
+  const unsigned int n = GetParam();
+  GaussChebyshev quad(n);
+  const auto& abscissas = quad.abscissas();
+
+  std::vector<double> sorted(abscissas.begin(), abscissas.end());
+  std::sort(sorted.begin(), sorted.end());
+
+  for (double x : sorted) {
+    EXPECT_GE(x, -1.0);
+    EXPECT_LE(x, 1.0);
+  }
+
+  // Gauss-Legendre nodes are symmetric about 0: x_i == -x_{n-1-i}.
+  for (std::size_t i = 0; i < sorted.size(); ++i) {
+    const double mirrored = sorted[sorted.size() - 1 - i];
+    EXPECT_NEAR(sorted[i], -mirrored, 1e-12);
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(VariousPointCounts, GCQuadratureExactnessTest,
+                         ::testing::Values(1u, 2u, 3u, 4u, 5u, 6u, 8u, 10u));
+
+// ---------------------------------------------------------------------------
+// Boundary / negative test: a polynomial one degree too high should NOT
+// generally be integrated exactly.
+// ---------------------------------------------------------------------------
+
+TEST(GCQuadratureBoundaryTest,
+     DoesNotExactlyIntegratePolynomialAboveDegreeBound) {
+  const unsigned int n = 3;
+  GaussChebyshev quad(n);
+
+  // Degree 2n = 6 is one past the exactness bound (2n - 1 = 5).
+  const unsigned int degree = 2 * n;
+  auto pairs = EvaluateAt<GaussChebyshev>(
+      quad, [degree](double x) { return std::pow(x, degree); });
+  const double result = quad.Integrate(pairs);
+  const double expected = AnalyticMonomialIntegral(degree);
+
+  // We expect a real discrepancy here, not just floating point noise.
+  EXPECT_GT(std::abs(result - expected), 1e-3);
+}
+
+// ---------------------------------------------------------------------------
+// Non-polynomial test: exp(x) has a known closed form and provides a
+// meaningful accuracy/convergence check for a transcendental integrand.
+// ---------------------------------------------------------------------------
+
+TEST(GCQuadratureNonPolynomialTest,
+     ApproximatesExponentialIntegralWithinTolerance) {
+  // \int_{-1}^{1} e^x dx = e - 1/e
+  const double expected = std::exp(1.0) - std::exp(-1.0);
+
+  const unsigned int n = 20;  // enough points for e^x to converge tightly
+  GaussChebyshev quad(n);
+
+  auto pairs =
+      EvaluateAt<GaussChebyshev>(quad, [](double x) { return std::exp(x); });
+  const double result = quad.Integrate(pairs);
+
+  EXPECT_NEAR(result, expected, 1e-10);
+}
+
+TEST(GCQuadratureNonPolynomialTest,
+     ExponentialIntegralConvergesAsPointsIncrease) {
+  const double expected = std::exp(1.0) - std::exp(-1.0);
+
+  double previous_error = std::numeric_limits<double>::max();
+  for (unsigned int n : {2u, 4u, 6u, 8u}) {
+    GaussChebyshev quad(n);
+    auto pairs =
+        EvaluateAt<GaussChebyshev>(quad, [](double x) { return std::exp(x); });
+    const double result = quad.Integrate(pairs);
+    const double error = std::abs(result - expected);
+
+    EXPECT_LE(error, previous_error)
+        << "Error should not increase as n grows (n=" << n << ").";
+    previous_error = error;
+  }
+
+  // By n=10 the error should be essentially machine precision.
+  EXPECT_LT(previous_error, 1e-12);
+}
+
+}  // namespace hummingbird::quadrature
