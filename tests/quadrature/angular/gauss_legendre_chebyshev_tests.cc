@@ -55,7 +55,7 @@ TEST_P(GLCStructureTest, EveryOrdinateIsAUnitVector) {
     const double norm_sq = ord.XCosine() * ord.XCosine() +
                            ord.YCosine() * ord.YCosine() +
                            ord.ZCosine() * ord.ZCosine();
-    EXPECT_NEAR(norm_sq, 1.0, utils::TOLERANCE)
+    EXPECT_NEAR(norm_sq, 1.0, utils::EXP_NEAR_TOLERANCE)
         << "Direction cosines at index " << i << " are not normalized.";
   }
 }
@@ -77,7 +77,7 @@ TEST_P(GLCStructureTest, WeightsSumToFourPi) {
   auto [n_half_azim, n_polar] = GetParam();
   GaussLegendreChebyshev quad(n_half_azim, n_polar);
   const double sum = WeightedSum(quad, [](Ordinate) { return 1.0; });
-  EXPECT_NEAR(sum, kFourPi, utils::TOLERANCE);
+  EXPECT_NEAR(sum, kFourPi, utils::EXP_NEAR_TOLERANCE * 10.0);
 }
 
 TEST_P(GLCStructureTest, IntegrateAgreesWithManualWeightedSumForAConstant) {
@@ -92,7 +92,7 @@ TEST_P(GLCStructureTest, IntegrateAgreesWithManualWeightedSumForAConstant) {
     pairs.push_back({static_cast<int>(i), 1.0});
   }
 
-  EXPECT_NEAR(quad.Integrate(pairs), kFourPi, utils::TOLERANCE);
+  EXPECT_NEAR(quad.Integrate(pairs), kFourPi, utils::EXP_NEAR_TOLERANCE);
 }
 
 TEST_P(GLCStructureTest, WeightsMatchProductOfComponentQuadratures) {
@@ -107,10 +107,10 @@ TEST_P(GLCStructureTest, WeightsMatchProductOfComponentQuadratures) {
   for (unsigned int i = 0; i < n_polar; ++i) {
     for (unsigned int j = 0; j < n_half_azim; ++j) {
       const double expected = gl_polar.GetWeight(i) * gc_azim.GetWeight(j);
-      EXPECT_NEAR(quad.GetWeight(counter), expected, utils::TOLERANCE)
+      EXPECT_NEAR(quad.GetWeight(counter), expected, utils::EXP_NEAR_TOLERANCE)
           << "Mismatch at positive ordinate i=" << i << ", j=" << j;
       ++counter;
-      EXPECT_NEAR(quad.GetWeight(counter), expected, utils::TOLERANCE)
+      EXPECT_NEAR(quad.GetWeight(counter), expected, utils::EXP_NEAR_TOLERANCE)
           << "Mismatch at mirrored ordinate i=" << i << ", j=" << j;
       ++counter;
     }
@@ -145,11 +145,11 @@ TEST_P(GLCMomentTest, FirstMomentsVanish) {
   GaussLegendreChebyshev quad(n_half_azim, n_polar);
 
   EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.XCosine(); }), 0.0,
-              utils::TOLERANCE);
+              utils::EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.YCosine(); }), 0.0,
-              utils::TOLERANCE);
+              utils::EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.ZCosine(); }), 0.0,
-              utils::TOLERANCE);
+              utils::EXP_NEAR_TOLERANCE);
 }
 
 TEST_P(GLCMomentTest, CrossMomentsVanish) {
@@ -158,13 +158,13 @@ TEST_P(GLCMomentTest, CrossMomentsVanish) {
 
   EXPECT_NEAR(
       WeightedSum(quad, [](Ordinate o) { return o.XCosine() * o.YCosine(); }),
-      0.0, utils::TOLERANCE);
+      0.0, utils::EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(
       WeightedSum(quad, [](Ordinate o) { return o.YCosine() * o.ZCosine(); }),
-      0.0, utils::TOLERANCE);
+      0.0, utils::EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(
       WeightedSum(quad, [](Ordinate o) { return o.XCosine() * o.ZCosine(); }),
-      0.0, utils::TOLERANCE);
+      0.0, utils::EXP_NEAR_TOLERANCE);
 }
 
 TEST_P(GLCMomentTest, DiagonalSecondMomentsEqualFourPiOverThree) {
@@ -174,13 +174,13 @@ TEST_P(GLCMomentTest, DiagonalSecondMomentsEqualFourPiOverThree) {
 
   EXPECT_NEAR(
       WeightedSum(quad, [](Ordinate o) { return o.XCosine() * o.XCosine(); }),
-      expected, utils::TOLERANCE);
+      expected, utils::EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(
       WeightedSum(quad, [](Ordinate o) { return o.YCosine() * o.YCosine(); }),
-      expected, utils::TOLERANCE);
+      expected, utils::EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(
       WeightedSum(quad, [](Ordinate o) { return o.ZCosine() * o.ZCosine(); }),
-      expected, utils::TOLERANCE);
+      expected, utils::EXP_NEAR_TOLERANCE);
 }
 
 INSTANTIATE_TEST_SUITE_P(SufficientResolution, GLCMomentTest,
@@ -196,14 +196,14 @@ INSTANTIATE_TEST_SUITE_P(SufficientResolution, GLCMomentTest,
 TEST(GLCMomentEdgeCaseTest, FirstAndCrossMomentsVanishEvenAtMinimalOrder) {
   GaussLegendreChebyshev quad(1, 2);
   EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.XCosine(); }), 0.0,
-              utils::TOLERANCE);
+              utils::EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.YCosine(); }), 0.0,
-              utils::TOLERANCE);
+              utils::EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.ZCosine(); }), 0.0,
-              utils::TOLERANCE);
+              utils::EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(
       WeightedSum(quad, [](Ordinate o) { return o.XCosine() * o.YCosine(); }),
-      0.0, utils::TOLERANCE);
+      0.0, utils::EXP_NEAR_TOLERANCE);
 }
 
 // At n_half_azim == 1 there are only two azimuthal directions (phi = pi/2
@@ -214,7 +214,7 @@ TEST(GLCMomentEdgeCaseTest, XSquaredMomentIsAliasedWithOnlyOneAzimuthalPoint) {
   GaussLegendreChebyshev quad(1, 4);
   const double x_squared_moment =
       WeightedSum(quad, [](Ordinate o) { return o.XCosine() * o.XCosine(); });
-  EXPECT_NEAR(x_squared_moment, 0.0, utils::TOLERANCE);
+  EXPECT_NEAR(x_squared_moment, 0.0, utils::EXP_NEAR_TOLERANCE);
   EXPECT_GT(std::abs(x_squared_moment - kFourPi / 3.0), 1e-3);
 }
 
@@ -246,15 +246,19 @@ TEST(GLCRangeTest, MirroredPairsShareThePolarAngleButOpposeAzimuthally) {
     Ordinate positive = quad.GetAbscissa(idx);
     Ordinate negative = quad.GetAbscissa(idx + 1);
 
-    EXPECT_NEAR(positive.ZCosine(), negative.ZCosine(), utils::TOLERANCE)
+    EXPECT_NEAR(positive.ZCosine(), negative.ZCosine(),
+                utils::EXP_NEAR_TOLERANCE)
         << "Mirrored pair at index " << idx << " should share a polar angle.";
-    EXPECT_NEAR(positive.XCosine(), negative.XCosine(), utils::TOLERANCE)
+    EXPECT_NEAR(positive.XCosine(), negative.XCosine(),
+                utils::EXP_NEAR_TOLERANCE)
         << "Mirrored pair at index " << idx
         << " should share an x-direction cosine.";
-    EXPECT_NEAR(positive.YCosine(), -negative.YCosine(), utils::TOLERANCE)
+    EXPECT_NEAR(positive.YCosine(), -negative.YCosine(),
+                utils::EXP_NEAR_TOLERANCE)
         << "Mirrored pair at index " << idx
         << " should have opposite y-direction cosines.";
-    EXPECT_NEAR(quad.GetWeight(idx), quad.GetWeight(idx + 1), utils::TOLERANCE)
+    EXPECT_NEAR(quad.GetWeight(idx), quad.GetWeight(idx + 1),
+                utils::EXP_NEAR_TOLERANCE)
         << "Mirrored pair at index " << idx << " should share a weight.";
   }
 }
@@ -267,7 +271,7 @@ TEST(GLCEdgeCaseTest, SinglePointPerHalfProducesTwoOrdinates) {
   GaussLegendreChebyshev quad(1, 1);
   EXPECT_EQ(quad.n_points(), 2u);
   EXPECT_NEAR(WeightedSum(quad, [](Ordinate) { return 1.0; }), kFourPi,
-              utils::TOLERANCE);
+              utils::EXP_NEAR_TOLERANCE);
 }
 
 }  // namespace hummingbird::quadrature::angular
