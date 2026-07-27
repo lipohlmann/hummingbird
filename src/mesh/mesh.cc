@@ -15,7 +15,7 @@ void Mesh::RenumberNodes() {
               return first.id < second.id;
             });
 
-  uint32_t new_node_id = 0;
+  size_t new_node_id = 0;
   for (auto& element : elements_) {
     auto node_ids = element->node_ids();
     for (auto id : node_ids) {
