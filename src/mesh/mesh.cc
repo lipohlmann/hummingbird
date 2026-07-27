@@ -8,8 +8,20 @@ namespace hummingbird::mesh {
 
 void Mesh::AddNode(const Node node) { nodes_.push_back(node); }
 
+void Mesh::AddNodes(const std::vector<Node> nodes) {
+  for (auto node : nodes) nodes_.push_back(node);
+}
+
 void Mesh::AddElement(const std::unique_ptr<Element> element) {
   elements_.push_back(std::move(element));
+}
+
+void Mesh::CreateInteriorElementNodes(
+    const quadrature::GaussLobattoLegendre& gll_quadrature) {
+  for (auto& element : elements_) {
+    auto new_nodes = element->CreateInteriorNodes(nodes_, gll_quadrature);
+    AddNodes(new_nodes);
+  }
 }
 
 void Mesh::RenumberNodes() {

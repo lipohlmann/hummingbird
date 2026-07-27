@@ -5,6 +5,7 @@
 
 #include "mesh/element.h"
 #include "mesh/node.h"
+#include "quadrature/gauss_lobatto_legendre.h"
 
 namespace hummingbird::mesh {
 
@@ -28,11 +29,27 @@ class Mesh {
   void AddNode(const Node node);
 
   /**
+   * @brief Add nodes in a vector to Mesh
+   *
+   * @param nodes Nodes
+   */
+  void AddNodes(const std::vector<Node> nodes);
+
+  /**
    * @brief Add element to Mesh
    *
    * @param element Element
    */
   void AddElement(const std::unique_ptr<Element> element);
+
+  /**
+   * @brief Create interior nodes on elements using Gauss-Lobatto-Legendre
+   * quadrature set and add to Mesh
+   *
+   * @param gll_quadrature Gauss-Lobatto-Legendre quadrature set
+   */
+  void CreateInteriorElementNodes(
+      const quadrature::GaussLobattoLegendre& gll_quadrature);
 
  private:
   /// @brief Nodes in the mesh
