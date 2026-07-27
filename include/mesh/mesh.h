@@ -14,7 +14,11 @@ namespace hummingbird::mesh {
  */
 class Mesh {
  public:
-  Mesh();
+  /**
+   * @brief Construct a new Mesh object
+   *
+   */
+  Mesh() = default;
 
   /**
    * @brief Add node to Mesh
