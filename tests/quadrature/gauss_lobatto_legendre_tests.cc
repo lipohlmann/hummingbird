@@ -7,7 +7,7 @@
 #include <vector>
 
 #include "../tests/quadrature/helpers.h"
-#include "quadrature/gauss_legendre_lobatto.h"
+#include "quadrature/gauss_lobatto_legendre.h"
 #include "quadrature/quadrature_base.h"
 #include "utils/constants.h"
 
@@ -28,13 +28,13 @@ class GLLQuadratureExactnessTest
 
 TEST_P(GLLQuadratureExactnessTest, IntegratesAllMonomialsUpToDegree2NMinus3) {
   const unsigned int n = GetParam();
-  GaussLegendreLobatto quad(n);
+  GaussLobattoLegendre quad(n);
 
   ASSERT_EQ(quad.abscissas().size(), n);
 
   const int max_exact_degree = 2 * static_cast<int>(n) - 3;
   for (int k = 0; k <= max_exact_degree; ++k) {
-    auto pairs = EvaluateAt<GaussLegendreLobatto>(
+    auto pairs = EvaluateAt<GaussLobattoLegendre>(
         quad, [k](double x) { return std::pow(x, k); });
     const double result = quad.Integrate(pairs);
     const double expected = AnalyticMonomialIntegral(k);
@@ -45,7 +45,7 @@ TEST_P(GLLQuadratureExactnessTest, IntegratesAllMonomialsUpToDegree2NMinus3) {
 
 TEST_P(GLLQuadratureExactnessTest, IntegratesArbitraryPolynomialInRange) {
   const unsigned int n = GetParam();
-  GaussLegendreLobatto quad(n);
+  GaussLobattoLegendre quad(n);
 
   const int max_exact_degree = 2 * static_cast<int>(n) - 3;
   auto poly = [max_exact_degree](double x) {
@@ -61,7 +61,7 @@ TEST_P(GLLQuadratureExactnessTest, IntegratesArbitraryPolynomialInRange) {
     expected += static_cast<double>(k + 1) * AnalyticMonomialIntegral(k);
   }
 
-  auto pairs = EvaluateAt<GaussLegendreLobatto>(quad, poly);
+  auto pairs = EvaluateAt<GaussLobattoLegendre>(quad, poly);
   const double result = quad.Integrate(pairs);
   EXPECT_DOUBLE_EQ(result, expected);
 }
@@ -69,17 +69,17 @@ TEST_P(GLLQuadratureExactnessTest, IntegratesArbitraryPolynomialInRange) {
 TEST_P(GLLQuadratureExactnessTest, WeightsSumToTwo) {
   // \int_{-1}^{1} 1 dx = 2, i.e. sum of all weights must equal 2.
   const unsigned int n = GetParam();
-  GaussLegendreLobatto quad(n);
+  GaussLobattoLegendre quad(n);
 
   auto pairs =
-      EvaluateAt<GaussLegendreLobatto>(quad, [](double) { return 1.0; });
+      EvaluateAt<GaussLobattoLegendre>(quad, [](double) { return 1.0; });
   const double result = quad.Integrate(pairs);
   EXPECT_DOUBLE_EQ(result, 2.0);
 }
 
 TEST_P(GLLQuadratureExactnessTest, WeightsArePositive) {
   const unsigned int n = GetParam();
-  GaussLegendreLobatto quad(n);
+  GaussLobattoLegendre quad(n);
 
   for (unsigned int i = 0; i < quad.abscissas().size(); ++i) {
     EXPECT_GT(quad.GetWeight(i), 0.0)
@@ -91,7 +91,7 @@ TEST_P(GLLQuadratureExactnessTest, WeightsArePositive) {
 
 TEST_P(GLLQuadratureExactnessTest, AbscissasLieWithinIntervalAndAreSymmetric) {
   const unsigned int n = GetParam();
-  GaussLegendreLobatto quad(n);
+  GaussLobattoLegendre quad(n);
   const auto& abscissas = quad.abscissas();
 
   std::vector<double> sorted(abscissas.begin(), abscissas.end());
@@ -113,7 +113,7 @@ TEST_P(GLLQuadratureExactnessTest, EndpointsAreFixedAtPlusMinusOne) {
   // Unlike Gauss-Legendre, GLL always includes both endpoints of [-1, 1]
   // as abscissas.
   const unsigned int n = GetParam();
-  GaussLegendreLobatto quad(n);
+  GaussLobattoLegendre quad(n);
   const auto& abscissas = quad.abscissas();
 
   const double min_val = abscissas.front();
@@ -132,7 +132,7 @@ INSTANTIATE_TEST_SUITE_P(VariousPointCounts, GLLQuadratureExactnessTest,
 // ---------------------------------------------------------------------------
 
 TEST(GLLQuadratureTwoPointTest, DegeneratesToTrapezoidalRule) {
-  GaussLegendreLobatto quad(2);
+  GaussLobattoLegendre quad(2);
   ASSERT_EQ(quad.abscissas().size(), 2u);
 
   for (unsigned int i = 0; i < 2; ++i) {
@@ -148,11 +148,11 @@ TEST(GLLQuadratureTwoPointTest, DegeneratesToTrapezoidalRule) {
 TEST(GLLQuadratureBoundaryTest,
      DoesNotExactlyIntegratePolynomialAboveDegreeBound) {
   const unsigned int n = 4;
-  GaussLegendreLobatto quad(n);
+  GaussLobattoLegendre quad(n);
 
   // Exactness bound is 2n - 3 = 5; degree 2n - 2 = 6 is one past it.
   const unsigned int degree = 2 * n - 2;
-  auto pairs = EvaluateAt<GaussLegendreLobatto>(
+  auto pairs = EvaluateAt<GaussLobattoLegendre>(
       quad, [degree](double x) { return std::pow(x, degree); });
   const double result = quad.Integrate(pairs);
   const double expected = AnalyticMonomialIntegral(degree);
@@ -172,9 +172,9 @@ TEST(GLLQuadratureNonPolynomialTest,
   const double expected = std::exp(1.0) - std::exp(-1.0);
 
   const unsigned int n = 20;  // enough points for e^x to converge tightly
-  GaussLegendreLobatto quad(n);
+  GaussLobattoLegendre quad(n);
 
-  auto pairs = EvaluateAt<GaussLegendreLobatto>(
+  auto pairs = EvaluateAt<GaussLobattoLegendre>(
       quad, [](double x) { return std::exp(x); });
   const double result = quad.Integrate(pairs);
 
@@ -187,8 +187,8 @@ TEST(GLLQuadratureNonPolynomialTest,
 
   double previous_error = std::numeric_limits<double>::max();
   for (unsigned int n : {3u, 5u, 7u, 9u}) {
-    GaussLegendreLobatto quad(n);
-    auto pairs = EvaluateAt<GaussLegendreLobatto>(
+    GaussLobattoLegendre quad(n);
+    auto pairs = EvaluateAt<GaussLobattoLegendre>(
         quad, [](double x) { return std::exp(x); });
     const double result = quad.Integrate(pairs);
     const double error = std::abs(result - expected);

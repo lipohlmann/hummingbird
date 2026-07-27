@@ -1,5 +1,5 @@
-#ifndef HUMMINGBIRD_QUADRATURE_GAUSS_LEGENDRE_LOBATTO_H_
-#define HUMMINGBIRD_QUADRATURE_GAUSS_LEGENDRE_LOBATTO_H_
+#ifndef HUMMINGBIRD_QUADRATURE_GAUSS_LOBATTO_LEGENDRE_H_
+#define HUMMINGBIRD_QUADRATURE_GAUSS_LOBATTO_LEGENDRE_H_
 
 #include "quadrature/quadrature_base.h"
 
@@ -19,9 +19,9 @@ namespace hummingbird::quadrature {
  * https://doi.org/10.1017/CBO9780511546792
  *
  */
-class GaussLegendreLobatto : public QuadratureBase<double> {
+class GaussLobattoLegendre : public QuadratureBase<double> {
  public:
-  GaussLegendreLobatto(const size_t n_points);
+  GaussLobattoLegendre(const size_t n_points);
 
  private:
   /**
@@ -56,4 +56,4 @@ class GaussLegendreLobatto : public QuadratureBase<double> {
 };
 }  // namespace hummingbird::quadrature
 
-#endif  // HUMMINGBIRD_QUADRATURE_GAUSS_LEGENDRE_LOBATTO_H_
+#endif  // HUMMINGBIRD_QUADRATURE_GAUSS_LOBATTO_LEGENDRE_H_
