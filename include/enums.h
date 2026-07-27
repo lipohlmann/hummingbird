@@ -2,7 +2,7 @@
 #define HUMMINGBIRD_ENUMS_H_
 
 namespace hummingbird {
-enum class Boundary { TRANSMISSIVE, REFLECTIVE };
+enum class Boundary { TRANSMISSIVE, REFLECTIVE, NONE };
 }  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_ENUMS_H_
