@@ -13,12 +13,10 @@ class Segment : public Element {
    *
    * @param boundary_node_ids Node IDs defining the Segment bounds
    * @param material_id Material ID
-   * @param gll_quadrature Gauss-Lobatto-Legendre quadrature set
    */
-  Segment(const std::array<size_t, 2> boundary_node_ids, const int material_id,
-          const quadrature::GaussLobattoLegendre& gll_quadrature);
+  Segment(const std::array<size_t, 2> boundary_node_ids, const int material_id);
 
-  std::vector<Node> CreateNodes(
+  std::vector<Node> CreateInteriorNodes(
       const quadrature::GaussLobattoLegendre& gll_quadrature) override;
 
  private:
