@@ -7,7 +7,7 @@
 
 namespace hummingbird::mesh {
 struct Node {
-  uint32_t id;
+  size_t id;
   double x;
   double y;
   double z;
