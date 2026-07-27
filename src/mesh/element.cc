@@ -4,11 +4,7 @@
 #include <stdexcept>
 
 namespace hummingbird::mesh {
-Element::Element(const int material_id,
-                 const quadrature::GaussLobattoLegendre& gll_quadrature)
-    : material_id_(material_id), gll_quadrature_(gll_quadrature) {
-  node_ids_.reserve(gll_quadrature.n_points());
-}
+Element::Element(const int material_id) : material_id_(material_id) {}
 
 void Element::SetNewNodeID(const size_t prev_id, const size_t new_id) {
   for (auto i = 0; i < node_ids_.size(); i++)

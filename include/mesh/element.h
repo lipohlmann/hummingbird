@@ -19,10 +19,8 @@ class Element {
    * @brief Construct a new Element object
    *
    * @param material_id Material ID
-   * @param gll_quadrature GaussLobattoLegendre quadrature set
    */
-  Element(const int material_id,
-          const quadrature::GaussLobattoLegendre& gll_quadrature);
+  Element(const int material_id);
 
   /**
    * @brief Create nodes by mapping the Gauss-Lobatto-Legendre quadrature set
@@ -30,7 +28,7 @@ class Element {
    *
    * @param gll_quadrature GaussLobattoLegendre quadrature set
    */
-  virtual std::vector<Node> CreateNodes(
+  virtual std::vector<Node> CreateInteriorNodes(
       const quadrature::GaussLobattoLegendre& gll_quadrature) = 0;
 
   /**
@@ -51,9 +49,6 @@ class Element {
  protected:
   /// @brief Material ID
   const int material_id_;
-
-  /// @brief Gauss-Lobatto-Legendre quadrature set
-  const quadrature::GaussLobattoLegendre& gll_quadrature_;
 
   /// @brief IDs of nodes defining the element
   std::vector<size_t> node_ids_;
