@@ -26,9 +26,14 @@ class Element {
    * @brief Create nodes by mapping the Gauss-Lobatto-Legendre quadrature set
    * from the reference to the real domain
    *
+   * @param existing_nodes Vector of nodes that already exist in the mesh.
+   * Starting ID for new nodes will be equal to the number of nodes that already
+   * exist to ensure no duplicates
    * @param gll_quadrature GaussLobattoLegendre quadrature set
    */
   virtual std::vector<Node> CreateInteriorNodes(
+
+      const std::vector<Node>& existing_nodes,
       const quadrature::GaussLobattoLegendre& gll_quadrature) = 0;
 
   /**
