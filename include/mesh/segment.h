@@ -17,9 +17,11 @@ class Segment : public Element {
   Segment(const std::array<size_t, 2> boundary_node_ids, const int material_id);
 
   std::vector<Node> CreateInteriorNodes(
+      const std::vector<Node>& existing_nodes,
       const quadrature::GaussLobattoLegendre& gll_quadrature) override;
 
  private:
+  std::array<size_t, 2> boundary_node_ids_;
 };
 }  // namespace hummingbird::mesh
 
