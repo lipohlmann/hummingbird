@@ -30,6 +30,7 @@ GaussLegendreChebyshev::GaussLegendreChebyshev(const size_t n_half_azim,
       Ordinate negative(-std::acos(azim), std::acos(polar));
       abscissas_.push_back(std::move(negative));
       weight_map_.insert({counter, weight});
+      counter++;
     }
   }
 }
