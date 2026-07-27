@@ -11,7 +11,7 @@ struct Node {
   double x;
   double y;
   double z;
-  Boundary boundary;
+  Boundary boundary = Boundary::TRANSMISSIVE;
 };
 }  // namespace hummingbird::mesh
 
