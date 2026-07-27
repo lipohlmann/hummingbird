@@ -5,6 +5,9 @@
 #include <stdexcept>
 
 namespace hummingbird::mesh {
+
+void Mesh::AddNode(const Node node) { nodes_.push_back(node); }
+
 void Mesh::AddElement(const std::unique_ptr<Element> element) {
   elements_.push_back(std::move(element));
 }

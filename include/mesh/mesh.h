@@ -17,6 +17,13 @@ class Mesh {
   Mesh();
 
   /**
+   * @brief Add node to Mesh
+   *
+   * @param node Node
+   */
+  void AddNode(const Node node);
+
+  /**
    * @brief Add element to Mesh
    *
    * @param element Element
