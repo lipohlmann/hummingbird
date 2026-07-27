@@ -33,7 +33,7 @@ class Element {
   virtual std::vector<Node> CreateNodes(
       const quadrature::GaussLobattoLegendre& gll_quadrature) = 0;
 
- private:
+ protected:
   /// @brief Material ID
   const int material_id_;
 
