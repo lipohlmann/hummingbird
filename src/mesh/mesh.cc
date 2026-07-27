@@ -5,6 +5,10 @@
 #include <stdexcept>
 
 namespace hummingbird::mesh {
+void Mesh::AddElement(const std::unique_ptr<Element> element) {
+  elements_.push_back(std::move(element));
+}
+
 void Mesh::RenumberNodes() {
   std::sort(nodes_.begin(), nodes_.end(),
             [](const Node& first, const Node& second) {

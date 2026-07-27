@@ -16,6 +16,13 @@ class Mesh {
  public:
   Mesh();
 
+  /**
+   * @brief Add element to Mesh
+   *
+   * @param element Element
+   */
+  void AddElement(const std::unique_ptr<Element> element);
+
  private:
   std::vector<Node> nodes_;
   std::vector<std::unique_ptr<Element>> elements_;
