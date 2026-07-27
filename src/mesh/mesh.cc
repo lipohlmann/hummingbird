@@ -21,7 +21,8 @@ void Mesh::RenumberNodes() {
     for (auto id : node_ids) {
       // Elements will share nodes. Don't renumber if we've already set a new ID
       if (id < new_node_id) continue;
-      nodes_.at(id).id = new_node_id;
+      nodes_.at(id).id = new_node_id;          // update global nodes
+      element->SetNewNodeID(id, new_node_id);  // update element nodes
       new_node_id++;
     }
   }
