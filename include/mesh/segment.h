@@ -4,11 +4,24 @@
 #include <array>
 
 #include "mesh/element.h"
+#include "mesh/node.h"
 namespace hummingbird::mesh {
 class Segment : public Element {
+ public:
+  /**
+   * @brief Construct a new Segment object
+   *
+   * @param boundary_node_ids Node IDs defining the Segment bounds
+   * @param material_id Material ID
+   * @param gll_quadrature Gauss-Lobatto-Legendre quadrature set
+   */
+  Segment(const std::array<size_t, 2> boundary_node_ids, const int material_id,
+          const quadrature::GaussLobattoLegendre& gll_quadrature);
+
+  std::vector<Node> CreateNodes(
+      const quadrature::GaussLobattoLegendre& gll_quadrature) override;
+
  private:
-  std::array<uint32_t, 2>
-      node_indices;  // this might need to change for the quadrature stuff...
 };
 }  // namespace hummingbird::mesh
 
