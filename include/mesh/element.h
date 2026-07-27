@@ -33,6 +33,15 @@ class Element {
 
   /// @brief Nodes defining the element
   std::vector<Node> nodes_;
+
+  /**
+   * @brief Create nodes by mapping the Gauss-Lobatto-Legendre quadrature set
+   * from the reference to the real domain
+   *
+   * @param gll_quadrature GaussLobattoLegendre quadrature set
+   */
+  virtual void CreateNodes(
+      const quadrature::GaussLobattoLegendre& gll_quadrature) = 0;
 };
 }  // namespace hummingbird::mesh
 
