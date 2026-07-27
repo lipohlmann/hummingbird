@@ -35,7 +35,10 @@ class Mesh {
   void AddElement(const std::unique_ptr<Element> element);
 
  private:
+  /// @brief Nodes in the mesh
   std::vector<Node> nodes_;
+
+  /// @brief Elements in the mesh
   std::vector<std::unique_ptr<Element>> elements_;
 
   /**
