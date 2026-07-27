@@ -26,6 +26,15 @@ class Mesh {
    *
    */
   void RenumberNodes();
+
+  /**
+   * @brief Check that all Node IDs are unique and continuous from 0 to N-1 for
+   * N total nodes
+   *
+   * @throw std::runtime_error Prints expected ID, found ID, and previous ID.
+   *
+   */
+  void CheckNodeIDs();
 };
 }  // namespace hummingbird::mesh
 

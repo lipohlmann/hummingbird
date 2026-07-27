@@ -1,6 +1,8 @@
 #include "mesh/mesh.h"
 
 #include <algorithm>
+#include <format>
+#include <stdexcept>
 
 namespace hummingbird::mesh {
 void Mesh::RenumberNodes() {
@@ -19,5 +21,16 @@ void Mesh::RenumberNodes() {
       new_node_id++;
     }
   }
+}
+
+void Mesh::CheckNodeIDs() {
+  std::vector<size_t> ids(nodes_.size());
+  for (auto node : nodes_) ids.push_back(node.id);
+  std::sort(ids.begin(), ids.end());
+  for (auto i = 0; i < ids.size(); i++)
+    if (ids.at(i) != i)
+      throw std::runtime_error(std::format(
+          "Node ID expected to be {} but was instead {}. Previous node ID: {}.",
+          i, ids.at(i), ids.at(i - 1)));
 }
 }  // namespace hummingbird::mesh
