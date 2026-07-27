@@ -6,14 +6,33 @@
 
 #include "material.h"
 #include "node.h"
+#include "quadrature/gauss_lobatto_legendre.h"
 
 namespace hummingbird::mesh {
+/**
+ * @brief Defines a subset of the domain (an "element")
+ *
+ */
 class Element {
  public:
-  Element();
+  /**
+   * @brief Construct a new Element object
+   *
+   * @param material_id Material ID
+   * @param gll_quadrature GaussLobattoLegendre quadrature set
+   */
+  Element(const int material_id,
+          const quadrature::GaussLobattoLegendre& gll_quadrature);
 
  private:
-  const int material_id;
+  /// @brief Material ID
+  const int material_id_;
+
+  /// @brief Gauss-Lobatto-Legendre quadrature set
+  const quadrature::GaussLobattoLegendre& gll_quadrature_;
+
+  /// @brief Nodes defining the element
+  std::vector<Node> nodes_;
 };
 }  // namespace hummingbird::mesh
 
