@@ -33,6 +33,21 @@ class Element {
   virtual std::vector<Node> CreateNodes(
       const quadrature::GaussLobattoLegendre& gll_quadrature) = 0;
 
+  /**
+   * @brief Get node IDs
+   *
+   * @return std::vector<size_t>
+   */
+  std::vector<size_t> node_ids() const { return node_ids_; }
+
+  /**
+   * @brief Set the new Node ID
+   *
+   * @param prev_id Previous ID (currently stored in object)
+   * @param new_id New ID
+   */
+  void SetNewNodeID(const size_t prev_id, const size_t new_id);
+
  protected:
   /// @brief Material ID
   const int material_id_;
@@ -40,8 +55,8 @@ class Element {
   /// @brief Gauss-Lobatto-Legendre quadrature set
   const quadrature::GaussLobattoLegendre& gll_quadrature_;
 
-  /// @brief Nodes defining the element
-  std::vector<Node> nodes_;
+  /// @brief IDs of nodes defining the element
+  std::vector<size_t> node_ids_;
 };
 }  // namespace hummingbird::mesh
 
