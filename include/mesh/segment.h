@@ -26,7 +26,7 @@ class Segment : public Element {
    *
    * \f[
    * \mathbf{r}(\xi) = \mathbf{r}_1+\left( \frac{\xi+1}{2} \right)\left(
-   * \mathbf{r}_2-mathbf{r}_1 \right) \f]
+   * \mathbf{r}_2-\mathbf{r}_1 \right) \f]
    *
    * where \f$x\in[-1,1]\f$.
    *
