@@ -36,5 +36,6 @@ std::vector<Node> Segment::CreateInteriorNodes(
     nodes.at(i - 1) = std::move(new_node);
     id++;
   }
+  return nodes;
 }
 }  // namespace hummingbird::mesh
