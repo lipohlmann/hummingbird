@@ -1,0 +1,63 @@
+{
+  "mesh": {
+    "type": "gmsh",
+    "format": "ASCII",
+    "filename": "1D_MMS_1_mesh.msh"
+  },
+  "boundary_conditions": {
+    "left": {
+      "type": "reflecting"
+    },
+    "right": {
+      "type": "vacuum"
+    }
+  },
+  "materials": {
+    "mms_material": {
+      "scattering_ratio": 0.5,
+      "fission_xs": 0.3,
+      "neutrons_per_fission": 2.4
+    }
+  },
+  "sources": {
+    "mms_source": {
+      "type": "manufactured",
+      "dimension": 1,
+      "case": 1
+    }
+  },
+  "regions": {
+    "problem_region": {
+      "material": "mms_material",
+      "source": "mms_source"
+    }
+  },
+  "problem": {
+    "equation": "SAAF",
+    "mode": "fixed_source"
+  },
+  "solvers": {
+    "source_iteration": {
+      "tolerance": 1e-8,
+      "max_iterations": 1000
+    }
+  },
+  "angular_treatment": {
+    "type": "discrete_ordinates",
+    "quadrature_set": "GaussLegendreTrapezoid",
+    "n_azimuthal": 2,
+    "n_polar": 2
+  },
+  "spatial_discretization": {
+    "method": "spectral_elements",
+    "formulation": "CG",
+    "basis": "lagrange",
+    "nodes": "GaussLobattoLegendre",
+    "order": 4
+  },
+  "output": {
+    "directory": "results/",
+    "basename": "1D_MMS_1",
+    "format": "vtk"
+  }
+}
