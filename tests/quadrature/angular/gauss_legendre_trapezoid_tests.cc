@@ -1,9 +1,8 @@
 #include <gtest/gtest.h>
 
-#include <algorithm>
 #include <cmath>
 #include <functional>
-#include <numeric>
+#include <limits>
 #include <tuple>
 #include <vector>
 
@@ -34,37 +33,44 @@ double WeightedSum(const GaussLegendreTrapezoid& quad,
   return sum;
 }
 
-// Groups ordinate indices by shared z-cosine (i.e. by polar level), without
-// assuming anything about how the implementation orders its points. Indices
-// within a group are all the azimuthal samples at that polar angle.
-std::vector<std::vector<size_t>> GroupIndicesByZCosine(
-    const GaussLegendreTrapezoid& quad) {
-  std::vector<size_t> order(quad.n_points());
-  std::iota(order.begin(), order.end(), 0);
-  std::sort(order.begin(), order.end(), [&](size_t a, size_t b) {
-    return quad.GetAbscissa(a).ZCosine() < quad.GetAbscissa(b).ZCosine();
-  });
+// Matches the implementation's flattening of (polar index i, azimuthal
+// index j) into a single point index: the polar loop is outer, so each
+// polar level owns a contiguous run of n_azim azimuthal points.
+size_t Index(size_t n_azim, size_t i, size_t j) { return i * n_azim + j; }
 
-  std::vector<std::vector<size_t>> groups;
-  for (size_t idx : order) {
-    const double z = quad.GetAbscissa(idx).ZCosine();
-    if (groups.empty() ||
-        std::abs(quad.GetAbscissa(groups.back().front()).ZCosine() - z) >
-            1e-6) {
-      groups.push_back({idx});
-    } else {
-      groups.back().push_back(idx);
-    }
-  }
-  return groups;
-}
-
-// Azimuthal angle in [0, 2*pi).
+// Azimuthal angle in [0, 2*pi), recovered from the ordinate itself (as
+// opposed to the construction formula) so tests using this are genuinely
+// checking the quadrature's output.
 double Phi(Ordinate ord) {
   double phi = std::atan2(ord.YCosine(), ord.XCosine());
   if (phi < 0.0) phi += kTwoPi;
   return phi;
 }
+
+// n!! with the convention (-1)!! = 1, used by the closed-form sphere-monomial
+// integral below.
+double DoubleFactorial(int n) {
+  double result = 1.0;
+  for (int i = n; i > 0; i -= 2) result *= i;
+  return result;
+}
+
+// Closed-form value of int_{S^2} x^a y^b z^c dOmega. Vanishes unless a, b, c
+// are all even, in which case it equals
+// 4*pi * (a-1)!! * (b-1)!! * (c-1)!! / (a+b+c+1)!!
+// This is a standard result for moments of monomials over the unit sphere
+// and gives an independent, closed-form target to check the quadrature
+// against (as opposed to re-deriving the expected value from the
+// quadrature's own weights).
+double AnalyticSphereMonomialIntegral(int a, int b, int c) {
+  if (a % 2 != 0 || b % 2 != 0 || c % 2 != 0) return 0.0;
+  return 4.0 * M_PI * DoubleFactorial(a - 1) * DoubleFactorial(b - 1) *
+         DoubleFactorial(c - 1) / DoubleFactorial(a + b + c + 1);
+}
+
+struct Monomial {
+  int a, b, c;
+};
 
 }  // namespace
 
@@ -131,40 +137,47 @@ TEST_P(GLTStructureTest, IntegrateAgreesWithManualWeightedSumForAConstant) {
 
 TEST_P(GLTStructureTest,
        WeightsMatchProductOfPolarWeightAndUniformAzimuthalWeight) {
-  // Each ordinate's weight should be w_polar(i) * (2*pi / n_azim), since the
-  // trapezoid rule on a full period assigns every azimuthal sample an equal
-  // weight. Grouping by shared z-cosine avoids assuming anything about the
-  // implementation's point ordering.
+  // weight(i, j) == w_polar(i) * (2*pi / n_azim) for every azimuthal index j
+  // at a given polar level i, straight from the constructor.
   auto [n_azim, n_polar] = GetParam();
   GaussLegendreTrapezoid quad(n_azim, n_polar);
   GaussLegendre gl_polar(n_polar);
+  const double delta_azim = kTwoPi / n_azim;
 
-  auto groups = GroupIndicesByZCosine(quad);
-  ASSERT_EQ(groups.size(), n_polar);
-
-  std::vector<double> actual_weights;
-  for (const auto& group : groups) {
-    ASSERT_EQ(group.size(), n_azim);
-    const double first_weight = quad.GetWeight(group.front());
-    for (size_t idx : group) {
-      EXPECT_NEAR(quad.GetWeight(idx), first_weight, utils::EXP_NEAR_TOLERANCE)
-          << "Azimuthal weights at a fixed polar level should be equal.";
+  for (size_t i = 0; i < n_polar; ++i) {
+    const double expected_weight = gl_polar.GetWeight(i) * delta_azim;
+    for (size_t j = 0; j < n_azim; ++j) {
+      EXPECT_NEAR(quad.GetWeight(Index(n_azim, i, j)), expected_weight,
+                  utils::EXP_NEAR_TOLERANCE)
+          << "Mismatch at polar index " << i << ", azimuthal index " << j;
     }
-    actual_weights.push_back(first_weight);
   }
-  std::sort(actual_weights.begin(), actual_weights.end());
+}
 
-  std::vector<double> expected_weights;
-  for (unsigned int i = 0; i < n_polar; ++i) {
-    expected_weights.push_back(gl_polar.GetWeight(i) * (kTwoPi / n_azim));
-  }
-  std::sort(expected_weights.begin(), expected_weights.end());
+TEST_P(GLTStructureTest, OrdinatesMatchClosedFormPolarAndAzimuthalAngles) {
+  // Each ordinate should be (sin(theta_i)*cos(phi_j), sin(theta_i)*sin(phi_j),
+  // mu_i), with mu_i the i-th Gauss-Legendre node, theta_i = acos(mu_i), and
+  // phi_j = -pi + j * (2*pi / n_azim).
+  auto [n_azim, n_polar] = GetParam();
+  GaussLegendreTrapezoid quad(n_azim, n_polar);
+  GaussLegendre gl_polar(n_polar);
+  const double delta_azim = kTwoPi / n_azim;
 
-  ASSERT_EQ(actual_weights.size(), expected_weights.size());
-  for (size_t i = 0; i < actual_weights.size(); ++i) {
-    EXPECT_NEAR(actual_weights.at(i), expected_weights.at(i),
-                utils::EXP_NEAR_TOLERANCE)
-        << "Mismatch at sorted polar-weight index " << i;
+  for (size_t i = 0; i < n_polar; ++i) {
+    const double mu = gl_polar.GetAbscissa(i);
+    const double theta = std::acos(mu);
+    for (size_t j = 0; j < n_azim; ++j) {
+      const double phi = -M_PI + static_cast<double>(j) * delta_azim;
+      Ordinate ord = quad.GetAbscissa(Index(n_azim, i, j));
+      EXPECT_NEAR(ord.XCosine(), std::sin(theta) * std::cos(phi),
+                  utils::EXP_NEAR_TOLERANCE)
+          << "at polar index " << i << ", azimuthal index " << j;
+      EXPECT_NEAR(ord.YCosine(), std::sin(theta) * std::sin(phi),
+                  utils::EXP_NEAR_TOLERANCE)
+          << "at polar index " << i << ", azimuthal index " << j;
+      EXPECT_NEAR(ord.ZCosine(), mu, utils::EXP_NEAR_TOLERANCE)
+          << "at polar index " << i << ", azimuthal index " << j;
+    }
   }
 }
 
@@ -293,38 +306,6 @@ TEST(GLTRangeTest, ZCosineIsStrictlyInsideUnitInterval) {
   }
 }
 
-TEST(GLTRangeTest, PointsAtFixedPolarLevelAreEquallySpacedInAzimuth) {
-  // For each polar level, the n_azim trapezoid samples should share a
-  // z-cosine and be spaced 2*pi/n_azim apart in azimuthal angle. Points are
-  // grouped by z-cosine rather than by assumed index layout, so this holds
-  // regardless of how the implementation orders its points.
-  const size_t n_azim = 4;
-  const size_t n_polar = 3;
-  GaussLegendreTrapezoid quad(n_azim, n_polar);
-
-  auto groups = GroupIndicesByZCosine(quad);
-  ASSERT_EQ(groups.size(), n_polar);
-
-  const double expected_spacing = kTwoPi / n_azim;
-  for (const auto& group : groups) {
-    ASSERT_EQ(group.size(), n_azim);
-
-    std::vector<double> phis;
-    for (size_t idx : group) phis.push_back(Phi(quad.GetAbscissa(idx)));
-    std::sort(phis.begin(), phis.end());
-
-    for (size_t k = 0; k + 1 < phis.size(); ++k) {
-      EXPECT_NEAR(phis.at(k + 1) - phis.at(k), expected_spacing,
-                  utils::EXP_NEAR_TOLERANCE)
-          << "Uneven azimuthal spacing within a polar level.";
-    }
-    // Wraparound gap between the last and first (plus a full turn).
-    EXPECT_NEAR(phis.front() + kTwoPi - phis.back(), expected_spacing,
-                utils::EXP_NEAR_TOLERANCE)
-        << "Uneven azimuthal spacing across the 0/2*pi wraparound.";
-  }
-}
-
 // ---------------------------------------------------------------------------
 // Minimal/edge-case configuration
 // ---------------------------------------------------------------------------
@@ -334,6 +315,121 @@ TEST(GLTEdgeCaseTest, SinglePointPerDimensionProducesOneOrdinate) {
   EXPECT_EQ(quad.n_points(), 1u);
   EXPECT_NEAR(WeightedSum(quad, [](Ordinate) { return 1.0; }), kFourPi,
               utils::EXP_NEAR_TOLERANCE);
+}
+
+// ---------------------------------------------------------------------------
+// Exactness tests against closed-form sphere integrals
+//
+// These go beyond the moment checks above by verifying the quadrature
+// against an independently-derived analytic formula for a whole family of
+// monomials in x, y, z. Gauss-Legendre integrates a degree-d polynomial in
+// mu exactly once 2*n_polar - 1 >= d, and the trapezoid rule integrates
+// trigonometric polynomials of degree <= n_azim - 1 exactly, so with
+// n_azim = 8 and n_polar = 6 every monomial up to total degree 6 below
+// should be reproduced to quadrature tolerance.
+// ---------------------------------------------------------------------------
+
+class GLTMonomialExactnessTest : public ::testing::TestWithParam<Monomial> {};
+
+TEST_P(GLTMonomialExactnessTest, MatchesClosedFormSphereIntegral) {
+  const Monomial m = GetParam();
+  const size_t n_azim = 8;
+  const size_t n_polar = 6;
+  GaussLegendreTrapezoid quad(n_azim, n_polar);
+
+  const double expected = AnalyticSphereMonomialIntegral(m.a, m.b, m.c);
+  const double actual = WeightedSum(quad, [&](Ordinate o) {
+    return std::pow(o.XCosine(), m.a) * std::pow(o.YCosine(), m.b) *
+           std::pow(o.ZCosine(), m.c);
+  });
+  EXPECT_NEAR(actual, expected, utils::EXP_NEAR_TOLERANCE)
+      << "Monomial x^" << m.a << " y^" << m.b << " z^" << m.c
+      << " did not match its closed-form sphere integral.";
+}
+
+INSTANTIATE_TEST_SUITE_P(
+    UpToDegreeSix, GLTMonomialExactnessTest,
+    ::testing::Values(Monomial{0, 0, 0}, Monomial{2, 0, 0}, Monomial{0, 2, 0},
+                      Monomial{0, 0, 2}, Monomial{2, 2, 0}, Monomial{2, 0, 2},
+                      Monomial{0, 2, 2}, Monomial{4, 0, 0}, Monomial{0, 4, 0},
+                      Monomial{0, 0, 4}, Monomial{4, 2, 0}, Monomial{2, 4, 0},
+                      Monomial{0, 0, 6}, Monomial{2, 2, 2}));
+
+// A monomial with azimuthal degree (a + b) at or beyond n_azim aliases,
+// exactly like the diagonal-second-moment edge case above -- this checks
+// that the exactness result genuinely depends on resolution rather than
+// happening to hold for any inputs.
+TEST(GLTMonomialExactnessTest, DegreeExceedingNAzimIsNotExact) {
+  const size_t n_azim = 4;
+  const size_t n_polar = 6;
+  GaussLegendreTrapezoid quad(n_azim, n_polar);
+
+  // x^4 has azimuthal content up to cos(4*phi), which aliases when
+  // n_azim == 4.
+  const double expected = AnalyticSphereMonomialIntegral(4, 0, 0);
+  const double actual =
+      WeightedSum(quad, [](Ordinate o) { return std::pow(o.XCosine(), 4); });
+  EXPECT_GT(std::abs(actual - expected), 1e-3);
+}
+
+// ---------------------------------------------------------------------------
+// Convergence tests against non-polynomial integrands
+//
+// Monomial exactness only demonstrates correctness for functions the
+// quadrature is designed to integrate exactly. These tests check the
+// quadrature against smooth but non-polynomial integrands with known
+// closed-form integrals, and confirm that increasing resolution actually
+// drives the error down (rather than just checking a single fixed order).
+// ---------------------------------------------------------------------------
+
+TEST(GLTConvergenceTest, PolarErrorShrinksAsNPolarIncreasesForExpMu) {
+  // int_{S^2} exp(mu) dOmega = 2*pi * (e - 1/e), independent of any
+  // trigonometric-exactness concerns since it doesn't depend on phi at all.
+  // Gauss-Legendre has no finite polynomial degree that reproduces exp(mu)
+  // exactly, so this checks genuine convergence rather than exactness.
+  const double expected = kTwoPi * (std::exp(1.0) - std::exp(-1.0));
+  const std::vector<size_t> polar_orders = {2, 4, 6, 8};
+  const size_t n_azim =
+      2;  // Irrelevant here: the integrand is phi-independent.
+
+  double previous_error = std::numeric_limits<double>::infinity();
+  for (size_t n_polar : polar_orders) {
+    GaussLegendreTrapezoid quad(n_azim, n_polar);
+    const double actual =
+        WeightedSum(quad, [](Ordinate o) { return std::exp(o.ZCosine()); });
+    const double error = std::abs(actual - expected);
+    EXPECT_LE(error, previous_error)
+        << "Error did not shrink going to n_polar = " << n_polar;
+    previous_error = error;
+  }
+  EXPECT_LT(previous_error, 1e-10)
+      << "Expected near machine-precision agreement at the highest order.";
+}
+
+TEST(GLTConvergenceTest, AzimuthalErrorShrinksAsNAzimIncreasesForExpCosPhi) {
+  // int_{S^2} exp(cos(phi)) dOmega = 4*pi*I_0(1), where I_0 is the modified
+  // Bessel function of the first kind. exp(cos(phi)) is smooth and periodic
+  // in phi, so the trapezoid rule should converge toward it very quickly as
+  // n_azim grows, while n_polar plays no role since the integrand doesn't
+  // depend on mu.
+  constexpr double kBesselI0OfOne = 1.2660658777520084;
+  const double expected = kFourPi * kBesselI0OfOne;
+  const std::vector<size_t> azim_orders = {2, 4, 6, 8, 12};
+  const size_t n_polar =
+      3;  // Irrelevant here: the integrand is mu-independent.
+
+  double previous_error = std::numeric_limits<double>::infinity();
+  for (size_t n_azim : azim_orders) {
+    GaussLegendreTrapezoid quad(n_azim, n_polar);
+    const double actual = WeightedSum(
+        quad, [](Ordinate o) { return std::exp(std::cos(Phi(o))); });
+    const double error = std::abs(actual - expected);
+    EXPECT_LE(error, previous_error)
+        << "Error did not shrink going to n_azim = " << n_azim;
+    previous_error = error;
+  }
+  EXPECT_LT(previous_error, 1e-10)
+      << "Expected near machine-precision agreement at the highest order.";
 }
 
 }  // namespace hummingbird::quadrature::angular
