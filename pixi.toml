@@ -1,0 +1,10 @@
+[workspace]
+authors = ["Liam Pohlmann <liam.pohlmann@gmail.com>"]
+channels = ["conda-forge"]
+name = "hummingbird"
+platforms = ["osx-arm64"]
+version = "0.1.0"
+
+[tasks]
+
+[dependencies]

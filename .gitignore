@@ -75,3 +75,6 @@ Testing/
 docs/Doxyfile
 *.html
 
+# pixi environments
+.pixi/*
+!.pixi/config.toml
