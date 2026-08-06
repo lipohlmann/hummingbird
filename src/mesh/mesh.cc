@@ -6,13 +6,13 @@
 
 namespace hummingbird::mesh {
 
-void Mesh::AddNode(const Node node) { nodes_.push_back(node); }
+void Mesh::AddNode(const Node& node) { nodes_.push_back(node); }
 
-void Mesh::AddNodes(const std::vector<Node> nodes) {
-  for (auto node : nodes) nodes_.push_back(node);
+void Mesh::AddNodes(const std::vector<Node>& nodes) {
+  for (auto node : nodes) nodes_.push_back(std::move(node));
 }
 
-void Mesh::AddElement(const std::unique_ptr<Element> element) {
+void Mesh::AddElement(std::unique_ptr<Element> element) {
   elements_.push_back(std::move(element));
 }
 
@@ -44,8 +44,9 @@ void Mesh::RenumberNodes() {
 }
 
 void Mesh::CheckNodeIDs() {
-  std::vector<size_t> ids(nodes_.size());
-  for (auto node : nodes_) ids.push_back(node.id);
+  std::vector<size_t> ids;
+  ids.reserve(nodes_.size());
+  for (const auto& node : nodes_) ids.push_back(node.id);
   std::sort(ids.begin(), ids.end());
   for (auto i = 0; i < ids.size(); i++)
     if (ids.at(i) != i)

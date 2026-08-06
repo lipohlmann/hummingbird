@@ -26,21 +26,21 @@ class Mesh {
    *
    * @param node Node
    */
-  void AddNode(const Node node);
+  void AddNode(const Node& node);
 
   /**
    * @brief Add nodes in a vector to Mesh
    *
    * @param nodes Nodes
    */
-  void AddNodes(const std::vector<Node> nodes);
+  void AddNodes(const std::vector<Node>& nodes);
 
   /**
    * @brief Add element to Mesh
    *
    * @param element Element
    */
-  void AddElement(const std::unique_ptr<Element> element);
+  void AddElement(std::unique_ptr<Element> element);
 
   /**
    * @brief Create interior nodes on elements using Gauss-Lobatto-Legendre
