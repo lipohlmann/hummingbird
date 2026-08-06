@@ -17,9 +17,9 @@ GaussLegendreChebyshev::GaussLegendreChebyshev(const size_t n_half_azim,
 
   size_t counter = 0;
   for (auto i = 0; i < n_polar; i++) {
+    double polar = gl_polar_quad.GetAbscissa(i);
     for (auto j = 0; j < n_half_azim; j++) {
       double azim = gc_azim_quad.GetAbscissa(j);
-      double polar = gl_polar_quad.GetAbscissa(i);
 
       Ordinate positive(std::acos(azim), std::acos(polar));
       abscissas_.push_back(std::move(positive));
