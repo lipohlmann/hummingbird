@@ -26,7 +26,7 @@ std::vector<Node> Segment::CreateInteriorNodes(
   std::vector<Node> nodes(gll_quadrature.n_points() - 2);
   for (auto i = 1; i < gll_quadrature.n_points() - 1; i++) {
     double xi = gll_quadrature.GetAbscissa(i);
-    double fraction = (xi - 1.0) / 2.0;
+    double fraction = (xi + 1.0) / 2.0;
     Node new_node;
     new_node.id = id;
     new_node.x = left_node.x + fraction * direction_x;
