@@ -19,9 +19,6 @@ struct Material {
 
   /// @brief Average number of neutrons produced per fission event
   double neutrons_per_fission;
-
-  /// @brief Volumetric source in neutrons/cm3-s
-  double volumetric_source = 0;
 };
 
 }  // namespace hummingbird
