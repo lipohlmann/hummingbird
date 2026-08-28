@@ -1,3 +1,5 @@
+# SPDX-License-Identifier: Unlicense
+
 #!/usr/bin/env bash
 
 set -e
@@ -20,8 +22,15 @@ mkdir -p \
     "tests/$(dirname "$NAME")"
 
 cat > "include/${NAME}.h" <<EOF
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright (c) 2026, Liam Pohlmann
+
 #ifndef ${GUARD}
 #define ${GUARD}
+
+namespace hummingbird {
+
+}
 
 #endif // ${GUARD}
 EOF
