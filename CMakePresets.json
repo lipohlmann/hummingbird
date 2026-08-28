@@ -25,6 +25,19 @@
       "cacheVariables": {
         "CMAKE_BUILD_TYPE": "Release"
       }
+    },
+    {
+      "name": "pixi",
+      "displayName": "Pixi Environment",
+      "description": "Build using tools installed by Pixi",
+      "generator": "Ninja",
+      "binaryDir": "${sourceDir}/build",
+      "environment": {
+        "PATH": "${sourceDir}/.pixi/envs/default/bin:$PENVS{PATH}"
+      },
+      "cacheVariables": {
+        "CMAKE_MAKE_PROGRAM": "${sourceDir}/.pixi/envs/default/bin/ninja"
+      }
     }
   ],
   "buildPresets": [
@@ -33,7 +46,7 @@
       "displayName": "Release",
       "configurePreset": "release",
       "targets": [
-        "hummingbird"
+        "starling"
       ]
     },
     {
@@ -46,7 +59,7 @@
       "displayName": "Build Tests",
       "configurePreset": "debug",
       "targets": [
-        "test_hummingbird"
+        "test_starling"
       ]
     }
   ],
@@ -85,3 +98,4 @@
     }
   ]
 }
+
