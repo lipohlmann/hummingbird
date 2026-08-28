@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright (c) 2026, Liam Pohlmann
+
 #ifndef HUMMINGBIRD_MATERIAL_H_
 #define HUMMINGBIRD_MATERIAL_H_
 

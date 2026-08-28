@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright (c) 2026, Liam Pohlmann
+
 #ifndef HUMMINGBIRD_QUADRATURE_GAUSS_CHEBYSHEV_H_
 #define HUMMINGBIRD_QUADRATURE_GAUSS_CHEBYSHEV_H_
 

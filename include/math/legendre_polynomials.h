@@ -1,3 +1,6 @@
+// SPDX-License-Identifier: BSD-3-Clause
+// Copyright (c) 2026, Liam Pohlmann
+
 /* The following was written heavily based on the teachings and codes found in
  * the book Numerical Methods in Physics with Python, Second Edition by Alex
  * Gezerlis. For more information on this text, please see
