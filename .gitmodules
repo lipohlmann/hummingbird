@@ -1,4 +1,0 @@
-[submodule "external/MathJax"]
-	path = external/MathJax
-	url = https://github.com/mathjax/MathJax.git
-	shallow = true
