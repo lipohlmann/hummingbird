@@ -6,8 +6,8 @@
 
 #include "physics/source_base.h"
 
-namespace hummingbird::physics {
+namespace hummingbird {
 class ConstantSource : public SourceBase {};
-}  // namespace hummingbird::physics
+}  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_PHYSICS_CONSTANT_SOURCE_H_

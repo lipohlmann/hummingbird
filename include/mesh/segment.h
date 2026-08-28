@@ -8,7 +8,7 @@
 
 #include "mesh/element.h"
 #include "mesh/node.h"
-namespace hummingbird::mesh {
+namespace hummingbird {
 class Segment : public Element {
  public:
   /**
@@ -40,11 +40,11 @@ class Segment : public Element {
    */
   std::vector<Node> CreateInteriorNodes(
       const std::vector<Node>& existing_nodes,
-      const quadrature::GaussLobattoLegendre& gll_quadrature) override;
+      const GaussLobattoLegendre& gll_quadrature) override;
 
  private:
   std::array<size_t, 2> boundary_node_ids_;
 };
-}  // namespace hummingbird::mesh
+}  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_MESH_SEGMENT_H_

@@ -1,6 +1,6 @@
 #include "../tests/quadrature/helpers.h"
 
-namespace hummingbird::quadrature {
+namespace hummingbird {
 
 // Closed-form value of \int_{-1}^{1} x^k dx.
 double AnalyticMonomialIntegral(const unsigned int k) {
@@ -9,4 +9,4 @@ double AnalyticMonomialIntegral(const unsigned int k) {
   }
   return 2.0 / static_cast<double>(k + 1);
 }
-}  // namespace hummingbird::quadrature
+}  // namespace hummingbird

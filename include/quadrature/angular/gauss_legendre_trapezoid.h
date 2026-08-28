@@ -7,7 +7,7 @@
 #include "quadrature/angular/ordinate.h"
 #include "quadrature/gauss_legendre.h"
 #include "quadrature/quadrature_base.h"
-namespace hummingbird::quadrature::angular {
+namespace hummingbird {
 
 /**
  * @brief Class defines a Gauss-Legendre-Trapezoid rule on the unit sphere,
@@ -25,6 +25,6 @@ class GaussLegendreTrapezoid : public QuadratureBase<Ordinate> {
    */
   GaussLegendreTrapezoid(const size_t n_azim, const size_t n_polar);
 };
-}  // namespace hummingbird::quadrature::angular
+}  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_QUADRATURE_ANGULAR_GAUSS_LEGENDRE_TRAPEZOID_H_

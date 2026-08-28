@@ -11,7 +11,7 @@
 #include "quadrature/quadrature_base.h"
 #include "utils/constants.h"
 
-namespace hummingbird::quadrature {
+namespace hummingbird {
 
 // ---------------------------------------------------------------------------
 // Parameterized tests: exactness on monomials / polynomials
@@ -38,7 +38,7 @@ TEST_P(GLLQuadratureExactnessTest, IntegratesAllMonomialsUpToDegree2NMinus3) {
         quad, [k](double x) { return std::pow(x, k); });
     const double result = quad.Integrate(pairs);
     const double expected = AnalyticMonomialIntegral(k);
-    EXPECT_NEAR(result, expected, utils::TOLERANCE)
+    EXPECT_NEAR(result, expected, TOLERANCE)
         << "Failed for n=" << n << ", monomial degree k=" << k;
   }
 }
@@ -204,4 +204,4 @@ TEST(GLLQuadratureNonPolynomialTest,
   EXPECT_LT(previous_error, 1e-8);
 }
 
-}  // namespace hummingbird::quadrature
+}  // namespace hummingbird

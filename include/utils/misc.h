@@ -10,9 +10,9 @@
 
 #include "utils/constants.h"
 
-namespace hummingbird::utils {
+namespace hummingbird {
 /**
- * @brief Tests if two double-type numbers are equal using the utils::TOLERANCE
+ * @brief Tests if two double-type numbers are equal using the TOLERANCE
  * value. Taken from https://github.com/starling
  *
  * @param first First number to compare
@@ -31,6 +31,6 @@ bool DoubleEqual(const double first, const double second,
  * @return double
  */
 double RelativeError(const double new_val, const double old_val);
-}  // namespace hummingbird::utils
+}  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_UTILS_MISC_H_

@@ -10,7 +10,7 @@
 #include "mesh/node.h"
 #include "quadrature/gauss_lobatto_legendre.h"
 
-namespace hummingbird::mesh {
+namespace hummingbird {
 
 /**
  * @brief Class defing a mesh
@@ -52,7 +52,7 @@ class Mesh {
    * @param gll_quadrature Gauss-Lobatto-Legendre quadrature set
    */
   void CreateInteriorElementNodes(
-      const quadrature::GaussLobattoLegendre& gll_quadrature);
+      const GaussLobattoLegendre& gll_quadrature);
 
  private:
   /// @brief Nodes in the mesh
@@ -77,6 +77,6 @@ class Mesh {
    */
   void CheckNodeIDs();
 };
-}  // namespace hummingbird::mesh
+}  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_MESH_MESH_H_

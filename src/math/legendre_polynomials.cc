@@ -7,7 +7,7 @@
 #include "utils/constants.h"
 #include "utils/misc.h"
 
-namespace hummingbird::math {
+namespace hummingbird {
 double LegendrePolynomial(const int n, const double x) {
   switch (n) {
     case 0:
@@ -30,9 +30,9 @@ double LegendrePolynomial(const int n, const double x) {
 }
 
 double LegendrePolynomialPrime(const int n, const double x) {
-  if (utils::DoubleEqual(x, -1.0))
+  if (DoubleEqual(x, -1.0))
     return std::pow(-1, n - 1) * n * (n + 1) / 2.0;
-  else if (utils::DoubleEqual(x, 1.0))
+  else if (DoubleEqual(x, 1.0))
     return n * (n + 1) / 2.0;
 
   switch (n) {
@@ -76,7 +76,7 @@ double LegendreRoot(const int n, const int k) {
     double relative_error = std::abs((x_new - x_old) / std::max(1.0, x_new));
     double backward_error = std::abs(LegendrePolynomial(n, x_new));
 
-    if (backward_error < 1e-13 && relative_error < utils::TOLERANCE)
+    if (backward_error < 1e-13 && relative_error < TOLERANCE)
       return x_new;
     x_old = x_new;
   }
@@ -111,7 +111,7 @@ double LegendrePrimeRoot(const int n, const int k) {
     double relative_error = std::abs((x_new - x_old) / std::max(1.0, x_new));
     double backward_error = std::abs(LegendrePolynomialPrime(n, x_new));
 
-    if (backward_error < 1e-12 && relative_error < utils::TOLERANCE)
+    if (backward_error < 1e-12 && relative_error < TOLERANCE)
       return x_new;
     x_old = x_new;
   }
@@ -124,4 +124,4 @@ double ApproximateLegendrePrimeRoot(const int n, const int k) {
          2.0;
 }
 
-}  // namespace hummingbird::math
+}  // namespace hummingbird

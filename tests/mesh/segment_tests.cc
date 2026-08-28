@@ -10,7 +10,7 @@
 #include "quadrature/gauss_lobatto_legendre.h"
 #include "utils/constants.h"
 
-namespace hummingbird::mesh {
+namespace hummingbird {
 
 namespace {
 
@@ -38,7 +38,7 @@ TEST_P(SegmentInteriorCountTest, ProducesNPointsMinusTwoInteriorNodes) {
   std::vector<Node> nodes = {MakeNode(0, 0.0, 0.0, 0.0),
                              MakeNode(1, 10.0, 0.0, 0.0)};
   Segment segment({0, 1}, /*material_id=*/1);
-  quadrature::GaussLobattoLegendre gll(n_points);
+  GaussLobattoLegendre gll(n_points);
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
   EXPECT_EQ(interior.size(), n_points - 2);
@@ -52,7 +52,7 @@ TEST(SegmentTest, TwoPointQuadratureProducesNoInteriorNodes) {
   std::vector<Node> nodes = {MakeNode(0, 0.0, 0.0, 0.0),
                              MakeNode(1, 10.0, 0.0, 0.0)};
   Segment segment({0, 1}, 1);
-  quadrature::GaussLobattoLegendre gll(2);
+  GaussLobattoLegendre gll(2);
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
   EXPECT_TRUE(interior.empty());
@@ -68,7 +68,7 @@ TEST(SegmentTest, InteriorNodeIdsContinueFromExistingNodeCount) {
                              MakeNode(1, 10.0, 0.0, 0.0),
                              MakeNode(2, 20.0, 0.0, 0.0)};
   Segment segment({0, 1}, 1);
-  quadrature::GaussLobattoLegendre gll(5);  // 3 interior points
+  GaussLobattoLegendre gll(5);  // 3 interior points
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
   ASSERT_EQ(interior.size(), 3u);
@@ -85,7 +85,7 @@ TEST(SegmentTest, UsesNodesAtSpecifiedBoundaryIndicesRegardlessOfPosition) {
   nodes.at(2) = MakeNode(2, 0.0, 0.0, 0.0);
   nodes.at(5) = MakeNode(5, 10.0, 0.0, 0.0);
   Segment segment({2, 5}, 1);
-  quadrature::GaussLobattoLegendre gll(3);  // 1 interior point
+  GaussLobattoLegendre gll(3);  // 1 interior point
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
   ASSERT_EQ(interior.size(), 1u);
@@ -106,7 +106,7 @@ TEST(SegmentTest, InteriorNodesMatchDocumentedReferenceToPhysicalMapping) {
   const Node right = MakeNode(1, 4.0, 6.0, 3.0);  // non-axis-aligned segment
   std::vector<Node> nodes = {left, right};
   Segment segment({0, 1}, 1);
-  quadrature::GaussLobattoLegendre gll(6);  // 4 interior points
+  GaussLobattoLegendre gll(6);  // 4 interior points
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
   ASSERT_EQ(interior.size(), gll.n_points() - 2);
@@ -120,11 +120,11 @@ TEST(SegmentTest, InteriorNodesMatchDocumentedReferenceToPhysicalMapping) {
     const double expected_y = left.y + fraction * (right.y - left.y);
     const double expected_z = left.z + fraction * (right.z - left.z);
 
-    EXPECT_NEAR(interior.at(k).x, expected_x, utils::EXP_NEAR_TOLERANCE)
+    EXPECT_NEAR(interior.at(k).x, expected_x, EXP_NEAR_TOLERANCE)
         << "x mismatch at interior node " << k;
-    EXPECT_NEAR(interior.at(k).y, expected_y, utils::EXP_NEAR_TOLERANCE)
+    EXPECT_NEAR(interior.at(k).y, expected_y, EXP_NEAR_TOLERANCE)
         << "y mismatch at interior node " << k;
-    EXPECT_NEAR(interior.at(k).z, expected_z, utils::EXP_NEAR_TOLERANCE)
+    EXPECT_NEAR(interior.at(k).z, expected_z, EXP_NEAR_TOLERANCE)
         << "z mismatch at interior node " << k;
   }
 }
@@ -138,13 +138,13 @@ TEST(SegmentTest, MidpointQuadratureAbscissaMapsToSegmentMidpoint) {
   const Node right = MakeNode(1, 10.0, 20.0, -6.0);
   std::vector<Node> nodes = {left, right};
   Segment segment({0, 1}, 1);
-  quadrature::GaussLobattoLegendre gll(3);
+  GaussLobattoLegendre gll(3);
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
   ASSERT_EQ(interior.size(), 1u);
-  EXPECT_NEAR(interior.at(0).x, 5.0, utils::EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(interior.at(0).y, 10.0, utils::EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(interior.at(0).z, -3.0, utils::EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(interior.at(0).x, 5.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(interior.at(0).y, 10.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(interior.at(0).z, -3.0, EXP_NEAR_TOLERANCE);
 }
 
 TEST(SegmentTest, InteriorNodesAreMonotonicAlongTheSegmentDirection) {
@@ -155,7 +155,7 @@ TEST(SegmentTest, InteriorNodesAreMonotonicAlongTheSegmentDirection) {
   const Node right = MakeNode(1, 10.0, 0.0, 0.0);
   std::vector<Node> nodes = {left, right};
   Segment segment({0, 1}, 1);
-  quadrature::GaussLobattoLegendre gll(6);
+  GaussLobattoLegendre gll(6);
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
   ASSERT_GE(interior.size(), 2u);
@@ -172,7 +172,7 @@ TEST(SegmentTest, DirectionFollowsBoundaryNodeIdOrder) {
   const Node node_b = MakeNode(1, 10.0, 0.0, 0.0);
   std::vector<Node> nodes = {node_a, node_b};
   Segment segment({1, 0}, 1);  // node_b is "left", node_a is "right"
-  quadrature::GaussLobattoLegendre gll(3);
+  GaussLobattoLegendre gll(3);
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
   ASSERT_EQ(interior.size(), 1u);
@@ -180,7 +180,7 @@ TEST(SegmentTest, DirectionFollowsBoundaryNodeIdOrder) {
   // distinguish a correct implementation from a reversed one -- see
   // InteriorNodesAreMonotonicAlongTheSegmentDirection-style checks with a
   // non-midpoint quadrature for that.
-  EXPECT_NEAR(interior.at(0).x, 5.0, utils::EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(interior.at(0).x, 5.0, EXP_NEAR_TOLERANCE);
 }
 
 // ---------------------------------------------------------------------------
@@ -197,7 +197,7 @@ TEST(SegmentTest, InteriorBoundaryMatchesSharedEndpointBoundary) {
   Node right = MakeNode(1, 10.0, 0.0, 0.0, kSharedBoundary);
   std::vector<Node> nodes = {left, right};
   Segment segment({0, 1}, 1);
-  quadrature::GaussLobattoLegendre gll(5);  // 3 interior points
+  GaussLobattoLegendre gll(5);  // 3 interior points
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
   ASSERT_FALSE(interior.empty());
@@ -211,7 +211,7 @@ TEST(SegmentTest, InteriorBoundaryIsNoneWhenEndpointBoundariesDiffer) {
   Node right = MakeNode(1, 10.0, 0.0, 0.0, static_cast<Boundary>(1));
   std::vector<Node> nodes = {left, right};
   Segment segment({0, 1}, 1);
-  quadrature::GaussLobattoLegendre gll(5);  // 3 interior points
+  GaussLobattoLegendre gll(5);  // 3 interior points
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
   ASSERT_FALSE(interior.empty());
@@ -226,7 +226,7 @@ TEST(SegmentTest, InteriorBoundaryIsNoneWhenBothEndpointsAreNone) {
   std::vector<Node> nodes = {MakeNode(0, 0.0, 0.0, 0.0, Boundary::NONE),
                              MakeNode(1, 10.0, 0.0, 0.0, Boundary::NONE)};
   Segment segment({0, 1}, 1);
-  quadrature::GaussLobattoLegendre gll(4);  // 2 interior points
+  GaussLobattoLegendre gll(4);  // 2 interior points
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
   ASSERT_FALSE(interior.empty());
@@ -235,4 +235,4 @@ TEST(SegmentTest, InteriorBoundaryIsNoneWhenBothEndpointsAreNone) {
   }
 }
 
-}  // namespace hummingbird::mesh
+}  // namespace hummingbird

@@ -4,7 +4,7 @@
 #include <format>
 #include <stdexcept>
 
-namespace hummingbird::mesh {
+namespace hummingbird {
 
 void Mesh::AddNode(const Node& node) { nodes_.push_back(node); }
 
@@ -17,7 +17,7 @@ void Mesh::AddElement(std::unique_ptr<Element> element) {
 }
 
 void Mesh::CreateInteriorElementNodes(
-    const quadrature::GaussLobattoLegendre& gll_quadrature) {
+    const GaussLobattoLegendre& gll_quadrature) {
   for (auto& element : elements_) {
     auto new_nodes = element->CreateInteriorNodes(nodes_, gll_quadrature);
     AddNodes(new_nodes);
@@ -54,4 +54,4 @@ void Mesh::CheckNodeIDs() {
           "Node ID expected to be {} but was instead {}. Previous node ID: {}.",
           i, ids.at(i), ids.at(i - 1)));
 }
-}  // namespace hummingbird::mesh
+}  // namespace hummingbird

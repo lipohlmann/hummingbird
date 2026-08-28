@@ -2,7 +2,7 @@
 
 #include "enums.h"
 
-namespace hummingbird::mesh {
+namespace hummingbird {
 Segment::Segment(const std::array<size_t, 2> boundary_node_ids,
                  const int material_id)
     : boundary_node_ids_(boundary_node_ids), Element(material_id) {}
@@ -10,7 +10,7 @@ Segment::Segment(const std::array<size_t, 2> boundary_node_ids,
 std::vector<Node> Segment::CreateInteriorNodes(
 
     const std::vector<Node>& existing_nodes,
-    const quadrature::GaussLobattoLegendre& gll_quadrature) {
+    const GaussLobattoLegendre& gll_quadrature) {
   size_t id = existing_nodes.size();
 
   Node left_node = existing_nodes.at(boundary_node_ids_.at(0));
@@ -38,4 +38,4 @@ std::vector<Node> Segment::CreateInteriorNodes(
   }
   return nodes;
 }
-}  // namespace hummingbird::mesh
+}  // namespace hummingbird

@@ -3,7 +3,7 @@
 #include <format>
 #include <stdexcept>
 
-namespace hummingbird::mesh {
+namespace hummingbird {
 Element::Element(const int material_id) : material_id_(material_id) {}
 
 void Element::SetNewNodeID(const size_t prev_id, const size_t new_id) {
@@ -12,4 +12,4 @@ void Element::SetNewNodeID(const size_t prev_id, const size_t new_id) {
   throw std::runtime_error(
       std::format("ID {} not found in current element.", prev_id));
 }
-}  // namespace hummingbird::mesh
+}  // namespace hummingbird

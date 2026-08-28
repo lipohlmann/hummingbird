@@ -4,8 +4,8 @@
 #ifndef HUMMINGBIRD_PHYSICS_SOURCE_BASE_H_
 #define HUMMINGBIRD_PHYSICS_SOURCE_BASE_H_
 
-namespace hummingbird::physics {
+namespace hummingbird {
 class SourceBase {};
-}  // namespace hummingbird::physics
+}  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_PHYSICS_SOURCE_BASE_H_

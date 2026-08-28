@@ -11,7 +11,7 @@
 #include "quadrature/gauss_legendre.h"
 #include "utils/constants.h"
 
-namespace hummingbird::quadrature::angular {
+namespace hummingbird {
 
 namespace {
 
@@ -95,7 +95,7 @@ TEST_P(GLTStructureTest, EveryOrdinateIsAUnitVector) {
     const double norm_sq = ord.XCosine() * ord.XCosine() +
                            ord.YCosine() * ord.YCosine() +
                            ord.ZCosine() * ord.ZCosine();
-    EXPECT_NEAR(norm_sq, 1.0, utils::EXP_NEAR_TOLERANCE)
+    EXPECT_NEAR(norm_sq, 1.0, EXP_NEAR_TOLERANCE)
         << "Direction cosines at index " << i << " are not normalized.";
   }
 }
@@ -117,7 +117,7 @@ TEST_P(GLTStructureTest, WeightsSumToFourPi) {
   auto [n_azim, n_polar] = GetParam();
   GaussLegendreTrapezoid quad(n_azim, n_polar);
   const double sum = WeightedSum(quad, [](Ordinate) { return 1.0; });
-  EXPECT_NEAR(sum, kFourPi, utils::EXP_NEAR_TOLERANCE * 10.0);
+  EXPECT_NEAR(sum, kFourPi, EXP_NEAR_TOLERANCE * 10.0);
 }
 
 TEST_P(GLTStructureTest, IntegrateAgreesWithManualWeightedSumForAConstant) {
@@ -132,7 +132,7 @@ TEST_P(GLTStructureTest, IntegrateAgreesWithManualWeightedSumForAConstant) {
     pairs.push_back({static_cast<int>(i), 1.0});
   }
 
-  EXPECT_NEAR(quad.Integrate(pairs), kFourPi, utils::EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(quad.Integrate(pairs), kFourPi, EXP_NEAR_TOLERANCE);
 }
 
 TEST_P(GLTStructureTest,
@@ -148,7 +148,7 @@ TEST_P(GLTStructureTest,
     const double expected_weight = gl_polar.GetWeight(i) * delta_azim;
     for (size_t j = 0; j < n_azim; ++j) {
       EXPECT_NEAR(quad.GetWeight(Index(n_azim, i, j)), expected_weight,
-                  utils::EXP_NEAR_TOLERANCE)
+                  EXP_NEAR_TOLERANCE)
           << "Mismatch at polar index " << i << ", azimuthal index " << j;
     }
   }
@@ -170,12 +170,12 @@ TEST_P(GLTStructureTest, OrdinatesMatchClosedFormPolarAndAzimuthalAngles) {
       const double phi = -M_PI + static_cast<double>(j) * delta_azim;
       Ordinate ord = quad.GetAbscissa(Index(n_azim, i, j));
       EXPECT_NEAR(ord.XCosine(), std::sin(theta) * std::cos(phi),
-                  utils::EXP_NEAR_TOLERANCE)
+                  EXP_NEAR_TOLERANCE)
           << "at polar index " << i << ", azimuthal index " << j;
       EXPECT_NEAR(ord.YCosine(), std::sin(theta) * std::sin(phi),
-                  utils::EXP_NEAR_TOLERANCE)
+                  EXP_NEAR_TOLERANCE)
           << "at polar index " << i << ", azimuthal index " << j;
-      EXPECT_NEAR(ord.ZCosine(), mu, utils::EXP_NEAR_TOLERANCE)
+      EXPECT_NEAR(ord.ZCosine(), mu, EXP_NEAR_TOLERANCE)
           << "at polar index " << i << ", azimuthal index " << j;
     }
   }
@@ -210,11 +210,11 @@ TEST_P(GLTMomentTest, FirstMomentsVanish) {
   GaussLegendreTrapezoid quad(n_azim, n_polar);
 
   EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.XCosine(); }), 0.0,
-              utils::EXP_NEAR_TOLERANCE);
+              EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.YCosine(); }), 0.0,
-              utils::EXP_NEAR_TOLERANCE);
+              EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.ZCosine(); }), 0.0,
-              utils::EXP_NEAR_TOLERANCE);
+              EXP_NEAR_TOLERANCE);
 }
 
 TEST_P(GLTMomentTest, CrossMomentsVanish) {
@@ -223,13 +223,13 @@ TEST_P(GLTMomentTest, CrossMomentsVanish) {
 
   EXPECT_NEAR(
       WeightedSum(quad, [](Ordinate o) { return o.XCosine() * o.YCosine(); }),
-      0.0, utils::EXP_NEAR_TOLERANCE);
+      0.0, EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(
       WeightedSum(quad, [](Ordinate o) { return o.YCosine() * o.ZCosine(); }),
-      0.0, utils::EXP_NEAR_TOLERANCE);
+      0.0, EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(
       WeightedSum(quad, [](Ordinate o) { return o.XCosine() * o.ZCosine(); }),
-      0.0, utils::EXP_NEAR_TOLERANCE);
+      0.0, EXP_NEAR_TOLERANCE);
 }
 
 TEST_P(GLTMomentTest, DiagonalSecondMomentsEqualFourPiOverThree) {
@@ -239,13 +239,13 @@ TEST_P(GLTMomentTest, DiagonalSecondMomentsEqualFourPiOverThree) {
 
   EXPECT_NEAR(
       WeightedSum(quad, [](Ordinate o) { return o.XCosine() * o.XCosine(); }),
-      expected, utils::EXP_NEAR_TOLERANCE);
+      expected, EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(
       WeightedSum(quad, [](Ordinate o) { return o.YCosine() * o.YCosine(); }),
-      expected, utils::EXP_NEAR_TOLERANCE);
+      expected, EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(
       WeightedSum(quad, [](Ordinate o) { return o.ZCosine() * o.ZCosine(); }),
-      expected, utils::EXP_NEAR_TOLERANCE);
+      expected, EXP_NEAR_TOLERANCE);
 }
 
 INSTANTIATE_TEST_SUITE_P(SufficientResolution, GLTMomentTest,
@@ -260,14 +260,14 @@ INSTANTIATE_TEST_SUITE_P(SufficientResolution, GLTMomentTest,
 TEST(GLTMomentEdgeCaseTest, FirstAndCrossMomentsVanishEvenAtMinimalOrder) {
   GaussLegendreTrapezoid quad(2, 2);
   EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.XCosine(); }), 0.0,
-              utils::EXP_NEAR_TOLERANCE);
+              EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.YCosine(); }), 0.0,
-              utils::EXP_NEAR_TOLERANCE);
+              EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.ZCosine(); }), 0.0,
-              utils::EXP_NEAR_TOLERANCE);
+              EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(
       WeightedSum(quad, [](Ordinate o) { return o.XCosine() * o.YCosine(); }),
-      0.0, utils::EXP_NEAR_TOLERANCE);
+      0.0, EXP_NEAR_TOLERANCE);
 }
 
 // At n_azim == 2 the trapezoid rule aliases the k=2 harmonic (n_azim divides
@@ -288,7 +288,7 @@ TEST(GLTMomentEdgeCaseTest,
   // The sum only depends on the polar angle (x^2 + y^2 = 1 - z^2), so it's
   // unaffected by azimuthal aliasing.
   EXPECT_NEAR(x_squared_moment + y_squared_moment, 2.0 * expected,
-              utils::EXP_NEAR_TOLERANCE);
+              EXP_NEAR_TOLERANCE);
 }
 
 // ---------------------------------------------------------------------------
@@ -314,7 +314,7 @@ TEST(GLTEdgeCaseTest, SinglePointPerDimensionProducesOneOrdinate) {
   GaussLegendreTrapezoid quad(1, 1);
   EXPECT_EQ(quad.n_points(), 1u);
   EXPECT_NEAR(WeightedSum(quad, [](Ordinate) { return 1.0; }), kFourPi,
-              utils::EXP_NEAR_TOLERANCE);
+              EXP_NEAR_TOLERANCE);
 }
 
 // ---------------------------------------------------------------------------
@@ -342,7 +342,7 @@ TEST_P(GLTMonomialExactnessTest, MatchesClosedFormSphereIntegral) {
     return std::pow(o.XCosine(), m.a) * std::pow(o.YCosine(), m.b) *
            std::pow(o.ZCosine(), m.c);
   });
-  EXPECT_NEAR(actual, expected, utils::EXP_NEAR_TOLERANCE)
+  EXPECT_NEAR(actual, expected, EXP_NEAR_TOLERANCE)
       << "Monomial x^" << m.a << " y^" << m.b << " z^" << m.c
       << " did not match its closed-form sphere integral.";
 }
@@ -432,4 +432,4 @@ TEST(GLTConvergenceTest, AzimuthalErrorShrinksAsNAzimIncreasesForExpCosPhi) {
       << "Expected near machine-precision agreement at the highest order.";
 }
 
-}  // namespace hummingbird::quadrature::angular
+}  // namespace hummingbird

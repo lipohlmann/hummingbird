@@ -11,7 +11,7 @@
 #include "node.h"
 #include "quadrature/gauss_lobatto_legendre.h"
 
-namespace hummingbird::mesh {
+namespace hummingbird {
 /**
  * @brief Defines a subset of the domain (an "element")
  *
@@ -37,7 +37,7 @@ class Element {
   virtual std::vector<Node> CreateInteriorNodes(
 
       const std::vector<Node>& existing_nodes,
-      const quadrature::GaussLobattoLegendre& gll_quadrature) = 0;
+      const GaussLobattoLegendre& gll_quadrature) = 0;
 
   /**
    * @brief Get node IDs
@@ -61,6 +61,6 @@ class Element {
   /// @brief IDs of nodes defining the element
   std::vector<size_t> node_ids_;
 };
-}  // namespace hummingbird::mesh
+}  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_MESH_ELEMENT_H_

@@ -7,7 +7,7 @@
 #include <map>
 #include <vector>
 
-namespace hummingbird::quadrature {
+namespace hummingbird {
 
 /**
  * @brief Simple struct holding a function value evaluated at the supplied
@@ -114,6 +114,6 @@ class QuadratureBase {
    */
   virtual double ComputeWeight(const size_t k, const size_t n) { return 0; }
 };
-}  // namespace hummingbird::quadrature
+}  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_QUADRATURE_QUADRATURE_BASE_H_

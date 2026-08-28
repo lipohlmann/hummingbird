@@ -1,7 +1,7 @@
 #include "quadrature/angular/gauss_legendre_trapezoid.h"
 
 #include <cmath>
-namespace hummingbird::quadrature::angular {
+namespace hummingbird {
 GaussLegendreTrapezoid::GaussLegendreTrapezoid(const size_t n_azim,
                                                const size_t n_polar) {
   abscissas_.reserve(n_azim * n_polar);
@@ -23,4 +23,4 @@ GaussLegendreTrapezoid::GaussLegendreTrapezoid(const size_t n_azim,
     }
   }
 }
-}  // namespace hummingbird::quadrature::angular
+}  // namespace hummingbird

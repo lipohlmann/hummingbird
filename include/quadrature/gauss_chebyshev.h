@@ -6,7 +6,7 @@
 
 #include "quadrature/quadrature_base.h"
 
-namespace hummingbird::quadrature {
+namespace hummingbird {
 /**
  * @brief Class defines a Gauss-Chebyshev quadrature set, which approximates the
  * integral of the form:
@@ -58,6 +58,6 @@ class GaussChebyshev : public QuadratureBase<double> {
    */
   double ComputeWeight(const size_t k, const size_t n) override;
 };
-}  // namespace hummingbird::quadrature
+}  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_QUADRATURE_GAUSS_CHEBYSHEV_H_

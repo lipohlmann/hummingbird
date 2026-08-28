@@ -8,7 +8,7 @@
 
 #include "enums.h"
 
-namespace hummingbird::mesh {
+namespace hummingbird {
 struct Node {
   size_t id;
   double x;
@@ -16,6 +16,6 @@ struct Node {
   double z;
   Boundary boundary = Boundary::NONE;
 };
-}  // namespace hummingbird::mesh
+}  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_MESH_NODE_H_

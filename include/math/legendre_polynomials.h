@@ -11,7 +11,7 @@
 
 #include <vector>
 
-namespace hummingbird::math {
+namespace hummingbird {
 /**
  * @brief Computes the Legendre polynomial of degree n at a point x using the
  * formula:
@@ -148,6 +148,6 @@ double LegendrePrimeRoot(const int n, const int k);
  */
 double ApproximateLegendrePrimeRoot(const int n, const int k);
 
-}  // namespace hummingbird::math
+}  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_MATH_LEGENDRE_POLYNOMIALS_H_

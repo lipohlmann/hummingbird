@@ -11,7 +11,7 @@
 #include "quadrature/quadrature_base.h"
 #include "utils/constants.h"
 
-namespace hummingbird::quadrature {
+namespace hummingbird {
 
 // ---------------------------------------------------------------------------
 // Helpers
@@ -61,7 +61,7 @@ TEST_P(GCQuadratureExactnessTest, IntegratesAllMonomialsUpToDegree2NMinus1) {
     auto pairs = EvaluateAt(quad, [k](double x) { return std::pow(x, k); });
     const double result = quad.Integrate(pairs);
     const double expected = AnalyticWeightedMonomialIntegral(k);
-    EXPECT_NEAR(result, expected, utils::TOLERANCE)
+    EXPECT_NEAR(result, expected, TOLERANCE)
         << "Failed for n=" << n << ", monomial degree k=" << k;
   }
 }
@@ -142,7 +142,7 @@ TEST_P(GCQuadratureExactnessTest,
   // Gauss-Chebyshev nodes are symmetric about 0: x_i == -x_{n-1-i}.
   for (std::size_t i = 0; i < sorted.size(); ++i) {
     const double mirrored = sorted[sorted.size() - 1 - i];
-    EXPECT_NEAR(sorted[i], -mirrored, utils::TOLERANCE);
+    EXPECT_NEAR(sorted[i], -mirrored, TOLERANCE);
   }
 }
 
@@ -165,7 +165,7 @@ TEST(GCQuadratureExplicitFormulaTest, MatchesKnownThreePointAbscissas) {
   std::sort(sorted.begin(), sorted.end());
 
   EXPECT_DOUBLE_EQ(sorted[0], -std::sqrt(3.0) / 2.0);
-  EXPECT_NEAR(sorted[1], 0.0, utils::TOLERANCE);
+  EXPECT_NEAR(sorted[1], 0.0, TOLERANCE);
   EXPECT_DOUBLE_EQ(sorted[2], std::sqrt(3.0) / 2.0);
 }
 
@@ -219,4 +219,4 @@ TEST(GCQuadratureNonPolynomialTest,
   EXPECT_LT(previous_error, 1e-10);
 }
 
-}  // namespace hummingbird::quadrature
+}  // namespace hummingbird

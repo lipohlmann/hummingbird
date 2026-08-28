@@ -5,7 +5,7 @@
 #include "quadrature/gauss_chebyshev.h"
 #include "quadrature/gauss_legendre.h"
 
-namespace hummingbird::quadrature::angular {
+namespace hummingbird {
 
 GaussLegendreChebyshev::GaussLegendreChebyshev(const size_t n_half_azim,
                                                const size_t n_polar) {
@@ -35,4 +35,4 @@ GaussLegendreChebyshev::GaussLegendreChebyshev(const size_t n_half_azim,
   }
 }
 
-}  // namespace hummingbird::quadrature::angular
+}  // namespace hummingbird

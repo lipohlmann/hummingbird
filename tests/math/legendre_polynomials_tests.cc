@@ -7,7 +7,7 @@
 #include "math/legendre_polynomials.h"
 #include "utils/constants.h"
 
-namespace hummingbird::math {
+namespace hummingbird {
 
 // Representative x values in the open interval, plus endpoints.
 const std::vector<double> kInteriorX = {
@@ -41,7 +41,7 @@ TEST(LegendrePolynomial, P2ClosedForm) {
 TEST(LegendrePolynomial, P3ClosedForm) {
   for (double x : kAllX) {
     double expected = 0.5 * (5.0 * x * x * x - 3.0 * x);
-    EXPECT_NEAR(LegendrePolynomial(3, x), expected, utils::TOLERANCE);
+    EXPECT_NEAR(LegendrePolynomial(3, x), expected, TOLERANCE);
   }
 }
 
@@ -195,7 +195,7 @@ void TestRoots(const std::vector<double>& expected_roots) {
   int order = expected_roots.size();
   auto computed_roots = AllLegendreRoots(order);
   for (auto i = 0; i < order; i++)
-    EXPECT_NEAR(computed_roots[i], expected_roots[i], utils::TOLERANCE);
+    EXPECT_NEAR(computed_roots[i], expected_roots[i], TOLERANCE);
 }
 
 TEST(LegendrePolynomialRootFinding, P1) {
@@ -414,4 +414,4 @@ TEST(AllLegendrePrimeRoots, SymmetricAboutZero) {
   }
 }
 
-}  // namespace hummingbird::math
+}  // namespace hummingbird

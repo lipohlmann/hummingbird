@@ -9,7 +9,7 @@
 #include "quadrature/gauss_legendre.h"
 #include "quadrature/quadrature_base.h"
 
-namespace hummingbird::quadrature::angular {
+namespace hummingbird {
 /**
  * @brief Class defines a Gauss-Legendre-Chebyshev quadrature set on the unit
  * sphere, where a Gauss-Legendre quadrature set is used along the polar
@@ -17,7 +17,7 @@ namespace hummingbird::quadrature::angular {
  * direction.
  *
  */
-class GaussLegendreChebyshev : public quadrature::QuadratureBase<Ordinate> {
+class GaussLegendreChebyshev : public QuadratureBase<Ordinate> {
  public:
   /**
    * @brief Construct a new Gauss Legendre Chebyshev object
@@ -31,6 +31,6 @@ class GaussLegendreChebyshev : public quadrature::QuadratureBase<Ordinate> {
  private:
 };
 
-}  // namespace hummingbird::quadrature::angular
+}  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_QUADRATURE_ANGULAR_GAUSS_LEGENDRE_CHEBYSHEV_H_

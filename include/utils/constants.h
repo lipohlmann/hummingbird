@@ -4,7 +4,7 @@
 #ifndef HUMMINGBIRD_UTILS_CONSTANTS_H_
 #define HUMMINGBIRD_UTILS_CONSTANTS_H_
 
-namespace hummingbird::utils {
+namespace hummingbird {
 
 /// @brief General tolerance value for double comparisons
 constexpr double TOLERANCE = 1e-15;
@@ -12,6 +12,6 @@ constexpr double TOLERANCE = 1e-15;
 /// @brief Tolerance value for EXPECT_NEAR in tests
 constexpr double EXP_NEAR_TOLERANCE = 1e-14;
 
-}  // namespace hummingbird::utils
+}  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_UTILS_CONSTANTS_H_

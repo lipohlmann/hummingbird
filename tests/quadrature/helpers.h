@@ -6,7 +6,7 @@
 
 #include "quadrature/quadrature_base.h"
 
-namespace hummingbird::quadrature {
+namespace hummingbird {
 
 template <typename Q>
 std::vector<QuadraturePair> EvaluateAt(const Q& quad,
@@ -20,6 +20,6 @@ std::vector<QuadraturePair> EvaluateAt(const Q& quad,
 }
 
 double AnalyticMonomialIntegral(const unsigned int k);
-}  // namespace hummingbird::quadrature
+}  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_TESTS_QUADRATURE_HELPERS_H_

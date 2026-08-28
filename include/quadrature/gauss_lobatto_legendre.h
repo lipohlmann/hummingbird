@@ -6,7 +6,7 @@
 
 #include "quadrature/quadrature_base.h"
 
-namespace hummingbird::quadrature {
+namespace hummingbird {
 
 /**
  * @brief Class defining a 1D Gauss-Legendre-Lobatto quadrature set on [-1,1].
@@ -57,6 +57,6 @@ class GaussLobattoLegendre : public QuadratureBase<double> {
    */
   double ComputeWeight(const size_t k, const size_t n) override;
 };
-}  // namespace hummingbird::quadrature
+}  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_QUADRATURE_GAUSS_LOBATTO_LEGENDRE_H_

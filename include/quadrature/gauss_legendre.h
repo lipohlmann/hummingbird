@@ -5,7 +5,7 @@
 #define HUMMINGBIRD_QUADRATURE_GAUSS_LEGENDRE_H_
 
 #include "quadrature/quadrature_base.h"
-namespace hummingbird::quadrature {
+namespace hummingbird {
 
 /**
  * @brief Defines a Gauss-Legendre quadrature set on the interval [-1,1]
@@ -31,6 +31,6 @@ class GaussLegendre : public QuadratureBase<double> {
    */
   double ComputeWeight(const size_t k, const size_t n) override;
 };
-}  // namespace hummingbird::quadrature
+}  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_QUADRATURE_GAUSS_LEGENDRE_H_
