@@ -1,64 +1,337 @@
 ```css
 /*
- * customization.css
- * ------------------
- * Custom theme for Doxygen Awesome
+ * Hummingbird — Doxygen Awesome customization
+ * ----------------------------------------------
  *
- * Intended for:
- *   - Spectral element methods
- *   - Nuclear engineering / reactor physics
- *   - High-performance scientific computing
- *   - C/C++ / Fortran / Python scientific codes
+ * University of Illinois Urbana-Champaign inspired theme.
  *
- * Load after Doxygen Awesome's stylesheet.
+ * Primary brand colors:
+ *   Illini Blue   #13294B
+ *   Illini Orange #FF5F05
+ *
+ * Supporting web colors:
+ *   Industrial    #1D58A7
+ *   Arches       #009FD4
+ *   Altgeld      #C84113
+ *   Storm        #707372
+ *
+ * This file is intentionally built around Doxygen Awesome's
+ * CSS variables rather than overriding its internal layout.
+ *
+ * Loaded AFTER doxygen-awesome.css.
  */
 
 
 /* ==========================================================================
-   1. COLOR PALETTE
+   LIGHT MODE
    ========================================================================== */
 
-:root {
-  /* Primary colors */
-  --primary-color: #164e63;
-  --primary-dark-color: #0f3442;
-  --primary-light-color: #0891b2;
+html {
+  /*
+   * ------------------------------------------------------------------------
+   * BRAND COLORS
+   * ------------------------------------------------------------------------
+   */
 
-  /* Accent */
-  --accent-color: #0e7490;
-  --accent-light-color: #22d3ee;
+  /* Main theme color:
+   * links, navigation, arrows, labels, etc.
+   */
+  --primary-color: #13294B;
 
-  /* Backgrounds */
-  --page-background-color: #f8fafc;
-  --page-secondary-background-color: #f1f5f9;
-  --fragment-background: #f1f5f9;
+  /* Darker Illini Blue for stronger UI elements */
+  --primary-dark-color: #000033;
 
-  /* Text */
-  --page-foreground-color: #1e293b;
-  --page-secondary-foreground-color: #475569;
+  /* Industrial blue gives links and interactive elements
+   * a little more visual separation from the main blue.
+   */
+  --primary-light-color: #1D58A7;
 
-  /* Borders */
-  --separator-color: #cbd5e1;
-  --tablehead-background: #e2e8f0;
-  --tablehead-foreground: #0f172a;
 
-  /* Code */
-  --code-background: #f1f5f9;
-  --code-foreground: #1e293b;
+  /*
+   * ------------------------------------------------------------------------
+   * PAGE
+   * ------------------------------------------------------------------------
+   */
 
-  /* Links */
-  --link-color: #0369a1;
-  --link-hover-color: #0e7490;
+  --page-background-color: #FFFFFF;
+
+  /* Official web guidance uses #252525 for default body text. */
+  --page-foreground-color: #252525;
+
+  --page-secondary-foreground-color: #707372;
+
+
+  /*
+   * ------------------------------------------------------------------------
+   * SEPARATORS
+   * ------------------------------------------------------------------------
+   */
+
+  --separator-color: #C6C7C6;
+
+
+  /*
+   * ------------------------------------------------------------------------
+   * CONTENT WIDTH
+   * ------------------------------------------------------------------------
+   *
+   * Hummingbird has long function signatures, template parameters,
+   * mathematical notation, and source listings. Give the documentation
+   * a little more horizontal room than the Doxygen Awesome default.
+   */
+
+  --content-maxwidth: 1150px;
+
+
+  /*
+   * ------------------------------------------------------------------------
+   * SPACING
+   * ------------------------------------------------------------------------
+   */
+
+  --spacing-small: 5px;
+  --spacing-medium: 10px;
+  --spacing-large: 16px;
+  --spacing-xlarge: 22px;
+
+
+  /*
+   * ------------------------------------------------------------------------
+   * CORNERS
+   * ------------------------------------------------------------------------
+   *
+   * Keep these fairly restrained. This is scientific software
+   * documentation, not a consumer application.
+   */
+
+  --border-radius-small: 4px;
+  --border-radius-medium: 6px;
+  --border-radius-large: 8px;
+
+
+  /*
+   * ------------------------------------------------------------------------
+   * CODE
+   * ------------------------------------------------------------------------
+   */
+
+  --fragment-background: #F4F4F4;
+  --fragment-foreground: #252525;
+
+  --code-background: #F4F4F4;
+  --code-foreground: #252525;
+
+
+  /*
+   * ------------------------------------------------------------------------
+   * TABLES
+   * ------------------------------------------------------------------------
+   */
+
+  --tablehead-background: #13294B;
+  --tablehead-foreground: #FFFFFF;
+
+
+  /*
+   * ------------------------------------------------------------------------
+   * SIDEBAR
+   * ------------------------------------------------------------------------
+   */
+
+  --side-nav-background: #F4F4F4;
+  --side-nav-foreground: #252525;
+
+  /*
+   * Keep the navigation arrows visible enough to make a large
+   * API hierarchy easy to scan.
+   */
+  --side-nav-arrow-opacity: 0.35;
+  --side-nav-arrow-hover-opacity: 1;
+
+
+  /*
+   * ------------------------------------------------------------------------
+   * SEARCH
+   * ------------------------------------------------------------------------
+   */
+
+  --searchbar-background: #F4F4F4;
+
+
+  /*
+   * ------------------------------------------------------------------------
+   * BLOCKQUOTES / CALLOUTS
+   * ------------------------------------------------------------------------
+   */
+
+  --blockquote-background: #F4F4F4;
+  --blockquote-foreground: #252525;
+
+
+  /*
+   * ------------------------------------------------------------------------
+   * STATUS COLORS
+   * ------------------------------------------------------------------------
+   *
+   * Orange is deliberately used as an accent rather than normal body text.
+   * Illinois' web guidance warns that Illini Orange on white is not
+   * sufficiently accessible for small text.
+   */
+
+  --warning-color: #C84113;
+  --warning-color-dark: #A72F10;
+  --warning-color-darker: #983220;
+
+
+  /*
+   * ------------------------------------------------------------------------
+   * TOP BAR
+   * ------------------------------------------------------------------------
+   *
+   * This is the one place where we use Illini Orange strongly.
+   */
+
+  --top-height: 60px;
 }
 
 
 /* ==========================================================================
-   2. GLOBAL TYPOGRAPHY
+   DARK MODE
+   ========================================================================== */
+
+html.dark-mode {
+  color-scheme: dark;
+
+  /*
+   * ------------------------------------------------------------------------
+   * BRAND
+   * ------------------------------------------------------------------------
+   */
+
+  --primary-color: #FF5F05;
+  --primary-dark-color: #FF5F05;
+  --primary-light-color: #009FD4;
+
+
+  /*
+   * ------------------------------------------------------------------------
+   * PAGE
+   * ------------------------------------------------------------------------
+   */
+
+  --page-background-color: #11181D;
+  --page-foreground-color: #FFFFFF;
+  --page-secondary-foreground-color: #C6C7C6;
+
+  --separator-color: #474948;
+
+
+  /*
+   * ------------------------------------------------------------------------
+   * SIDEBAR
+   * ------------------------------------------------------------------------
+   */
+
+  --side-nav-background: #13294B;
+  --side-nav-foreground: #FFFFFF;
+
+
+  /*
+   * ------------------------------------------------------------------------
+   * CODE
+   * ------------------------------------------------------------------------
+   */
+
+  --fragment-background: #000033;
+  --fragment-foreground: #FFFFFF;
+
+  --code-background: #000033;
+  --code-foreground: #FFFFFF;
+
+
+  /*
+   * ------------------------------------------------------------------------
+   * TABLES
+   * ------------------------------------------------------------------------
+   */
+
+  --tablehead-background: #13294B;
+  --tablehead-foreground: #FFFFFF;
+
+
+  /*
+   * ------------------------------------------------------------------------
+   * SEARCH
+   * ------------------------------------------------------------------------
+   */
+
+  --searchbar-background: #13294B;
+
+
+  /*
+   * ------------------------------------------------------------------------
+   * BLOCKQUOTES
+   * ------------------------------------------------------------------------
+   */
+
+  --blockquote-background: #252525;
+  --blockquote-foreground: #FFFFFF;
+
+
+  /*
+   * ------------------------------------------------------------------------
+   * STATUS
+   * ------------------------------------------------------------------------
+   */
+
+  --warning-color: #FF5F05;
+  --warning-color-dark: #C84113;
+  --warning-color-darker: #A72F10;
+}
+
+
+/* ==========================================================================
+   PROJECT HEADER
+   ========================================================================== */
+
+/*
+ * The project header is where the Illinois identity should be strongest.
+ *
+ * Blue is the foundation.
+ * Orange is a thin visual signal rather than a giant orange banner.
+ */
+
+#top {
+  border-bottom: 4px solid #FF5F05;
+}
+
+
+/*
+ * Project title.
+ */
+
+#projectname {
+  font-weight: 700;
+  letter-spacing: -0.015em;
+}
+
+
+/*
+ * The project brief contains a lot of technical information, so keep it
+ * subordinate to the project name.
+ */
+
+#projectbrief {
+  opacity: 0.88;
+}
+
+
+/* ==========================================================================
+   TYPOGRAPHY
    ========================================================================== */
 
 body {
   font-family:
-    Inter,
     -apple-system,
     BlinkMacSystemFont,
     "Segoe UI",
@@ -67,610 +340,336 @@ body {
     Arial,
     sans-serif;
 
-  font-size: 15px;
-  line-height: 1.65;
-  color: var(--page-foreground-color);
-  background: var(--page-background-color);
+  line-height: 1.6;
 }
+
 
 /*
- * Headings are deliberately restrained.
- * The documentation should feel like a scientific software manual,
- * rather than a marketing website.
+ * Technical documentation benefits from relatively compact headings.
  */
-
-h1,
-h2,
-h3,
-h4,
-h5,
-h6 {
-  font-weight: 600;
-  letter-spacing: -0.015em;
-}
 
 h1 {
   font-size: 2rem;
+  font-weight: 700;
+  color: #13294B;
 }
 
 h2 {
   font-size: 1.45rem;
-  padding-bottom: 0.35rem;
-  border-bottom: 1px solid var(--separator-color);
+  font-weight: 700;
+  color: #13294B;
+
+  border-bottom: 2px solid #C6C7C6;
+  padding-bottom: 0.35em;
 }
 
 h3 {
   font-size: 1.15rem;
+  font-weight: 700;
+  color: #13294B;
+}
+
+h4,
+h5,
+h6 {
+  color: #13294B;
+}
+
+
+/* Dark mode headings */
+
+html.dark-mode h1,
+html.dark-mode h2,
+html.dark-mode h3,
+html.dark-mode h4,
+html.dark-mode h5,
+html.dark-mode h6 {
+  color: #FFFFFF;
 }
 
 
 /* ==========================================================================
-   3. TOP NAVIGATION
-   ========================================================================== */
-
-#top {
-  background:
-    linear-gradient(
-      135deg,
-      #0f3442 0%,
-      #164e63 55%,
-      #0e7490 100%
-    );
-
-  border-bottom: 3px solid #22d3ee;
-}
-
-#top .main-nav {
-  background: transparent;
-}
-
-#main-nav {
-  background: transparent;
-}
-
-.sm-dox a,
-.sm-dox a:visited {
-  color: #e0f2fe;
-}
-
-.sm-dox a:hover,
-.sm-dox a:focus {
-  color: #ffffff;
-  background: rgba(255, 255, 255, 0.08);
-}
-
-
-/* ==========================================================================
-   4. PROJECT TITLE
-   ========================================================================== */
-
-#projectname {
-  font-weight: 650;
-  letter-spacing: -0.02em;
-}
-
-#projectbrief {
-  color: #bae6fd;
-  font-size: 0.95rem;
-}
-
-
-/* ==========================================================================
-   5. CONTENT AREA
-   ========================================================================== */
-
-#doc-content {
-  max-width: 1400px;
-}
-
-.contents {
-  padding-top: 1.5rem;
-}
-
-/* Comfortable reading width for prose */
-.contents > div {
-  max-width: 1100px;
-}
-
-
-/* ==========================================================================
-   6. LINKS
-   ========================================================================== */
-
-a {
-  color: var(--link-color);
-  text-decoration-thickness: 1px;
-  text-underline-offset: 2px;
-}
-
-a:hover {
-  color: var(--link-hover-color);
-}
-
-
-/* ==========================================================================
-   7. CODE
+   LINKS
    ========================================================================== */
 
 /*
- * Scientific software documentation contains a lot of code.
- * Use a slightly cooler background to visually distinguish it
- * without making code blocks dominate the page.
+ * Industrial blue is the official Illinois web color intended for
+ * body links on white backgrounds.
  */
 
-code,
-tt,
-.fragment {
-  font-family:
-    "JetBrains Mono",
-    "SFMono-Regular",
-    Consolas,
-    "Liberation Mono",
-    monospace;
-
-  font-size: 0.88em;
+a {
+  color: #1D58A7;
 }
 
-code {
-  background: #e2e8f0;
-  padding: 0.12em 0.35em;
+a:hover,
+a:focus {
+  color: #C84113;
+}
+
+
+/*
+ * In dark mode, orange is accessible against the dark blue/black
+ * backgrounds and gives the documentation a distinctly Illinois feel.
+ */
+
+html.dark-mode a {
+  color: #FF5F05;
+}
+
+html.dark-mode a:hover,
+html.dark-mode a:focus {
+  color: #009FD4;
+}
+
+
+/* ==========================================================================
+   NAVIGATION TREE
+   ========================================================================== */
+
+/*
+ * Selected navigation entry:
+ * subtle blue tint rather than a large saturated block.
+ */
+
+#nav-tree .selected {
+  background: #E1E7F1;
+  border-left: 3px solid #FF5F05;
+}
+
+html.dark-mode #nav-tree .selected {
+  background: #2F4668;
+  border-left-color: #FF5F05;
+}
+
+
+/* ==========================================================================
+   CODE FRAGMENTS
+   ========================================================================== */
+
+/*
+ * Keep code blocks visually distinct but quiet.
+ *
+ * The orange accent on the left makes long source listings easier
+ * to visually identify without covering the code in brand colors.
+ */
+
+div.fragment {
+  border-left: 3px solid #FF5F05;
   border-radius: 4px;
 }
 
-div.fragment {
-  border: 1px solid #cbd5e1;
-  border-left: 3px solid var(--accent-color);
-  border-radius: 5px;
 
-  background: var(--code-background);
+/*
+ * Inline code.
+ */
 
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.04);
-
-  margin: 1.2rem 0;
+code,
+tt {
+  border-radius: 3px;
 }
+
+
+/* ==========================================================================
+   MEMBER DOCUMENTATION
+   ========================================================================== */
+
+/*
+ * Doxygen's member definitions are extremely dense in a scientific
+ * C++ project. A restrained blue header makes them easier to scan.
+ */
+
+.memproto {
+  border-left: 3px solid #FF5F05;
+}
+
+.memname {
+  font-weight: 600;
+}
+
+
+/* ==========================================================================
+   TABLES
+   ========================================================================== */
+
+table.doxtable th {
+  background: #13294B;
+  color: #FFFFFF;
+}
+
+table.doxtable tr:hover td {
+  background: #F4F4F4;
+}
+
+html.dark-mode table.doxtable tr:hover td {
+  background: #252525;
+}
+
+
+/* ==========================================================================
+   PARAMETERS
+   ========================================================================== */
+
+.paramname {
+  color: #13294B;
+  font-weight: 600;
+}
+
+html.dark-mode .paramname {
+  color: #FF5F05;
+}
+
+
+/* ==========================================================================
+   ENUMS / LABELS
+   ========================================================================== */
+
+.mlabel {
+  border-radius: 3px;
+}
+
+
+/* ==========================================================================
+   SOURCE BROWSER
+   ========================================================================== */
+
+/*
+ * Your Doxyfile has SOURCE_BROWSER enabled, so source listings are an
+ * important part of the documentation. Give them the same visual language
+ * as the API documentation.
+ */
 
 div.line {
   line-height: 1.55;
 }
 
-
-/* ==========================================================================
-   8. MEMBER DEFINITIONS
-   ========================================================================== */
-
-.memitem {
-  border-radius: 5px;
-  border: 1px solid #dbe3ea;
-
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.03);
-
-  margin-bottom: 1rem;
+span.lineno {
+  color: #707372;
 }
 
-.memproto {
-  background: #e0f2fe;
-  border-left: 3px solid var(--accent-color);
-}
-
-.memdoc {
-  background: #ffffff;
+html.dark-mode span.lineno {
+  color: #8E9090;
 }
 
 
 /* ==========================================================================
-   9. TABLES
-   ========================================================================== */
-
-table.doxtable {
-  border-collapse: separate;
-  border-spacing: 0;
-
-  border: 1px solid #cbd5e1;
-  border-radius: 6px;
-  overflow: hidden;
-
-  box-shadow:
-    0 1px 2px rgba(15, 23, 42, 0.03);
-}
-
-table.doxtable th {
-  background: #e2e8f0;
-  color: #0f172a;
-  font-weight: 600;
-}
-
-table.doxtable td,
-table.doxtable th {
-  padding: 0.55rem 0.8rem;
-  border-bottom: 1px solid #e2e8f0;
-}
-
-table.doxtable tr:last-child td {
-  border-bottom: none;
-}
-
-table.doxtable tr:hover td {
-  background: #f8fafc;
-}
-
-
-/* ==========================================================================
-   10. PARAMETERS
-   ========================================================================== */
-
-.paramname {
-  color: #075985;
-  font-family:
-    "JetBrains Mono",
-    "SFMono-Regular",
-    Consolas,
-    monospace;
-
-  font-weight: 600;
-}
-
-.paramtype {
-  color: #64748b;
-}
-
-
-/* ==========================================================================
-   11. DIRECTORY / CLASS / FILE LISTS
-   ========================================================================== */
-
-.directory tr,
-.directory td {
-  transition: background-color 0.12s ease;
-}
-
-.directory tr:hover td {
-  background: #f1f5f9;
-}
-
-.directory .entry {
-  padding: 0.25rem 0;
-}
-
-
-/* ==========================================================================
-   12. SIDEBAR
-   ========================================================================== */
-
-#side-nav {
-  border-right: 1px solid #cbd5e1;
-  background: #f8fafc;
-}
-
-#nav-tree .selected {
-  background:
-    linear-gradient(
-      90deg,
-      #cffafe 0%,
-      #e0f2fe 100%
-    );
-
-  border-left: 3px solid var(--accent-color);
-  color: #0f3442;
-}
-
-#nav-tree .label a {
-  color: #334155;
-}
-
-#nav-tree .label a:hover {
-  color: var(--accent-color);
-}
-
-
-/* ==========================================================================
-   13. SEARCH
-   ========================================================================== */
-
-#MSearchBox {
-  background: rgba(255, 255, 255, 0.12);
-  border: 1px solid rgba(255, 255, 255, 0.2);
-  border-radius: 5px;
-}
-
-#MSearchField {
-  color: #ffffff;
-}
-
-#MSearchField::placeholder {
-  color: #bae6fd;
-}
-
-
-/* ==========================================================================
-   14. NOTES / WARNINGS / IMPORTANT INFORMATION
+   MATH
    ========================================================================== */
 
 /*
- * Give Doxygen's informational blocks a more deliberate
- * engineering-manual appearance.
+ * Hummingbird's documentation is fundamentally mathematical:
+ * transport equations, angular flux, spectral elements, etc.
+ *
+ * Avoid applying UI colors to equations themselves.
  */
 
-dl.note,
-dl.warning,
-dl.attention,
-dl.invariant,
-dl.pre,
-dl.deprecated {
-  border-radius: 5px;
-  border-left-width: 4px;
-}
-
-dl.note {
-  border-left-color: #0891b2;
-  background: #ecfeff;
-}
-
-dl.warning {
-  border-left-color: #d97706;
-  background: #fffbeb;
-}
-
-dl.attention {
-  border-left-color: #dc2626;
-  background: #fef2f2;
+.MathJax,
+.mjx-chtml {
+  color: inherit;
 }
 
 
 /* ==========================================================================
-   15. MATH / EQUATIONS
-   ========================================================================== */
-
-/*
- * Spectral element and reactor-physics documentation tends to contain
- * substantial mathematical notation.
- */
-
-.mjx-chtml,
-.MathJax {
-  color: #0f172a;
-}
-
-.arabic {
-  font-family:
-    "STIX Two Math",
-    "Cambria Math",
-    serif;
-}
-
-
-/* ==========================================================================
-   16. ENUMS / CONSTANTS
-   ========================================================================== */
-
-.mlabel {
-  border-radius: 3px;
-  background: #e0f2fe;
-  color: #075985;
-  font-weight: 600;
-}
-
-
-/* ==========================================================================
-   17. INHERITANCE / CLASS DIAGRAMS
+   DIAGRAMS
    ========================================================================== */
 
 .dotgraph {
-  padding: 1rem;
-  border: 1px solid #dbe3ea;
   border-radius: 6px;
-  background: #ffffff;
 }
 
 
 /* ==========================================================================
-   18. FOOTER
+   SEARCH
    ========================================================================== */
 
-#nav-path {
-  background: #f1f5f9;
-  border-top: 1px solid #cbd5e1;
-}
-
-#nav-path ul {
-  background: transparent;
+#MSearchBox {
+  border-radius: 5px;
 }
 
 
 /* ==========================================================================
-   19. SELECTION
+   MOBILE
    ========================================================================== */
 
-::selection {
-  background: #a5f3fc;
-  color: #0f172a;
+@media screen and (max-width: 767px) {
+
+  h1 {
+    font-size: 1.7rem;
+  }
+
+  h2 {
+    font-size: 1.3rem;
+  }
+
+  #projectbrief {
+    font-size: 0.9rem;
+  }
 }
 
 
 /* ==========================================================================
-   20. SCROLLBARS
+   PRINT
    ========================================================================== */
+
+@media print {
+
+  #top {
+    border-bottom: 2px solid #13294B;
+  }
+
+  h1,
+  h2,
+  h3,
+  h4,
+  h5,
+  h6 {
+    color: #13294B;
+  }
+
+  a {
+    color: #13294B;
+  }
+}
+
+
+/* ==========================================================================
+   SCROLLBAR
+   ========================================================================== */
+
+/*
+ * IMPORTANT:
+ *
+ * Doxygen notes that specifying HTML_EXTRA_STYLESHEET causes its default
+ * scrollbar styling to be omitted. Therefore we explicitly provide it here.
+ */
 
 ::-webkit-scrollbar {
-  width: 9px;
-  height: 9px;
+  width: 10px;
+  height: 10px;
 }
 
 ::-webkit-scrollbar-track {
-  background: #f1f5f9;
+  background: #F4F4F4;
 }
 
 ::-webkit-scrollbar-thumb {
-  background: #94a3b8;
+  background: #707372;
   border-radius: 5px;
 }
 
 ::-webkit-scrollbar-thumb:hover {
-  background: #64748b;
+  background: #13294B;
 }
 
-
-/* ==========================================================================
-   21. SCIENTIFIC / ENGINEERING CALLOUTS
-   ========================================================================== */
-
-/*
- * Optional classes that can be used directly in HTML/Markdown:
- *
- *   <div class="engineering-callout">
- *       ...
- *   </div>
- *
- *   <div class="algorithm-callout">
- *       ...
- *   </div>
- */
-
-.engineering-callout {
-  margin: 1.5rem 0;
-  padding: 1rem 1.25rem;
-
-  border-left: 4px solid #0e7490;
-  border-radius: 4px;
-
-  background: #ecfeff;
+html.dark-mode ::-webkit-scrollbar-track {
+  background: #11181D;
 }
 
-.algorithm-callout {
-  margin: 1.5rem 0;
-  padding: 1rem 1.25rem;
-
-  border-left: 4px solid #164e63;
-  border-radius: 4px;
-
-  background: #f1f5f9;
+html.dark-mode ::-webkit-scrollbar-thumb {
+  background: #707372;
 }
 
-.engineering-callout strong,
-.algorithm-callout strong {
-  color: #0f3442;
+html.dark-mode ::-webkit-scrollbar-thumb:hover {
+  background: #FF5F05;
 }
-
-
-/* ==========================================================================
-   22. DARK MODE
-   ========================================================================== */
-
-html.dark-mode {
-  --page-background-color: #0f172a;
-  --page-secondary-background-color: #1e293b;
-
-  --page-foreground-color: #e2e8f0;
-  --page-secondary-foreground-color: #94a3b8;
-
-  --separator-color: #334155;
-
-  --code-background: #111827;
-  --code-foreground: #e2e8f0;
-
-  --fragment-background: #111827;
-
-  --link-color: #67e8f9;
-  --link-hover-color: #a5f3fc;
-
-  --tablehead-background: #1e293b;
-  --tablehead-foreground: #e2e8f0;
-}
-
-html.dark-mode body {
-  background: var(--page-background-color);
-  color: var(--page-foreground-color);
-}
-
-html.dark-mode #side-nav {
-  background: #111827;
-  border-right-color: #334155;
-}
-
-html.dark-mode .memitem {
-  border-color: #334155;
-}
-
-html.dark-mode .memproto {
-  background: #164e63;
-}
-
-html.dark-mode .memdoc {
-  background: #1e293b;
-}
-
-html.dark-mode div.fragment {
-  background: #111827;
-  border-color: #334155;
-}
-
-html.dark-mode code {
-  background: #1e293b;
-}
-
-html.dark-mode table.doxtable {
-  border-color: #334155;
-}
-
-html.dark-mode table.doxtable th {
-  background: #1e293b;
-  color: #e2e8f0;
-}
-
-html.dark-mode table.doxtable td {
-  border-bottom-color: #334155;
-}
-
-html.dark-mode table.doxtable tr:hover td {
-  background: #1e293b;
-}
-
-html.dark-mode #nav-tree .selected {
-  background: #164e63;
-  color: #e0f2fe;
-}
-
-html.dark-mode .engineering-callout {
-  background: #083344;
-}
-
-html.dark-mode .algorithm-callout {
-  background: #1e293b;
-}
-
-
-/* ==========================================================================
-   23. PRINT
-   ========================================================================== */
-
-@media print {
-  #side-nav,
-  #top,
-  #nav-path,
-  #MSearchBox {
-    display: none;
-  }
-
-  #doc-content {
-    margin-left: 0;
-  }
-
-  body {
-    font-size: 10.5pt;
-    color: #000;
-    background: #fff;
-  }
-
-  div.fragment {
-    break-inside: avoid;
-    box-shadow: none;
-  }
-}
-
-
-/* ==========================================================================
-   END
-   ========================================================================== */
 ```
 
