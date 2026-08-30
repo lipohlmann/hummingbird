@@ -1,3 +1,676 @@
-html {
-    --content-maxwidth: auto;
+```css
+/*
+ * customization.css
+ * ------------------
+ * Custom theme for Doxygen Awesome
+ *
+ * Intended for:
+ *   - Spectral element methods
+ *   - Nuclear engineering / reactor physics
+ *   - High-performance scientific computing
+ *   - C/C++ / Fortran / Python scientific codes
+ *
+ * Load after Doxygen Awesome's stylesheet.
+ */
+
+
+/* ==========================================================================
+   1. COLOR PALETTE
+   ========================================================================== */
+
+:root {
+  /* Primary colors */
+  --primary-color: #164e63;
+  --primary-dark-color: #0f3442;
+  --primary-light-color: #0891b2;
+
+  /* Accent */
+  --accent-color: #0e7490;
+  --accent-light-color: #22d3ee;
+
+  /* Backgrounds */
+  --page-background-color: #f8fafc;
+  --page-secondary-background-color: #f1f5f9;
+  --fragment-background: #f1f5f9;
+
+  /* Text */
+  --page-foreground-color: #1e293b;
+  --page-secondary-foreground-color: #475569;
+
+  /* Borders */
+  --separator-color: #cbd5e1;
+  --tablehead-background: #e2e8f0;
+  --tablehead-foreground: #0f172a;
+
+  /* Code */
+  --code-background: #f1f5f9;
+  --code-foreground: #1e293b;
+
+  /* Links */
+  --link-color: #0369a1;
+  --link-hover-color: #0e7490;
 }
+
+
+/* ==========================================================================
+   2. GLOBAL TYPOGRAPHY
+   ========================================================================== */
+
+body {
+  font-family:
+    Inter,
+    -apple-system,
+    BlinkMacSystemFont,
+    "Segoe UI",
+    Roboto,
+    Helvetica,
+    Arial,
+    sans-serif;
+
+  font-size: 15px;
+  line-height: 1.65;
+  color: var(--page-foreground-color);
+  background: var(--page-background-color);
+}
+
+/*
+ * Headings are deliberately restrained.
+ * The documentation should feel like a scientific software manual,
+ * rather than a marketing website.
+ */
+
+h1,
+h2,
+h3,
+h4,
+h5,
+h6 {
+  font-weight: 600;
+  letter-spacing: -0.015em;
+}
+
+h1 {
+  font-size: 2rem;
+}
+
+h2 {
+  font-size: 1.45rem;
+  padding-bottom: 0.35rem;
+  border-bottom: 1px solid var(--separator-color);
+}
+
+h3 {
+  font-size: 1.15rem;
+}
+
+
+/* ==========================================================================
+   3. TOP NAVIGATION
+   ========================================================================== */
+
+#top {
+  background:
+    linear-gradient(
+      135deg,
+      #0f3442 0%,
+      #164e63 55%,
+      #0e7490 100%
+    );
+
+  border-bottom: 3px solid #22d3ee;
+}
+
+#top .main-nav {
+  background: transparent;
+}
+
+#main-nav {
+  background: transparent;
+}
+
+.sm-dox a,
+.sm-dox a:visited {
+  color: #e0f2fe;
+}
+
+.sm-dox a:hover,
+.sm-dox a:focus {
+  color: #ffffff;
+  background: rgba(255, 255, 255, 0.08);
+}
+
+
+/* ==========================================================================
+   4. PROJECT TITLE
+   ========================================================================== */
+
+#projectname {
+  font-weight: 650;
+  letter-spacing: -0.02em;
+}
+
+#projectbrief {
+  color: #bae6fd;
+  font-size: 0.95rem;
+}
+
+
+/* ==========================================================================
+   5. CONTENT AREA
+   ========================================================================== */
+
+#doc-content {
+  max-width: 1400px;
+}
+
+.contents {
+  padding-top: 1.5rem;
+}
+
+/* Comfortable reading width for prose */
+.contents > div {
+  max-width: 1100px;
+}
+
+
+/* ==========================================================================
+   6. LINKS
+   ========================================================================== */
+
+a {
+  color: var(--link-color);
+  text-decoration-thickness: 1px;
+  text-underline-offset: 2px;
+}
+
+a:hover {
+  color: var(--link-hover-color);
+}
+
+
+/* ==========================================================================
+   7. CODE
+   ========================================================================== */
+
+/*
+ * Scientific software documentation contains a lot of code.
+ * Use a slightly cooler background to visually distinguish it
+ * without making code blocks dominate the page.
+ */
+
+code,
+tt,
+.fragment {
+  font-family:
+    "JetBrains Mono",
+    "SFMono-Regular",
+    Consolas,
+    "Liberation Mono",
+    monospace;
+
+  font-size: 0.88em;
+}
+
+code {
+  background: #e2e8f0;
+  padding: 0.12em 0.35em;
+  border-radius: 4px;
+}
+
+div.fragment {
+  border: 1px solid #cbd5e1;
+  border-left: 3px solid var(--accent-color);
+  border-radius: 5px;
+
+  background: var(--code-background);
+
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.04);
+
+  margin: 1.2rem 0;
+}
+
+div.line {
+  line-height: 1.55;
+}
+
+
+/* ==========================================================================
+   8. MEMBER DEFINITIONS
+   ========================================================================== */
+
+.memitem {
+  border-radius: 5px;
+  border: 1px solid #dbe3ea;
+
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.03);
+
+  margin-bottom: 1rem;
+}
+
+.memproto {
+  background: #e0f2fe;
+  border-left: 3px solid var(--accent-color);
+}
+
+.memdoc {
+  background: #ffffff;
+}
+
+
+/* ==========================================================================
+   9. TABLES
+   ========================================================================== */
+
+table.doxtable {
+  border-collapse: separate;
+  border-spacing: 0;
+
+  border: 1px solid #cbd5e1;
+  border-radius: 6px;
+  overflow: hidden;
+
+  box-shadow:
+    0 1px 2px rgba(15, 23, 42, 0.03);
+}
+
+table.doxtable th {
+  background: #e2e8f0;
+  color: #0f172a;
+  font-weight: 600;
+}
+
+table.doxtable td,
+table.doxtable th {
+  padding: 0.55rem 0.8rem;
+  border-bottom: 1px solid #e2e8f0;
+}
+
+table.doxtable tr:last-child td {
+  border-bottom: none;
+}
+
+table.doxtable tr:hover td {
+  background: #f8fafc;
+}
+
+
+/* ==========================================================================
+   10. PARAMETERS
+   ========================================================================== */
+
+.paramname {
+  color: #075985;
+  font-family:
+    "JetBrains Mono",
+    "SFMono-Regular",
+    Consolas,
+    monospace;
+
+  font-weight: 600;
+}
+
+.paramtype {
+  color: #64748b;
+}
+
+
+/* ==========================================================================
+   11. DIRECTORY / CLASS / FILE LISTS
+   ========================================================================== */
+
+.directory tr,
+.directory td {
+  transition: background-color 0.12s ease;
+}
+
+.directory tr:hover td {
+  background: #f1f5f9;
+}
+
+.directory .entry {
+  padding: 0.25rem 0;
+}
+
+
+/* ==========================================================================
+   12. SIDEBAR
+   ========================================================================== */
+
+#side-nav {
+  border-right: 1px solid #cbd5e1;
+  background: #f8fafc;
+}
+
+#nav-tree .selected {
+  background:
+    linear-gradient(
+      90deg,
+      #cffafe 0%,
+      #e0f2fe 100%
+    );
+
+  border-left: 3px solid var(--accent-color);
+  color: #0f3442;
+}
+
+#nav-tree .label a {
+  color: #334155;
+}
+
+#nav-tree .label a:hover {
+  color: var(--accent-color);
+}
+
+
+/* ==========================================================================
+   13. SEARCH
+   ========================================================================== */
+
+#MSearchBox {
+  background: rgba(255, 255, 255, 0.12);
+  border: 1px solid rgba(255, 255, 255, 0.2);
+  border-radius: 5px;
+}
+
+#MSearchField {
+  color: #ffffff;
+}
+
+#MSearchField::placeholder {
+  color: #bae6fd;
+}
+
+
+/* ==========================================================================
+   14. NOTES / WARNINGS / IMPORTANT INFORMATION
+   ========================================================================== */
+
+/*
+ * Give Doxygen's informational blocks a more deliberate
+ * engineering-manual appearance.
+ */
+
+dl.note,
+dl.warning,
+dl.attention,
+dl.invariant,
+dl.pre,
+dl.deprecated {
+  border-radius: 5px;
+  border-left-width: 4px;
+}
+
+dl.note {
+  border-left-color: #0891b2;
+  background: #ecfeff;
+}
+
+dl.warning {
+  border-left-color: #d97706;
+  background: #fffbeb;
+}
+
+dl.attention {
+  border-left-color: #dc2626;
+  background: #fef2f2;
+}
+
+
+/* ==========================================================================
+   15. MATH / EQUATIONS
+   ========================================================================== */
+
+/*
+ * Spectral element and reactor-physics documentation tends to contain
+ * substantial mathematical notation.
+ */
+
+.mjx-chtml,
+.MathJax {
+  color: #0f172a;
+}
+
+.arabic {
+  font-family:
+    "STIX Two Math",
+    "Cambria Math",
+    serif;
+}
+
+
+/* ==========================================================================
+   16. ENUMS / CONSTANTS
+   ========================================================================== */
+
+.mlabel {
+  border-radius: 3px;
+  background: #e0f2fe;
+  color: #075985;
+  font-weight: 600;
+}
+
+
+/* ==========================================================================
+   17. INHERITANCE / CLASS DIAGRAMS
+   ========================================================================== */
+
+.dotgraph {
+  padding: 1rem;
+  border: 1px solid #dbe3ea;
+  border-radius: 6px;
+  background: #ffffff;
+}
+
+
+/* ==========================================================================
+   18. FOOTER
+   ========================================================================== */
+
+#nav-path {
+  background: #f1f5f9;
+  border-top: 1px solid #cbd5e1;
+}
+
+#nav-path ul {
+  background: transparent;
+}
+
+
+/* ==========================================================================
+   19. SELECTION
+   ========================================================================== */
+
+::selection {
+  background: #a5f3fc;
+  color: #0f172a;
+}
+
+
+/* ==========================================================================
+   20. SCROLLBARS
+   ========================================================================== */
+
+::-webkit-scrollbar {
+  width: 9px;
+  height: 9px;
+}
+
+::-webkit-scrollbar-track {
+  background: #f1f5f9;
+}
+
+::-webkit-scrollbar-thumb {
+  background: #94a3b8;
+  border-radius: 5px;
+}
+
+::-webkit-scrollbar-thumb:hover {
+  background: #64748b;
+}
+
+
+/* ==========================================================================
+   21. SCIENTIFIC / ENGINEERING CALLOUTS
+   ========================================================================== */
+
+/*
+ * Optional classes that can be used directly in HTML/Markdown:
+ *
+ *   <div class="engineering-callout">
+ *       ...
+ *   </div>
+ *
+ *   <div class="algorithm-callout">
+ *       ...
+ *   </div>
+ */
+
+.engineering-callout {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+
+  border-left: 4px solid #0e7490;
+  border-radius: 4px;
+
+  background: #ecfeff;
+}
+
+.algorithm-callout {
+  margin: 1.5rem 0;
+  padding: 1rem 1.25rem;
+
+  border-left: 4px solid #164e63;
+  border-radius: 4px;
+
+  background: #f1f5f9;
+}
+
+.engineering-callout strong,
+.algorithm-callout strong {
+  color: #0f3442;
+}
+
+
+/* ==========================================================================
+   22. DARK MODE
+   ========================================================================== */
+
+html.dark-mode {
+  --page-background-color: #0f172a;
+  --page-secondary-background-color: #1e293b;
+
+  --page-foreground-color: #e2e8f0;
+  --page-secondary-foreground-color: #94a3b8;
+
+  --separator-color: #334155;
+
+  --code-background: #111827;
+  --code-foreground: #e2e8f0;
+
+  --fragment-background: #111827;
+
+  --link-color: #67e8f9;
+  --link-hover-color: #a5f3fc;
+
+  --tablehead-background: #1e293b;
+  --tablehead-foreground: #e2e8f0;
+}
+
+html.dark-mode body {
+  background: var(--page-background-color);
+  color: var(--page-foreground-color);
+}
+
+html.dark-mode #side-nav {
+  background: #111827;
+  border-right-color: #334155;
+}
+
+html.dark-mode .memitem {
+  border-color: #334155;
+}
+
+html.dark-mode .memproto {
+  background: #164e63;
+}
+
+html.dark-mode .memdoc {
+  background: #1e293b;
+}
+
+html.dark-mode div.fragment {
+  background: #111827;
+  border-color: #334155;
+}
+
+html.dark-mode code {
+  background: #1e293b;
+}
+
+html.dark-mode table.doxtable {
+  border-color: #334155;
+}
+
+html.dark-mode table.doxtable th {
+  background: #1e293b;
+  color: #e2e8f0;
+}
+
+html.dark-mode table.doxtable td {
+  border-bottom-color: #334155;
+}
+
+html.dark-mode table.doxtable tr:hover td {
+  background: #1e293b;
+}
+
+html.dark-mode #nav-tree .selected {
+  background: #164e63;
+  color: #e0f2fe;
+}
+
+html.dark-mode .engineering-callout {
+  background: #083344;
+}
+
+html.dark-mode .algorithm-callout {
+  background: #1e293b;
+}
+
+
+/* ==========================================================================
+   23. PRINT
+   ========================================================================== */
+
+@media print {
+  #side-nav,
+  #top,
+  #nav-path,
+  #MSearchBox {
+    display: none;
+  }
+
+  #doc-content {
+    margin-left: 0;
+  }
+
+  body {
+    font-size: 10.5pt;
+    color: #000;
+    background: #fff;
+  }
+
+  div.fragment {
+    break-inside: avoid;
+    box-shadow: none;
+  }
+}
+
+
+/* ==========================================================================
+   END
+   ========================================================================== */
+```
+
