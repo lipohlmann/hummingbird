@@ -1,7 +1,5 @@
 {
   "mesh": {
-    "type": "gmsh",
-    "format": "ASCII",
     "filename": "1D_MMS_1_mesh.msh"
   },
   "boundary_conditions": {
@@ -9,7 +7,7 @@
       "type": "reflecting"
     },
     "right": {
-      "type": "vacuum"
+      "type": "transmissive"
     }
   },
   "materials": {
@@ -33,7 +31,7 @@
     }
   },
   "problem": {
-    "equation": "SAAF",
+    "transport_form": "SAAF",
     "mode": "fixed_source"
   },
   "solvers": {
@@ -49,11 +47,8 @@
     "n_polar": 2
   },
   "spatial_discretization": {
-    "method": "spectral_elements",
-    "formulation": "CG",
-    "basis": "lagrange",
-    "nodes": "GaussLobattoLegendre",
-    "order": 4
+    "fe_formulation": "CG",
+    "gll_order": 4
   },
   "output": {
     "directory": "results/",

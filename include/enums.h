@@ -5,11 +5,40 @@
 #define HUMMINGBIRD_ENUMS_H_
 
 namespace hummingbird {
+/**
+ * @brief Available boundary conditions
+ *
+ */
 enum class BC { TRANSMISSIVE, REFLECTIVE, NONE };
-enum class Boundary { NORTH, SOUTH, EAST, WEST };
-enum class SourceType { MANUFACTURED, CONSTANT };
-enum class Formulation { CG };
 
+/**
+ * @brief Boundary locations
+ *
+ */
+enum class Boundary { NORTH, SOUTH, EAST, WEST };
+
+/**
+ * @brief Available volumetric source types
+ *
+ */
+enum class SourceType { MANUFACTURED };
+
+/**
+ * @brief Available finite element formulations
+ *
+ */
+enum class FEFormulation { CG };
+
+/**
+ * @brief Available forms of the transport equation
+ *
+ */
+enum class TransportForm { SAAF };
+
+/**
+ * @brief Angular quadrature set
+ *
+ */
 enum class AngularQuadSet { GLT, GL, GLC };
 
 }  // namespace hummingbird
