@@ -19,9 +19,9 @@ std::vector<Node> Segment::CreateInteriorNodes(
   double direction_y = right_node.y - left_node.y;
   double direction_z = right_node.z - left_node.z;
 
-  Boundary interior_boundary = (left_node.boundary == right_node.boundary)
-                                   ? left_node.boundary
-                                   : Boundary::NONE;
+  BC interior_boundary = (left_node.boundary == right_node.boundary)
+                             ? left_node.boundary
+                             : BC::NONE;
 
   std::vector<Node> nodes(gll_quadrature.n_points() - 2);
   for (auto i = 1; i < gll_quadrature.n_points() - 1; i++) {

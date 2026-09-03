@@ -14,8 +14,7 @@ namespace hummingbird {
 
 namespace {
 
-Node MakeNode(size_t id, double x, double y, double z,
-              Boundary boundary = Boundary::NONE) {
+Node MakeNode(size_t id, double x, double y, double z, BC boundary = BC::NONE) {
   Node node;
   node.id = id;
   node.x = x;
@@ -78,7 +77,7 @@ TEST(SegmentTest, InteriorNodeIdsContinueFromExistingNodeCount) {
   }
 }
 
-TEST(SegmentTest, UsesNodesAtSpecifiedBoundaryIndicesRegardlessOfPosition) {
+TEST(SegmentTest, UsesNodesAtSpecifiedBCIndicesRegardlessOfPosition) {
   // boundary_node_ids_ should be used as indices into existing_nodes, not
   // assumed to be the first two entries.
   std::vector<Node> nodes(6);
@@ -165,7 +164,7 @@ TEST(SegmentTest, InteriorNodesAreMonotonicAlongTheSegmentDirection) {
   }
 }
 
-TEST(SegmentTest, DirectionFollowsBoundaryNodeIdOrder) {
+TEST(SegmentTest, DirectionFollowsBCNodeIdOrder) {
   // Swapping which ID is boundary_node_ids_[0] vs [1] should reverse which
   // endpoint is "left" for the purposes of the mapping.
   const Node node_a = MakeNode(0, 0.0, 0.0, 0.0);
@@ -184,17 +183,17 @@ TEST(SegmentTest, DirectionFollowsBoundaryNodeIdOrder) {
 }
 
 // ---------------------------------------------------------------------------
-// Boundary inheritance
+// BC inheritance
 // ---------------------------------------------------------------------------
 
-TEST(SegmentTest, InteriorBoundaryMatchesSharedEndpointBoundary) {
-  // NOTE: Boundary::NONE is the only enumerator visible from the provided
-  // source; static_cast<Boundary>(1) stands in for "some other boundary
+TEST(SegmentTest, InteriorBCMatchesSharedEndpointBC) {
+  // NOTE: BC::NONE is the only enumerator visible from the provided
+  // source; static_cast<BC>(1) stands in for "some other boundary
   // value" and should be replaced with the real enumerator name if it
   // differs from the underlying value 1.
-  const Boundary kSharedBoundary = static_cast<Boundary>(1);
-  Node left = MakeNode(0, 0.0, 0.0, 0.0, kSharedBoundary);
-  Node right = MakeNode(1, 10.0, 0.0, 0.0, kSharedBoundary);
+  const BC kSharedBC = static_cast<BC>(1);
+  Node left = MakeNode(0, 0.0, 0.0, 0.0, kSharedBC);
+  Node right = MakeNode(1, 10.0, 0.0, 0.0, kSharedBC);
   std::vector<Node> nodes = {left, right};
   Segment segment({0, 1}, 1);
   GaussLobattoLegendre gll(5);  // 3 interior points
@@ -202,13 +201,13 @@ TEST(SegmentTest, InteriorBoundaryMatchesSharedEndpointBoundary) {
   auto interior = segment.CreateInteriorNodes(nodes, gll);
   ASSERT_FALSE(interior.empty());
   for (const auto& node : interior) {
-    EXPECT_EQ(node.boundary, kSharedBoundary);
+    EXPECT_EQ(node.boundary, kSharedBC);
   }
 }
 
-TEST(SegmentTest, InteriorBoundaryIsNoneWhenEndpointBoundariesDiffer) {
-  Node left = MakeNode(0, 0.0, 0.0, 0.0, Boundary::NONE);
-  Node right = MakeNode(1, 10.0, 0.0, 0.0, static_cast<Boundary>(1));
+TEST(SegmentTest, InteriorBCIsNoneWhenEndpointBoundariesDiffer) {
+  Node left = MakeNode(0, 0.0, 0.0, 0.0, BC::NONE);
+  Node right = MakeNode(1, 10.0, 0.0, 0.0, static_cast<BC>(1));
   std::vector<Node> nodes = {left, right};
   Segment segment({0, 1}, 1);
   GaussLobattoLegendre gll(5);  // 3 interior points
@@ -216,22 +215,22 @@ TEST(SegmentTest, InteriorBoundaryIsNoneWhenEndpointBoundariesDiffer) {
   auto interior = segment.CreateInteriorNodes(nodes, gll);
   ASSERT_FALSE(interior.empty());
   for (const auto& node : interior) {
-    EXPECT_EQ(node.boundary, Boundary::NONE);
+    EXPECT_EQ(node.boundary, BC::NONE);
   }
 }
 
-TEST(SegmentTest, InteriorBoundaryIsNoneWhenBothEndpointsAreNone) {
+TEST(SegmentTest, InteriorBCIsNoneWhenBothEndpointsAreNone) {
   // Degenerate but common case: neither endpoint is on a boundary, so
   // interior nodes shouldn't be either.
-  std::vector<Node> nodes = {MakeNode(0, 0.0, 0.0, 0.0, Boundary::NONE),
-                             MakeNode(1, 10.0, 0.0, 0.0, Boundary::NONE)};
+  std::vector<Node> nodes = {MakeNode(0, 0.0, 0.0, 0.0, BC::NONE),
+                             MakeNode(1, 10.0, 0.0, 0.0, BC::NONE)};
   Segment segment({0, 1}, 1);
   GaussLobattoLegendre gll(4);  // 2 interior points
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
   ASSERT_FALSE(interior.empty());
   for (const auto& node : interior) {
-    EXPECT_EQ(node.boundary, Boundary::NONE);
+    EXPECT_EQ(node.boundary, BC::NONE);
   }
 }
 
