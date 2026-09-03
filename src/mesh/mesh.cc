@@ -6,6 +6,8 @@
 
 namespace hummingbird {
 
+Mesh::Mesh(const std::string& msh_file) {}
+
 void Mesh::AddNode(const Node& node) { nodes_.push_back(node); }
 
 void Mesh::AddNodes(const std::vector<Node>& nodes) {

@@ -4,6 +4,7 @@
 #ifndef HUMMINGBIRD_MESH_MESH_H_
 #define HUMMINGBIRD_MESH_MESH_H_
 
+#include <string>
 #include <vector>
 
 #include "mesh/element.h"
@@ -23,6 +24,13 @@ class Mesh {
    *
    */
   Mesh() = default;
+
+  /**
+   * @brief Construct a new Mesh object from a gmsh .msh file
+   *
+   * @param msh_file gmsh .msh file
+   */
+  Mesh(const std::string& msh_file);
 
   /**
    * @brief Add node to Mesh
@@ -51,8 +59,7 @@ class Mesh {
    *
    * @param gll_quadrature Gauss-Lobatto-Legendre quadrature set
    */
-  void CreateInteriorElementNodes(
-      const GaussLobattoLegendre& gll_quadrature);
+  void CreateInteriorElementNodes(const GaussLobattoLegendre& gll_quadrature);
 
  private:
   /// @brief Nodes in the mesh
