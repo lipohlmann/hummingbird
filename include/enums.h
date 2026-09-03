@@ -21,7 +21,7 @@ enum class Boundary { NORTH, SOUTH, EAST, WEST };
  * @brief Available volumetric source types
  *
  */
-enum class SourceType { MANUFACTURED };
+enum class SourceType { PARSED_FUNCTION };
 
 /**
  * @brief Available finite element formulations
