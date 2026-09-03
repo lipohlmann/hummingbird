@@ -1,4 +1,13 @@
 {
+  "problem": {
+    "name": "1D_MMS_1",
+    "mode": "fixed_source",
+    "source_iteration": {
+      "tolerance": 1e-8,
+      "max_iterations": 1000
+    },
+    "output_format": "vtk"
+  },
   "mesh": {
     "filename": "1D_MMS_1_mesh.msh"
   },
@@ -12,41 +21,30 @@
   },
   "materials": {
     "mms_material": {
-      "scattering_ratio": 0.5,
+      "scattering_xs": 1,
+      "total_xs": 2,
       "fission_xs": 0.3,
       "neutrons_per_fission": 2.4
     }
   },
   "sources": {
     "mms_source": {
-      "type": "manufactured",
+      "type": "parsed_function",
+      "expression": "x^2",
       "dimension": 1,
       "case": 1
     }
   },
-  "problem": {
-    "transport_form": "SAAF",
-    "mode": "fixed_source"
-  },
-  "solvers": {
-    "source_iteration": {
-      "tolerance": 1e-8,
-      "max_iterations": 1000
-    }
-  },
   "angular_treatment": {
     "type": "discrete_ordinates",
-    "quadrature_set": "GaussLegendreTrapezoid",
-    "n_azimuthal": 2,
-    "n_polar": 2
+    "quadrature": {
+      "quadrature_set": "GaussLegendreTrapezoid",
+      "n_azimuthal": 1,
+      "n_polar": 4 }
   },
-  "spatial_discretization": {
+  "spectral_elements": {
+    "transport_form": "SAAF",
     "fe_formulation": "CG",
     "gll_order": 4
-  },
-  "output": {
-    "directory": "results/",
-    "basename": "1D_MMS_1",
-    "format": "vtk"
   }
 }
