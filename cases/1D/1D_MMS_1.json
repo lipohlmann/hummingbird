@@ -3,10 +3,10 @@
     "filename": "1D_MMS_1_mesh.msh"
   },
   "boundary_conditions": {
-    "left": {
+    "west": {
       "type": "reflecting"
     },
-    "right": {
+    "east": {
       "type": "transmissive"
     }
   },
@@ -22,12 +22,6 @@
       "type": "manufactured",
       "dimension": 1,
       "case": 1
-    }
-  },
-  "regions": {
-    "problem_region": {
-      "material": "mms_material",
-      "source": "mms_source"
     }
   },
   "problem": {
