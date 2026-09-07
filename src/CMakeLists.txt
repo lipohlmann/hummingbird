@@ -24,7 +24,9 @@ add_library(
   quadrature/angular/gauss_legendre_chebyshev.cc
   quadrature/angular/gauss_legendre_trapezoid.cc
   quadrature/angular/ordinate.cc
-  utils/misc.cc)
+  utils/misc.cc
+  utils/tinyexpr.cpp
+  )
 
 target_compile_features(hummingbird_lib PRIVATE cxx_std_20)
 
