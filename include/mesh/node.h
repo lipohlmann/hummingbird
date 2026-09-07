@@ -4,6 +4,7 @@
 #ifndef HUMMINGBIRD_MESH_NODE_H_
 #define HUMMINGBIRD_MESH_NODE_H_
 
+#include <cstddef>
 #include <cstdint>
 
 #include "utils/enums.h"
