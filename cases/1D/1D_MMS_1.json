@@ -30,9 +30,7 @@
   "sources": {
     "mms_source": {
       "type": "parsed_function",
-      "expression": "x^2",
-      "dimension": 1,
-      "case": 1
+      "expression": "x^2"
     }
   },
   "angular_treatment": {
