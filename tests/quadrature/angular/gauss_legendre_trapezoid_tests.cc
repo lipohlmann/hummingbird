@@ -42,7 +42,7 @@ size_t Index(size_t n_azim, size_t i, size_t j) { return i * n_azim + j; }
 // opposed to the construction formula) so tests using this are genuinely
 // checking the quadrature's output.
 double Phi(Ordinate ord) {
-  double phi = std::atan2(ord.YCosine(), ord.XCosine());
+  double phi = std::atan2(ord.y(), ord.x());
   if (phi < 0.0) phi += kTwoPi;
   return phi;
 }
@@ -92,9 +92,8 @@ TEST_P(GLTStructureTest, EveryOrdinateIsAUnitVector) {
   GaussLegendreTrapezoid quad(n_azim, n_polar);
   for (unsigned int i = 0; i < quad.n_points(); ++i) {
     Ordinate ord = quad.GetAbscissa(i);
-    const double norm_sq = ord.XCosine() * ord.XCosine() +
-                           ord.YCosine() * ord.YCosine() +
-                           ord.ZCosine() * ord.ZCosine();
+    const double norm_sq =
+        ord.x() * ord.x() + ord.y() * ord.y() + ord.z() * ord.z();
     EXPECT_NEAR(norm_sq, 1.0, EXP_NEAR_TOLERANCE)
         << "Direction cosines at index " << i << " are not normalized.";
   }
@@ -169,13 +168,11 @@ TEST_P(GLTStructureTest, OrdinatesMatchClosedFormPolarAndAzimuthalAngles) {
     for (size_t j = 0; j < n_azim; ++j) {
       const double phi = -M_PI + static_cast<double>(j) * delta_azim;
       Ordinate ord = quad.GetAbscissa(Index(n_azim, i, j));
-      EXPECT_NEAR(ord.XCosine(), std::sin(theta) * std::cos(phi),
-                  EXP_NEAR_TOLERANCE)
+      EXPECT_NEAR(ord.x(), std::sin(theta) * std::cos(phi), EXP_NEAR_TOLERANCE)
           << "at polar index " << i << ", azimuthal index " << j;
-      EXPECT_NEAR(ord.YCosine(), std::sin(theta) * std::sin(phi),
-                  EXP_NEAR_TOLERANCE)
+      EXPECT_NEAR(ord.y(), std::sin(theta) * std::sin(phi), EXP_NEAR_TOLERANCE)
           << "at polar index " << i << ", azimuthal index " << j;
-      EXPECT_NEAR(ord.ZCosine(), mu, EXP_NEAR_TOLERANCE)
+      EXPECT_NEAR(ord.z(), mu, EXP_NEAR_TOLERANCE)
           << "at polar index " << i << ", azimuthal index " << j;
     }
   }
@@ -209,11 +206,11 @@ TEST_P(GLTMomentTest, FirstMomentsVanish) {
   auto [n_azim, n_polar] = GetParam();
   GaussLegendreTrapezoid quad(n_azim, n_polar);
 
-  EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.XCosine(); }), 0.0,
+  EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.x(); }), 0.0,
               EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.YCosine(); }), 0.0,
+  EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.y(); }), 0.0,
               EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.ZCosine(); }), 0.0,
+  EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.z(); }), 0.0,
               EXP_NEAR_TOLERANCE);
 }
 
@@ -221,15 +218,12 @@ TEST_P(GLTMomentTest, CrossMomentsVanish) {
   auto [n_azim, n_polar] = GetParam();
   GaussLegendreTrapezoid quad(n_azim, n_polar);
 
-  EXPECT_NEAR(
-      WeightedSum(quad, [](Ordinate o) { return o.XCosine() * o.YCosine(); }),
-      0.0, EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(
-      WeightedSum(quad, [](Ordinate o) { return o.YCosine() * o.ZCosine(); }),
-      0.0, EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(
-      WeightedSum(quad, [](Ordinate o) { return o.XCosine() * o.ZCosine(); }),
-      0.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.x() * o.y(); }), 0.0,
+              EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.y() * o.z(); }), 0.0,
+              EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.x() * o.z(); }), 0.0,
+              EXP_NEAR_TOLERANCE);
 }
 
 TEST_P(GLTMomentTest, DiagonalSecondMomentsEqualFourPiOverThree) {
@@ -237,15 +231,12 @@ TEST_P(GLTMomentTest, DiagonalSecondMomentsEqualFourPiOverThree) {
   GaussLegendreTrapezoid quad(n_azim, n_polar);
   const double expected = kFourPi / 3.0;
 
-  EXPECT_NEAR(
-      WeightedSum(quad, [](Ordinate o) { return o.XCosine() * o.XCosine(); }),
-      expected, EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(
-      WeightedSum(quad, [](Ordinate o) { return o.YCosine() * o.YCosine(); }),
-      expected, EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(
-      WeightedSum(quad, [](Ordinate o) { return o.ZCosine() * o.ZCosine(); }),
-      expected, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.x() * o.x(); }),
+              expected, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.y() * o.y(); }),
+              expected, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.z() * o.z(); }),
+              expected, EXP_NEAR_TOLERANCE);
 }
 
 INSTANTIATE_TEST_SUITE_P(SufficientResolution, GLTMomentTest,
@@ -259,15 +250,14 @@ INSTANTIATE_TEST_SUITE_P(SufficientResolution, GLTMomentTest,
 // n_azim is large enough for the diagonal second moments to be exact.
 TEST(GLTMomentEdgeCaseTest, FirstAndCrossMomentsVanishEvenAtMinimalOrder) {
   GaussLegendreTrapezoid quad(2, 2);
-  EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.XCosine(); }), 0.0,
+  EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.x(); }), 0.0,
               EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.YCosine(); }), 0.0,
+  EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.y(); }), 0.0,
               EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.ZCosine(); }), 0.0,
+  EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.z(); }), 0.0,
               EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(
-      WeightedSum(quad, [](Ordinate o) { return o.XCosine() * o.YCosine(); }),
-      0.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(WeightedSum(quad, [](Ordinate o) { return o.x() * o.y(); }), 0.0,
+              EXP_NEAR_TOLERANCE);
 }
 
 // At n_azim == 2 the trapezoid rule aliases the k=2 harmonic (n_azim divides
@@ -278,9 +268,9 @@ TEST(GLTMomentEdgeCaseTest,
      DiagonalMomentsAreAliasedWithOnlyTwoAzimuthalPoints) {
   GaussLegendreTrapezoid quad(2, 4);
   const double x_squared_moment =
-      WeightedSum(quad, [](Ordinate o) { return o.XCosine() * o.XCosine(); });
+      WeightedSum(quad, [](Ordinate o) { return o.x() * o.x(); });
   const double y_squared_moment =
-      WeightedSum(quad, [](Ordinate o) { return o.YCosine() * o.YCosine(); });
+      WeightedSum(quad, [](Ordinate o) { return o.y() * o.y(); });
   const double expected = kFourPi / 3.0;
 
   EXPECT_GT(std::abs(x_squared_moment - expected), 1e-3);
@@ -295,14 +285,14 @@ TEST(GLTMomentEdgeCaseTest,
 // Geometric range checks
 // ---------------------------------------------------------------------------
 
-TEST(GLTRangeTest, ZCosineIsStrictlyInsideUnitInterval) {
+TEST(GLTRangeTest, zIsStrictlyInsideUnitInterval) {
   // Gauss-Legendre nodes never include the endpoints -1/1, so no ordinate's
   // z-direction cosine should be exactly +-1.
   GaussLegendreTrapezoid quad(4, 5);
   for (unsigned int i = 0; i < quad.n_points(); ++i) {
     Ordinate ord = quad.GetAbscissa(i);
-    EXPECT_GT(ord.ZCosine(), -1.0);
-    EXPECT_LT(ord.ZCosine(), 1.0);
+    EXPECT_GT(ord.z(), -1.0);
+    EXPECT_LT(ord.z(), 1.0);
   }
 }
 
@@ -339,8 +329,7 @@ TEST_P(GLTMonomialExactnessTest, MatchesClosedFormSphereIntegral) {
 
   const double expected = AnalyticSphereMonomialIntegral(m.a, m.b, m.c);
   const double actual = WeightedSum(quad, [&](Ordinate o) {
-    return std::pow(o.XCosine(), m.a) * std::pow(o.YCosine(), m.b) *
-           std::pow(o.ZCosine(), m.c);
+    return std::pow(o.x(), m.a) * std::pow(o.y(), m.b) * std::pow(o.z(), m.c);
   });
   EXPECT_NEAR(actual, expected, EXP_NEAR_TOLERANCE)
       << "Monomial x^" << m.a << " y^" << m.b << " z^" << m.c
@@ -368,7 +357,7 @@ TEST(GLTMonomialExactnessTest, DegreeExceedingNAzimIsNotExact) {
   // n_azim == 4.
   const double expected = AnalyticSphereMonomialIntegral(4, 0, 0);
   const double actual =
-      WeightedSum(quad, [](Ordinate o) { return std::pow(o.XCosine(), 4); });
+      WeightedSum(quad, [](Ordinate o) { return std::pow(o.x(), 4); });
   EXPECT_GT(std::abs(actual - expected), 1e-3);
 }
 
@@ -396,7 +385,7 @@ TEST(GLTConvergenceTest, PolarErrorShrinksAsNPolarIncreasesForExpMu) {
   for (size_t n_polar : polar_orders) {
     GaussLegendreTrapezoid quad(n_azim, n_polar);
     const double actual =
-        WeightedSum(quad, [](Ordinate o) { return std::exp(o.ZCosine()); });
+        WeightedSum(quad, [](Ordinate o) { return std::exp(o.z()); });
     const double error = std::abs(actual - expected);
     EXPECT_LE(error, previous_error)
         << "Error did not shrink going to n_polar = " << n_polar;

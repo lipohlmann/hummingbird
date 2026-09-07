@@ -21,25 +21,39 @@ class Ordinate {
   Ordinate(const double azimuth, const double polar);
 
   /**
+   * @brief Getter for azimuthal angle
+   *
+   * @return double
+   */
+  double azimuth() const { return azimuth_; }
+
+  /**
+   * @brief Getter for polar angle
+   *
+   * @return double
+   */
+  double polar() const { return polar_; }
+
+  /**
    * @brief Evaluate the x-direction cosine
    *
    * @return double
    */
-  double XCosine() const;
+  double x() const;
 
   /**
    * @brief Evaluate the y-direction cosine
    *
    * @return double
    */
-  double YCosine() const;
+  double y() const;
 
   /**
    * @brief Evaluate the z-direction cosine
    *
    * @return double
    */
-  double ZCosine() const;
+  double z() const;
 
  private:
   /// @brief Azimuthal angle in radians
