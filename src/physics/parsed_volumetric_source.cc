@@ -20,6 +20,7 @@ double ParsedVolumetricSource::EvaluateAtNode(const Node& node,
     return result;
   else
     throw std::runtime_error("Parse error at " +
-                             std::to_string(tep.get_last_error_position()));
+                             std::to_string(tep.get_last_error_position()) +
+                             ". Error is: " + tep.get_last_error_message());
 }
 }  // namespace hummingbird
