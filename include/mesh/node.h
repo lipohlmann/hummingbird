@@ -6,7 +6,7 @@
 
 #include <cstdint>
 
-#include "enums.h"
+#include "utils/enums.h"
 
 namespace hummingbird {
 struct Node {

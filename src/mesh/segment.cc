@@ -1,6 +1,6 @@
 #include "mesh/segment.h"
 
-#include "enums.h"
+#include "utils/enums.h"
 
 namespace hummingbird {
 Segment::Segment(const std::array<size_t, 2> boundary_node_ids,

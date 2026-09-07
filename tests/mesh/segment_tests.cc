@@ -4,11 +4,11 @@
 #include <tuple>
 #include <vector>
 
-#include "enums.h"
 #include "mesh/node.h"
 #include "mesh/segment.h"
 #include "quadrature/gauss_lobatto_legendre.h"
 #include "utils/constants.h"
+#include "utils/enums.h"
 
 namespace hummingbird {
 

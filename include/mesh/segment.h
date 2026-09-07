@@ -8,6 +8,7 @@
 
 #include "mesh/element.h"
 #include "mesh/node.h"
+
 namespace hummingbird {
 class Segment : public Element {
  public:

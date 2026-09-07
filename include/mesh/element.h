@@ -7,8 +7,8 @@
 #include <memory>
 #include <vector>
 
-#include "material.h"
 #include "node.h"
+#include "physics/material.h"
 #include "quadrature/gauss_lobatto_legendre.h"
 
 namespace hummingbird {
