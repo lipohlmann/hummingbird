@@ -265,12 +265,6 @@ TEST_F(ParsedVolumetricSourceTest, ThrowsOnUnknownFunctionName) {
   EXPECT_THROW(pvs.EvaluateAtNode(node, ordinate), std::runtime_error);
 }
 
-// ---------------------------------------------------------------------------
-// Degenerate arithmetic: not a tinyexpr parse error, so no throw expected —
-// worth pinning down that these come back as Inf/NaN rather than something
-// silently wrong, since an MMS source term hiding a 0/0 would be nasty.
-// ---------------------------------------------------------------------------
-
 TEST_F(ParsedVolumetricSourceTest, DivisionByZeroProducesInfNotThrow) {
   Node n{.id = 7, .x = 1, .y = 0, .z = 0};
   ParsedVolumetricSource pvs("x/y");
