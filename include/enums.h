@@ -9,7 +9,7 @@ namespace hummingbird {
  * @brief Available boundary conditions
  *
  */
-enum class BC { TRANSMISSIVE, REFLECTIVE, NONE };
+enum class BC { VACUUM, REFLECTIVE, NONE };
 
 /**
  * @brief Boundary locations
