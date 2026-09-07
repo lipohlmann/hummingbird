@@ -7,6 +7,7 @@
 #include <string>
 
 #include "mesh/node.h"
+#include "physics/source_base.h"
 #include "quadrature/angular/ordinate.h"
 
 namespace hummingbird {
@@ -15,7 +16,7 @@ namespace hummingbird {
  * user
  *
  */
-class ParsedVolumetricSource {
+class ParsedVolumetricSource : public SourceBase {
  public:
   /**
    * @brief Construct a new Parsed Volumetric Source object
@@ -25,16 +26,10 @@ class ParsedVolumetricSource {
   ParsedVolumetricSource(const std::string_view expression);
 
   /**
-   * @brief Evaluate the source at a node in a particular direction
-   *
-   * @param node Node
-   * @param ordinate Ordinate (direction)
-   * @return Volumetric source in n/cm2/s/str
-   *
    * @todo Add support for 2- and 3D angular functions (currently only supports
    * mu-functions).
    */
-  double EvaluateAtNode(const Node& node, const Ordinate& ordinate);
+  double EvaluateAtNode(const Node& node, const Ordinate& ordinate) override;
 
  private:
   /// @brief Function expression to be evaluated
