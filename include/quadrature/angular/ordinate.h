@@ -25,21 +25,21 @@ class Ordinate {
    *
    * @return double
    */
-  double XCosine();
+  double XCosine() const;
 
   /**
    * @brief Evaluate the y-direction cosine
    *
    * @return double
    */
-  double YCosine();
+  double YCosine() const;
 
   /**
    * @brief Evaluate the z-direction cosine
    *
    * @return double
    */
-  double ZCosine();
+  double ZCosine() const;
 
  private:
   /// @brief Azimuthal angle in radians

@@ -18,9 +18,13 @@ void Ordinate::CheckInput(const double azimuth, const double polar) {
     throw std::invalid_argument("Azimuthal angle must be >= 0.");
 }
 
-double Ordinate::XCosine() { return std::cos(azimuth_) * std::sin(polar_); }
+double Ordinate::XCosine() const {
+  return std::cos(azimuth_) * std::sin(polar_);
+}
 
-double Ordinate::YCosine() { return std::sin(azimuth_) * std::sin(polar_); }
+double Ordinate::YCosine() const {
+  return std::sin(azimuth_) * std::sin(polar_);
+}
 
-double Ordinate::ZCosine() { return std::cos(polar_); }
+double Ordinate::ZCosine() const { return std::cos(polar_); }
 }  // namespace hummingbird
