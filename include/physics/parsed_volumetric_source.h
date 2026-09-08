@@ -23,7 +23,7 @@ class ParsedVolumetricSource : public SourceBase {
    *
    * @param expression Function expression to be evaluated
    */
-  ParsedVolumetricSource(const std::string_view expression);
+  ParsedVolumetricSource(const std::string expression);
 
   /**
    * @todo Add support for 2- and 3D angular functions (currently only supports
@@ -33,7 +33,7 @@ class ParsedVolumetricSource : public SourceBase {
 
  private:
   /// @brief Function expression to be evaluated
-  const std::string_view expression_;
+  const std::string expression_;
 };
 }  // namespace hummingbird
 

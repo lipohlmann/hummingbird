@@ -24,7 +24,7 @@
       "scattering_xs": 1,
       "total_xs": 2,
       "fission_xs": 0.3,
-      "neutrons_per_fission": 2.4
+      "nu": 2.4
     }
   },
   "sources": {

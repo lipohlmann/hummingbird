@@ -24,9 +24,8 @@ class SourceBase {
    * @brief Destroy the Source Base object
    *
    */
-  ~SourceBase() = default;
+  virtual ~SourceBase() = default;
 
- protected:
   /**
    * @brief Evaluate the source at a node in a particular direction
    *

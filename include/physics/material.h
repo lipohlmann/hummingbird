@@ -21,7 +21,7 @@ struct Material {
   double fission_xs;
 
   /// @brief Average number of neutrons produced per fission event
-  double neutrons_per_fission;
+  double nu;
 };
 
 }  // namespace hummingbird
