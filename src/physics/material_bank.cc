@@ -2,9 +2,9 @@
 
 namespace hummingbird {
 void from_json(const json& j, Material& material) {
-  material.scattering_xs = j.at("sigma_s").get<double>();
-  material.total_xs = j.at("sigma_t").get<double>();
-  material.fission_xs = j.at("sigma_f").get<double>();
+  material.scattering_xs = j.at("scattering_xs").get<double>();
+  material.total_xs = j.at("total_xs").get<double>();
+  material.fission_xs = j.at("fission_xs").get<double>();
   material.nu = j.at("nu").get<double>();
 }
 
@@ -14,13 +14,14 @@ MaterialBank::MaterialBank(const json& input_file_json) {
 }
 
 void MaterialBank::Build(const json& input_file_json) {
+  unsigned int id = 0;
   for (const auto& [name, material_json] :
        input_file_json.at("materials").items()) {
     Material material = material_json.get<Material>();
 
-    const auto id = material_json.at("id").get<unsigned int>();
     id_material_map_.emplace(id, std::move(material));
     name_id_map_.emplace(name, id);
+    id++;
   }
 }
 
