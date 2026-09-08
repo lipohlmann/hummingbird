@@ -5,8 +5,7 @@
 #include "utils/tinyexpr.h"
 
 namespace hummingbird {
-ParsedVolumetricSource::ParsedVolumetricSource(
-    const std::string_view expression)
+ParsedVolumetricSource::ParsedVolumetricSource(const std::string expression)
     : expression_(expression) {}
 
 double ParsedVolumetricSource::EvaluateAtNode(const Node& node,
