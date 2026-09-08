@@ -2,6 +2,8 @@
 
 namespace hummingbird {
 
+SourceBank::SourceBank(const json& json_input) { Build(json_input); }
+
 void SourceBank::Build(const json& json_input) {
   unsigned int id = 0;
   for (const auto& [name, source_json] : json_input.at("sources").items()) {
