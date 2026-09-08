@@ -16,7 +16,7 @@
       "type": "reflecting"
     },
     "east": {
-      "type": "transmissive"
+      "type": "vacuum"
     }
   },
   "materials": {
