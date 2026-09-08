@@ -16,6 +16,12 @@ struct Node {
   double y;
   double z;
   BC boundary = BC::NONE;
+
+  /// @brief Source ID to access Source Bank
+  unsigned int source_id;
+
+  /// @brief Material ID to access Material Bank
+  unsigned int material_id;
 };
 }  // namespace hummingbird
 
