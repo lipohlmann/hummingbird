@@ -26,7 +26,6 @@ class SourceBase {
    */
   virtual ~SourceBase() = default;
 
- protected:
   /**
    * @brief Evaluate the source at a node in a particular direction
    *
