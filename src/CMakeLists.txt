@@ -19,6 +19,8 @@ add_library(
   mesh/segment.cc
   physics/parsed_volumetric_source.cc
   physics/constant_volumetric_source.cc
+  physics/material_bank.cc
+  physics/source_bank.cc
   quadrature/gauss_chebyshev.cc
   quadrature/gauss_legendre.cc
   quadrature/gauss_lobatto_legendre.cc
@@ -31,8 +33,8 @@ add_library(
 
 target_compile_features(hummingbird_lib PRIVATE cxx_std_20)
 
-target_link_libraries(hummingbird_lib PRIVATE nlohmann_json::nlohmann_json)
-target_link_libraries(hummingbird_lib PRIVATE Armadillo::Armadillo)
+target_link_libraries(hummingbird_lib PUBLIC nlohmann_json::nlohmann_json)
+target_link_libraries(hummingbird_lib PUBLIC Armadillo::Armadillo)
 target_link_libraries(hummingbird_lib PRIVATE fmt::fmt)
 
 target_include_directories(hummingbird_lib
