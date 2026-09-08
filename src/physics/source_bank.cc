@@ -8,14 +8,14 @@ void SourceBank::Build(const json& json_input) {
   unsigned int id = 0;
   for (const auto& [name, source_json] : json_input.at("sources").items()) {
     if (source_json.at("type").get<std::string>() == "parsed_function") {
-      ParsedVolumetricSource pvs(
-          source_json.at("expression").get<std::string>());
-      id_source_map_.emplace(id, std::move(pvs));
+      id_source_map_.emplace(
+          id, std::make_unique<ParsedVolumetricSource>(
+                  source_json.at("expression").get<std::string>()));
       name_id_map_.emplace(name, id);
       id++;
     } else if (source_json.at("type").get<std::string>() == "constant") {
-      ConstantVolumetricSource cvs(source_json.at("strength").get<double>());
-      id_source_map_.emplace(id, std::move(cvs));
+      id_source_map_.emplace(id, std::make_unique<ConstantVolumetricSource>(
+                                     source_json.at("strength").get<double>()));
       name_id_map_.emplace(name, id);
       id++;
     }
