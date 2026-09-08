@@ -13,6 +13,15 @@
 using nlohmann::json;
 
 namespace hummingbird {
+
+/**
+ * @brief Get the Material information from the json input
+ *
+ * @param j JSON input
+ * @param material Material struct to populate
+ */
+void from_json(const json& j, Material& material);
+
 class MaterialBank {
  public:
   /**
