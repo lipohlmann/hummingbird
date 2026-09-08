@@ -2,11 +2,18 @@
 
 #include <algorithm>
 #include <format>
+#include <fstream>
+#include <functional>
 #include <stdexcept>
+#include <unordered_map>
 
 namespace hummingbird {
 
 Mesh::Mesh(const std::string& msh_file) {}
+
+void Mesh::ReadGMSH(const std::string& msh_file) {
+  std::unordered_map<std::string, std::function<std::ifstream & file>>
+}
 
 void Mesh::AddNode(const Node& node) { nodes_.push_back(node); }
 
