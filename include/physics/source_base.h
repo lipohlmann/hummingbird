@@ -24,7 +24,7 @@ class SourceBase {
    * @brief Destroy the Source Base object
    *
    */
-  ~SourceBase() = default;
+  virtual ~SourceBase() = default;
 
  protected:
   /**
