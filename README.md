@@ -4,6 +4,11 @@ Solving the self-adjoint angular flux transport equation using spectral elements
 ## Installation
 Hummingbird uses [pixi](https://pixi.sh/) to manage its build tools and dependencies, so no manual installation of `cmake`, compilers, or third-party libraries is required.
 
+[pixi](https://pixi.sh/) is a cross-platform package and workspace manager built on the conda ecosystem. It resolves all of the project's dependencies (compilers, `cmake`, `ninja`, and libraries like `armadillo` and `vtk`) from `conda-forge` into a self-contained environment under `.pixi/`, pinned by a lockfile ([`pixi.lock`](./pixi.lock)) so every contributor and CI run builds against identical dependency versions. This means:
+- No system-wide installation of build tools or libraries, and no risk of conflicting with other projects' dependencies on your machine.
+- Reproducible builds, since the lockfile guarantees everyone resolves the same dependency versions instead of "works on my machine" drift.
+- A single command (`pixi install`) sets up everything needed to build, test, and generate documentation for the project.
+
 ### Installing pixi
 If you don't already have pixi installed, install it with:
 
