@@ -55,6 +55,13 @@ class Element {
   int material_id() const { return material_id_; }
 
   /**
+   * @brief Get Source ID
+   *
+   * @return int
+   */
+  int source_id() const { return source_id_; }
+
+  /**
    * @brief Set the new Node ID
    *
    * @param prev_id Previous ID (currently stored in object)
