@@ -22,8 +22,9 @@ class Element {
    * @brief Construct a new Element object
    *
    * @param material_id Material ID
+   * @param source_id Source ID
    */
-  Element(const int material_id);
+  Element(const int material_id, const int source_id);
 
   /**
    * @brief Create nodes by mapping the Gauss-Lobatto-Legendre quadrature set
@@ -64,6 +65,9 @@ class Element {
  protected:
   /// @brief Material ID
   const int material_id_;
+
+  /// @brief Source ID
+  const int source_id_;
 
   /// @brief IDs of nodes defining the element
   std::vector<size_t> node_ids_;

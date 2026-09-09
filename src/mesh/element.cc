@@ -4,7 +4,8 @@
 #include <stdexcept>
 
 namespace hummingbird {
-Element::Element(const int material_id) : material_id_(material_id) {}
+Element::Element(const int material_id, const int source_id)
+    : material_id_(material_id), source_id_(source_id) {}
 
 void Element::SetNewNodeID(const size_t prev_id, const size_t new_id) {
   for (auto i = 0; i < node_ids_.size(); i++)

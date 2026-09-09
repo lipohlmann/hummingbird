@@ -17,8 +17,10 @@ class Segment : public Element {
    *
    * @param boundary_node_ids Node IDs defining the Segment bounds
    * @param material_id Material ID
+   * @param source_id Source ID
    */
-  Segment(const std::array<size_t, 2> boundary_node_ids, const int material_id);
+  Segment(const std::array<size_t, 2> boundary_node_ids, const int material_id,
+          const int source_id);
 
   /**
    * @brief Create interior Node objects using the Gauss-Lobatto-Legendre

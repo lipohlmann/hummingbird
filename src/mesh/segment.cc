@@ -4,8 +4,8 @@
 
 namespace hummingbird {
 Segment::Segment(const std::array<size_t, 2> boundary_node_ids,
-                 const int material_id)
-    : boundary_node_ids_(boundary_node_ids), Element(material_id) {}
+                 const int material_id, const int source_id)
+    : boundary_node_ids_(boundary_node_ids), Element(material_id, source_id) {}
 
 std::vector<Node> Segment::CreateInteriorNodes(
 
