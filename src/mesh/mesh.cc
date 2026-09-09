@@ -210,8 +210,10 @@ void Mesh::ReadElements(std::ifstream& file, GmshReadState& state) {
           "(2-node line elements) can currently be read.",
           element_type));
 
-    const int material_id = GetMaterialID(
+    const auto material_id = GetMaterialID(
         state.curve_physical_tags.at(entity_tag), state.physical_names);
+    const auto source_id = GetSourceID(state.curve_physical_tags.at(entity_tag),
+                                       state.physical_names);
 
     size_t element_tag = 0;
     size_t node_tag_1 = 0;
@@ -221,7 +223,8 @@ void Mesh::ReadElements(std::ifstream& file, GmshReadState& state) {
       std::array<size_t, 2> boundary_node_ids = {
           state.node_tag_to_id.at(node_tag_1),
           state.node_tag_to_id.at(node_tag_2)};
-      AddElement(std::make_unique<Segment>(boundary_node_ids, material_id));
+      AddElement(
+          std::make_unique<Segment>(boundary_node_ids, material_id, source_id));
     }
   }
 }
