@@ -36,7 +36,7 @@ TEST_P(SegmentInteriorCountTest, ProducesNPointsMinusTwoInteriorNodes) {
   const size_t n_points = GetParam();
   std::vector<Node> nodes = {MakeNode(0, 0.0, 0.0, 0.0),
                              MakeNode(1, 10.0, 0.0, 0.0)};
-  Segment segment({0, 1}, /*material_id=*/1);
+  Segment segment({0, 1}, 1, 0);
   GaussLobattoLegendre gll(n_points);
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
@@ -50,7 +50,7 @@ TEST(SegmentTest, TwoPointQuadratureProducesNoInteriorNodes) {
   // A GLL rule with only the two endpoints has no interior points at all.
   std::vector<Node> nodes = {MakeNode(0, 0.0, 0.0, 0.0),
                              MakeNode(1, 10.0, 0.0, 0.0)};
-  Segment segment({0, 1}, 1);
+  Segment segment({0, 1}, 1, 0);
   GaussLobattoLegendre gll(2);
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
@@ -66,7 +66,7 @@ TEST(SegmentTest, InteriorNodeIdsContinueFromExistingNodeCount) {
   std::vector<Node> nodes = {MakeNode(0, 0.0, 0.0, 0.0),
                              MakeNode(1, 10.0, 0.0, 0.0),
                              MakeNode(2, 20.0, 0.0, 0.0)};
-  Segment segment({0, 1}, 1);
+  Segment segment({0, 1}, 1, 0);
   GaussLobattoLegendre gll(5);  // 3 interior points
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
@@ -83,7 +83,7 @@ TEST(SegmentTest, UsesNodesAtSpecifiedBCIndicesRegardlessOfPosition) {
   std::vector<Node> nodes(6);
   nodes.at(2) = MakeNode(2, 0.0, 0.0, 0.0);
   nodes.at(5) = MakeNode(5, 10.0, 0.0, 0.0);
-  Segment segment({2, 5}, 1);
+  Segment segment({2, 5}, 1, 0);
   GaussLobattoLegendre gll(3);  // 1 interior point
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
@@ -104,7 +104,7 @@ TEST(SegmentTest, InteriorNodesMatchDocumentedReferenceToPhysicalMapping) {
   const Node left = MakeNode(0, 1.0, 2.0, 3.0);
   const Node right = MakeNode(1, 4.0, 6.0, 3.0);  // non-axis-aligned segment
   std::vector<Node> nodes = {left, right};
-  Segment segment({0, 1}, 1);
+  Segment segment({0, 1}, 1, 0);
   GaussLobattoLegendre gll(6);  // 4 interior points
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
@@ -136,7 +136,7 @@ TEST(SegmentTest, MidpointQuadratureAbscissaMapsToSegmentMidpoint) {
   const Node left = MakeNode(0, 0.0, 0.0, 0.0);
   const Node right = MakeNode(1, 10.0, 20.0, -6.0);
   std::vector<Node> nodes = {left, right};
-  Segment segment({0, 1}, 1);
+  Segment segment({0, 1}, 1, 0);
   GaussLobattoLegendre gll(3);
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
@@ -153,7 +153,7 @@ TEST(SegmentTest, InteriorNodesAreMonotonicAlongTheSegmentDirection) {
   const Node left = MakeNode(0, 0.0, 0.0, 0.0);
   const Node right = MakeNode(1, 10.0, 0.0, 0.0);
   std::vector<Node> nodes = {left, right};
-  Segment segment({0, 1}, 1);
+  Segment segment({0, 1}, 1, 0);
   GaussLobattoLegendre gll(6);
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
@@ -170,7 +170,7 @@ TEST(SegmentTest, DirectionFollowsBCNodeIdOrder) {
   const Node node_a = MakeNode(0, 0.0, 0.0, 0.0);
   const Node node_b = MakeNode(1, 10.0, 0.0, 0.0);
   std::vector<Node> nodes = {node_a, node_b};
-  Segment segment({1, 0}, 1);  // node_b is "left", node_a is "right"
+  Segment segment({1, 0}, 1, 0);  // node_b is "left", node_a is "right"
   GaussLobattoLegendre gll(3);
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
@@ -195,7 +195,7 @@ TEST(SegmentTest, InteriorBCMatchesSharedEndpointBC) {
   Node left = MakeNode(0, 0.0, 0.0, 0.0, kSharedBC);
   Node right = MakeNode(1, 10.0, 0.0, 0.0, kSharedBC);
   std::vector<Node> nodes = {left, right};
-  Segment segment({0, 1}, 1);
+  Segment segment({0, 1}, 1, 0);
   GaussLobattoLegendre gll(5);  // 3 interior points
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
@@ -209,7 +209,7 @@ TEST(SegmentTest, InteriorBCIsNoneWhenEndpointBoundariesDiffer) {
   Node left = MakeNode(0, 0.0, 0.0, 0.0, BC::NONE);
   Node right = MakeNode(1, 10.0, 0.0, 0.0, static_cast<BC>(1));
   std::vector<Node> nodes = {left, right};
-  Segment segment({0, 1}, 1);
+  Segment segment({0, 1}, 1, 0);
   GaussLobattoLegendre gll(5);  // 3 interior points
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
@@ -224,7 +224,7 @@ TEST(SegmentTest, InteriorBCIsNoneWhenBothEndpointsAreNone) {
   // interior nodes shouldn't be either.
   std::vector<Node> nodes = {MakeNode(0, 0.0, 0.0, 0.0, BC::NONE),
                              MakeNode(1, 10.0, 0.0, 0.0, BC::NONE)};
-  Segment segment({0, 1}, 1);
+  Segment segment({0, 1}, 1, 0);
   GaussLobattoLegendre gll(4);  // 2 interior points
 
   auto interior = segment.CreateInteriorNodes(nodes, gll);
