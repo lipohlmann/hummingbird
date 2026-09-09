@@ -203,6 +203,21 @@ class Mesh {
   int GetMaterialID(
       const std::vector<int>& curve_physical_tags,
       const std::unordered_map<int, std::string>& physical_names) const;
+
+  /**
+   * @brief Find the source ID for a curve entity, defined as the tag of the
+   * Physical Group on the curve whose name is prefixed with "source:" (see
+   * cases/README.md)
+   *
+   * @throw std::runtime_error if no such Physical Group is found
+   *
+   * @param curve_physical_tags Physical Group tags assigned to the curve
+   * @param physical_names Map from Physical Group tag to name
+   * @return int
+   */
+  int GetSourceID(
+      const std::vector<int>& curve_physical_tags,
+      const std::unordered_map<int, std::string>& physical_names) const;
 };
 }  // namespace hummingbird
 

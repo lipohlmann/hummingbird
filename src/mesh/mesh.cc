@@ -14,10 +14,6 @@ namespace hummingbird {
 
 Mesh::Mesh(const std::string& msh_file) { ReadGMSH(msh_file); }
 
-void Mesh::ReadGMSH(const std::string& msh_file) {
-  std::unordered_map<std::string, std::function<std::ifstream & file>>
-}
-
 void Mesh::AddNode(const Node& node) { nodes_.push_back(node); }
 
 void Mesh::AddNodes(const std::vector<Node>& nodes) {
@@ -238,6 +234,16 @@ int Mesh::GetMaterialID(
 
   throw std::runtime_error(
       "No Physical Group with a name prefixed \"material:\" was found for "
+      "a curve entity.");
+}
+
+int Mesh::GetSourceID(
+    const std::vector<int>& curve_physical_tags,
+    const std::unordered_map<int, std::string>& physical_names) const {
+  for (int tag : curve_physical_tags)
+    if (physical_names.at(tag).starts_with("source:")) return tag;
+  throw std::runtime_error(
+      "No Physical Group with a name prefixed \"source:\" was found for "
       "a curve entity.");
 }
 }  // namespace hummingbird
