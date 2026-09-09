@@ -94,10 +94,6 @@ class Mesh {
   /// @brief Elements in the mesh
   std::vector<std::unique_ptr<Element>> elements_;
 
-  void ReadGMSH(const std::string& msh_file);
-
-  void BuildSegments();
-
   /**
    * @brief Renumber nodes in mesh to keep node IDs near each other in a single
    * element
