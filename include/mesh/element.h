@@ -47,6 +47,13 @@ class Element {
   std::vector<size_t> node_ids() const { return node_ids_; }
 
   /**
+   * @brief Get Material ID
+   *
+   * @return int
+   */
+  int material_id() const { return material_id_; }
+
+  /**
    * @brief Set the new Node ID
    *
    * @param prev_id Previous ID (currently stored in object)
