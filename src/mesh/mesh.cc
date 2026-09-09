@@ -6,12 +6,17 @@
 #include <functional>
 #include <iomanip>
 #include <stdexcept>
+#include <unordered_map>
 
 #include "mesh/segment.h"
 
 namespace hummingbird {
 
 Mesh::Mesh(const std::string& msh_file) { ReadGMSH(msh_file); }
+
+void Mesh::ReadGMSH(const std::string& msh_file) {
+  std::unordered_map<std::string, std::function<std::ifstream & file>>
+}
 
 void Mesh::AddNode(const Node& node) { nodes_.push_back(node); }
 
