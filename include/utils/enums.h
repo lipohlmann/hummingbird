@@ -35,11 +35,15 @@ enum class FEFormulation { CG };
  */
 enum class TransportForm { SAAF };
 
+enum class AngularTreatmentType { DISCRETE_ORDINATES };
+
 /**
  * @brief Angular quadrature set
  *
  */
 enum class AngularQuadSet { GLT, GL, GLC };
+
+enum class RunMode { FIXED_SOURCE };
 
 }  // namespace hummingbird
 
