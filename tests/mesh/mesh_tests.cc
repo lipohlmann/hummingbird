@@ -97,6 +97,14 @@ TEST(MeshGMSHTest, ElementsHaveMaterialIDFromMaterialPhysicalGroup) {
         << "Element " << i << " has an unexpected material ID.";
 }
 
+TEST(MeshGMSHTest, ElementsHaveSourceIDFromSourcePhysicalGroup) {
+  Mesh mesh(WriteTempMesh("hummingbird_mesh_test_source.msh", kOneDGmsh));
+  ASSERT_EQ(mesh.n_elements(), 4u);
+  for (size_t i = 0; i < mesh.n_elements(); i++)
+    EXPECT_EQ(mesh.GetElement(i).source_id(), 5)
+        << "Element " << i << " has an unexpected source ID.";
+}
+
 TEST(MeshGMSHTest, SegmentConnectivityMatchesFileOrder) {
   // Segment::CreateInteriorNodes maps each element's boundary nodes to the
   // segment midpoint when using a 3-point GLL rule, so the resulting
