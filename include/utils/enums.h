@@ -35,8 +35,6 @@ enum class FEFormulation { CG };
  */
 enum class TransportForm { SAAF };
 
-enum class AngularTreatmentType { DISCRETE_ORDINATES };
-
 /**
  * @brief Angular quadrature set
  *
