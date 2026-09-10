@@ -41,7 +41,17 @@ enum class TransportForm { SAAF };
  */
 enum class AngularQuadSet { GLT, GL, GLC };
 
+/**
+ * @brief Run modes available
+ *
+ */
 enum class RunMode { FIXED_SOURCE };
+
+/**
+ * @brief Output forms available for export
+ *
+ */
+enum class OutputFormat { VTK, CSV };
 
 }  // namespace hummingbird
 
