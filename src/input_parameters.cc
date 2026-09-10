@@ -15,4 +15,7 @@ void from_json(const json& j, ProblemParams& problem_params) {
   j.at("problem").at("output_format").get_to(problem_params.output_format);
 }
 
+void from_json(const json& j, MeshParams& mesh_params) {
+  j.at("mesh").at("filename").get_to(mesh_params.mesh_file);
+}
 }  // namespace hummingbird
