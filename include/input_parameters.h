@@ -15,7 +15,7 @@ namespace hummingbird {
 
 struct InputParams {
   ProblemParams problem_params;
-  std::string mesh_file;
+  MeshParams mesh_params;
   BCParams bc_params;
   AngularTreatmentParams angular_treatment_params;
   SpectralElementParams sem_params;
@@ -28,6 +28,18 @@ struct InputParams {
  * @param input_params InputParams struct
  */
 void from_json(const json& j, InputParams& input_params);
+
+struct MeshParams {
+  std::string mesh_file;
+};
+
+/**
+ * @brief Retrieve mesh parameters from input
+ *
+ * @param j JSON object built from input file
+ * @param mesh_params MeshParams struct
+ */
+void from_json(const json& j, MeshParams& mesh_params);
 
 struct BCParams {
   BC west;
