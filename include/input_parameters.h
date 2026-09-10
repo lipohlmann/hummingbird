@@ -19,6 +19,7 @@ struct InputParams {
   BCParams bc_params;
   AngularTreatmentParams angular_treatment_params;
   SpectralElementParams sem_params;
+  SourceIterationParams source_iter_params;
 };
 
 /**
@@ -32,7 +33,6 @@ void from_json(const json& j, InputParams& input_params);
 struct ProblemParams {
   std::string name;
   RunMode run_mode;
-  SourceIterationParams source_iteration_params;
   OutputFormat output_format;
 };
 
@@ -79,19 +79,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(BC, {{BC::VACUUM, "vacuum"},
  */
 void from_json(const json& j, BCParams& bc_params);
 
-struct SourceIterationParams {
-  double tolerance;
-  unsigned int max_iterations;
-};
-
-/**
- * @brief Retrieve the source iteration params from input
- *
- * @param j JSON object built from input file
- * @param source_iter_params SourceIterationParams struct
- */
-void from_json(const json& j, SourceIterationParams& source_iter_params);
-
 struct AngularTreatmentParams {
   AngularQuadSet angular_quad_set;
   unsigned int n_azim;
@@ -127,6 +114,19 @@ NLOHMANN_JSON_SERIALIZE_ENUM(FEFormulation, {{FEFormulation::CG, "CG"}});
  * @param se_params SpectralElementParams struct
  */
 void from_json(const json& j, SpectralElementParams& se_params);
+
+struct SourceIterationParams {
+  double tolerance;
+  unsigned int max_iterations;
+};
+
+/**
+ * @brief Retrieve the source iteration params from input
+ *
+ * @param j JSON object built from input file
+ * @param source_iter_params SourceIterationParams struct
+ */
+void from_json(const json& j, SourceIterationParams& source_iter_params);
 
 }  // namespace hummingbird
 

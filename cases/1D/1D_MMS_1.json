@@ -2,10 +2,6 @@
   "problem": {
     "name": "1D_MMS_1",
     "mode": "fixed_source",
-    "source_iteration": {
-      "tolerance": 1e-8,
-      "max_iterations": 1000
-    },
     "output_format": "vtk"
   },
   "mesh": {
@@ -42,5 +38,9 @@
     "transport_form": "SAAF",
     "fe_formulation": "CG",
     "gll_order": 4
+  },
+  "source_iteration": {
+    "tolerance": 1e-8,
+    "max_iterations": 1000
   }
 }

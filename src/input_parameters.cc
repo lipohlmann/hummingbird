@@ -13,6 +13,6 @@ void from_json(const json& j, ProblemParams& problem_params) {
   j.at("problem").at("name").get_to(problem_params.name);
   j.at("problem").at("mode").get_to(problem_params.run_mode);
   j.at("problem").at("output_format").get_to(problem_params.output_format);
-  problem_params.source_iteration_params = j.get<SourceIterationParams>();
 }
+
 }  // namespace hummingbird
