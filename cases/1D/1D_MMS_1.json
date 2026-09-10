@@ -34,11 +34,9 @@
     }
   },
   "angular_treatment": {
-    "type": "discrete_ordinates",
-    "quadrature": {
-      "quadrature_set": "GaussLegendreTrapezoid",
-      "n_azimuthal": 1,
-      "n_polar": 4 }
+    "quadrature_set": "gauss_legendre",
+    "n_azimuthal": 1,
+    "n_polar": 4
   },
   "spectral_elements": {
     "transport_form": "SAAF",
