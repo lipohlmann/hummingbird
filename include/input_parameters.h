@@ -29,6 +29,26 @@ struct InputParams {
  */
 void from_json(const json& j, InputParams& input_params);
 
+struct ProblemParams {
+  std::string name;
+  RunMode run_mode;
+  SourceIterationParams source_iteration_params;
+  OutputFormat output_format;
+};
+
+NLOHMANN_JSON_SERIALIZE_ENUM(RunMode,
+                             {{RunMode::FIXED_SOURCE, "fixed_source"}});
+NLOHMANN_JSON_SERIALIZE_ENUM(OutputFormat, {{OutputFormat::CSV, "csv"},
+                                            {OutputFormat::VTK, "vtk"}});
+
+/**
+ * @brief Retrieve problem params from input
+ *
+ * @param j JSON object built from input file
+ * @param problem_params ProblemParams struct
+ */
+void from_json(const json& j, ProblemParams& problem_params);
+
 struct MeshParams {
   std::string mesh_file;
 };
@@ -58,26 +78,6 @@ NLOHMANN_JSON_SERIALIZE_ENUM(BC, {{BC::VACUUM, "vacuum"},
  * @param bc_params BCParams struct
  */
 void from_json(const json& j, BCParams& bc_params);
-
-struct ProblemParams {
-  std::string name;
-  RunMode run_mode;
-  SourceIterationParams source_iteration_params;
-  OutputFormat output_format;
-};
-
-NLOHMANN_JSON_SERIALIZE_ENUM(RunMode,
-                             {{RunMode::FIXED_SOURCE, "fixed_source"}});
-NLOHMANN_JSON_SERIALIZE_ENUM(OutputFormat, {{OutputFormat::CSV, "csv"},
-                                            {OutputFormat::VTK, "vtk"}});
-
-/**
- * @brief Retrieve problem params from input
- *
- * @param j JSON object built from input file
- * @param problem_params ProblemParams struct
- */
-void from_json(const json& j, ProblemParams& problem_params);
 
 struct SourceIterationParams {
   double tolerance;
