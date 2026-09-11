@@ -6,6 +6,7 @@ void from_json(const json& j, InputParams& input_params) {
   input_params.mesh_params = j.get<MeshParams>();
   input_params.angular_treatment_params = j.get<AngularTreatmentParams>();
   input_params.sem_params = j.get<SpectralElementParams>();
+  input_params.source_iter_params = j.get<SourceIterationParams>();
 }
 
 void from_json(const json& j, ProblemParams& problem_params) {
@@ -36,6 +37,13 @@ void from_json(const json& j, SpectralElementParams& se_params) {
       .at("fe_formulation")
       .get_to(se_params.fe_formulation);
   j.at("spectral_elements").at("gll_order").get_to(se_params.gll_order);
+}
+
+void from_json(const json& j, SourceIterationParams& source_iter_params) {
+  j.at("source_iteration").at("tolerance").get_to(source_iter_params.tolerance);
+  j.at("source_iteration")
+      .at("max_iterations")
+      .get_to(source_iter_params.max_iterations);
 }
 
 }  // namespace hummingbird
