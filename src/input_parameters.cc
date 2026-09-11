@@ -18,4 +18,10 @@ void from_json(const json& j, ProblemParams& problem_params) {
 void from_json(const json& j, MeshParams& mesh_params) {
   j.at("mesh").at("filename").get_to(mesh_params.mesh_file);
 }
+
+void from_json(const json& j, BCParams& bc_params) {
+  j.at("boundary_conditions").at("west").get_to(bc_params.west);
+  j.at("boundary_conditions").at("east").get_to(bc_params.east);
+}
+
 }  // namespace hummingbird
