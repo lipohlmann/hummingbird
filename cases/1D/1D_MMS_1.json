@@ -35,8 +35,8 @@
     "n_polar": 4
   },
   "spectral_elements": {
-    "transport_form": "SAAF",
-    "fe_formulation": "CG",
+    "transport_form": "saaf",
+    "fe_formulation": "cg",
     "gll_order": 4
   },
   "source_iteration": {

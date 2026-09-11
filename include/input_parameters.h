@@ -104,8 +104,8 @@ struct SpectralElementParams {
   unsigned int gll_order;
 };
 
-NLOHMANN_JSON_SERIALIZE_ENUM(TransportForm, {{TransportForm::SAAF, "SAAF"}});
-NLOHMANN_JSON_SERIALIZE_ENUM(FEFormulation, {{FEFormulation::CG, "CG"}});
+NLOHMANN_JSON_SERIALIZE_ENUM(TransportForm, {{TransportForm::SAAF, "saaf"}});
+NLOHMANN_JSON_SERIALIZE_ENUM(FEFormulation, {{FEFormulation::CG, "cg"}});
 
 /**
  * @brief Retrieve spectral element params from input
