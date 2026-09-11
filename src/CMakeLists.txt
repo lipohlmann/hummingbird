@@ -19,8 +19,8 @@ add_library(
   mesh/segment.cc
   physics/parsed_volumetric_source.cc
   physics/constant_volumetric_source.cc
-  physics/material_bank.cc
-  physics/source_bank.cc
+  banks/material_bank.cc
+  banks/source_bank.cc
   quadrature/gauss_chebyshev.cc
   quadrature/gauss_legendre.cc
   quadrature/gauss_lobatto_legendre.cc

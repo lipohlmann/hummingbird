@@ -7,8 +7,8 @@
 #include <stdexcept>
 #include <string>
 
+#include "banks/material_bank.h"
 #include "physics/material.h"
-#include "physics/material_bank.h"
 
 using nlohmann::json;
 

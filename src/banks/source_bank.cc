@@ -1,4 +1,4 @@
-#include "physics/source_bank.h"
+#include "banks/source_bank.h"
 
 namespace hummingbird {
 

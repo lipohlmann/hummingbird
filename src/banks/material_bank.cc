@@ -1,4 +1,4 @@
-#include "physics/material_bank.h"
+#include "banks/material_bank.h"
 
 namespace hummingbird {
 void from_json(const json& j, Material& material) {

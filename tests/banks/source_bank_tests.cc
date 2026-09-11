@@ -9,10 +9,10 @@
 #include <stdexcept>
 #include <string>
 
+#include "banks/source_bank.h"
 #include "mesh/node.h"
 #include "physics/constant_volumetric_source.h"
 #include "physics/parsed_volumetric_source.h"
-#include "physics/source_bank.h"
 #include "physics/source_base.h"
 #include "quadrature/angular/ordinate.h"
 
