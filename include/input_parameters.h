@@ -13,23 +13,6 @@ using nlohmann::json;
 
 namespace hummingbird {
 
-struct InputParams {
-  ProblemParams problem_params;
-  MeshParams mesh_params;
-  BCParams bc_params;
-  AngularTreatmentParams angular_treatment_params;
-  SpectralElementParams sem_params;
-  SourceIterationParams source_iter_params;
-};
-
-/**
- * @brief Retrieve input parameters from the user
- *
- * @param j JSON object built from input file
- * @param input_params InputParams struct
- */
-void from_json(const json& j, InputParams& input_params);
-
 struct ProblemParams {
   std::string name;
   RunMode run_mode;
@@ -127,6 +110,23 @@ struct SourceIterationParams {
  * @param source_iter_params SourceIterationParams struct
  */
 void from_json(const json& j, SourceIterationParams& source_iter_params);
+
+struct InputParams {
+  ProblemParams problem_params;
+  MeshParams mesh_params;
+  BCParams bc_params;
+  AngularTreatmentParams angular_treatment_params;
+  SpectralElementParams sem_params;
+  SourceIterationParams source_iter_params;
+};
+
+/**
+ * @brief Retrieve input parameters from the user
+ *
+ * @param j JSON object built from input file
+ * @param input_params InputParams struct
+ */
+void from_json(const json& j, InputParams& input_params);
 
 }  // namespace hummingbird
 
