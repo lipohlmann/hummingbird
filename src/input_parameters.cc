@@ -18,4 +18,24 @@ void from_json(const json& j, MeshParams& mesh_params) {
   j.at("mesh").at("filename").get_to(mesh_params.mesh_file);
 }
 
+void from_json(const json& j, AngularTreatmentParams& angular_treatment_params) {
+  j.at("angular_treatment")
+      .at("quadrature_set")
+      .get_to(angular_treatment_params.angular_quad_set);
+  j.at("angular_treatment")
+      .at("n_azimuthal")
+      .get_to(angular_treatment_params.n_azim);
+  j.at("angular_treatment").at("n_polar").get_to(angular_treatment_params.n_polar);
+}
+
+void from_json(const json& j, SpectralElementParams& se_params) {
+  j.at("spectral_elements")
+      .at("transport_form")
+      .get_to(se_params.transport_form);
+  j.at("spectral_elements")
+      .at("fe_formulation")
+      .get_to(se_params.fe_formulation);
+  j.at("spectral_elements").at("gll_order").get_to(se_params.gll_order);
+}
+
 }  // namespace hummingbird
