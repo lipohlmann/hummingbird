@@ -22,6 +22,9 @@ struct Node {
 
   /// @brief Material ID to access Material Bank
   unsigned int material_id;
+
+  /// @brief BC ID to access the boundary condition (BC) bank
+  unsigned int bc_id;
 };
 }  // namespace hummingbird
 

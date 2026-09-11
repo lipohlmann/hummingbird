@@ -39,21 +39,6 @@ struct MeshParams {
  */
 void from_json(const json& j, MeshParams& mesh_params);
 
-struct BCParams {
-  BC west;
-  BC east;
-  BC north = BC::NONE;
-  BC south = BC::NONE;
-};
-
-/**
- * @brief Retrieve boundary condition params from input
- *
- * @param j JSON object built from input file
- * @param bc_params BCParams struct
- */
-void from_json(const json& j, BCParams& bc_params);
-
 struct AngularTreatmentParams {
   AngularQuadSet angular_quad_set;
   unsigned int n_azim;
@@ -98,7 +83,6 @@ void from_json(const json& j, SourceIterationParams& source_iter_params);
 struct InputParams {
   ProblemParams problem_params;
   MeshParams mesh_params;
-  BCParams bc_params;
   AngularTreatmentParams angular_treatment_params;
   SpectralElementParams sem_params;
   SourceIterationParams source_iter_params;
