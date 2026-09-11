@@ -19,7 +19,7 @@ void MaterialBank::Build(const json& input_file_json) {
        input_file_json.at("materials").items()) {
     Material material = material_json.get<Material>();
 
-    id_material_map_.emplace(id, std::move(material));
+    id_object_map_.emplace(id, std::move(material));
     name_id_map_.emplace(name, id);
     id++;
   }
@@ -27,8 +27,8 @@ void MaterialBank::Build(const json& input_file_json) {
 
 void MaterialBank::CheckMaterials() {
   std::vector<Material> materials;
-  materials.reserve(id_material_map_.size());
-  for (const auto& [id, material] : id_material_map_)
+  materials.reserve(id_object_map_.size());
+  for (const auto& [id, material] : id_object_map_)
     materials.push_back(material);
 
   for (const auto& material : materials) {

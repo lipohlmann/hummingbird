@@ -88,13 +88,13 @@ TEST(MaterialBankTest, ConstructsWithSingleValidMaterial) {
 
   MaterialBank bank(input);
 
-  const Material& by_id = bank.GetMaterial(0u);
+  const Material& by_id = bank.GetByID(0u);
   EXPECT_DOUBLE_EQ(by_id.scattering_xs, 1.0);
   EXPECT_DOUBLE_EQ(by_id.total_xs, 2.0);
   EXPECT_DOUBLE_EQ(by_id.fission_xs, 0.3);
   EXPECT_DOUBLE_EQ(by_id.nu, 2.4);
 
-  const Material& by_name = bank.GetMaterial(std::string("mms_material"));
+  const Material& by_name = bank.GetByName(std::string("mms_material"));
   EXPECT_DOUBLE_EQ(by_name.scattering_xs, 1.0);
   EXPECT_DOUBLE_EQ(by_name.total_xs, 2.0);
   EXPECT_DOUBLE_EQ(by_name.fission_xs, 0.3);
@@ -110,13 +110,13 @@ TEST(MaterialBankTest, ConstructsWithMultipleMaterials) {
 
   MaterialBank bank(input);
 
-  EXPECT_DOUBLE_EQ(bank.GetMaterial(0).scattering_xs, 0.5);
-  EXPECT_DOUBLE_EQ(bank.GetMaterial(1).scattering_xs, 1.2);
-  EXPECT_DOUBLE_EQ(bank.GetMaterial(2).scattering_xs, 0.9);
+  EXPECT_DOUBLE_EQ(bank.GetByID(0).scattering_xs, 0.5);
+  EXPECT_DOUBLE_EQ(bank.GetByID(1).scattering_xs, 1.2);
+  EXPECT_DOUBLE_EQ(bank.GetByID(2).scattering_xs, 0.9);
 
-  EXPECT_DOUBLE_EQ(bank.GetMaterial(std::string("fuel")).nu, 2.5);
-  EXPECT_DOUBLE_EQ(bank.GetMaterial(std::string("moderator")).total_xs, 1.2);
-  EXPECT_DOUBLE_EQ(bank.GetMaterial(std::string("reflector")).total_xs, 1.0);
+  EXPECT_DOUBLE_EQ(bank.GetByName(std::string("fuel")).nu, 2.5);
+  EXPECT_DOUBLE_EQ(bank.GetByName(std::string("moderator")).total_xs, 1.2);
+  EXPECT_DOUBLE_EQ(bank.GetByName(std::string("reflector")).total_xs, 1.0);
 }
 
 TEST(MaterialBankTest, NameAndIdMapToSameMaterialInstance) {
@@ -125,8 +125,8 @@ TEST(MaterialBankTest, NameAndIdMapToSameMaterialInstance) {
 
   MaterialBank bank(input);
 
-  const Material& by_id = bank.GetMaterial(0);
-  const Material& by_name = bank.GetMaterial(std::string("absorber"));
+  const Material& by_id = bank.GetByID(0);
+  const Material& by_name = bank.GetByName(std::string("absorber"));
 
   EXPECT_EQ(&by_id, &by_name);
 }
@@ -136,7 +136,7 @@ TEST(MaterialBankTest, GetMaterialByUnknownIdThrows) {
       WrapMaterials({{"mms_material", MakeMaterialJson(1.0, 2.0, 0.3, 2.4)}});
   MaterialBank bank(input);
 
-  EXPECT_THROW(bank.GetMaterial(42u), std::out_of_range);
+  EXPECT_THROW(bank.GetByID(42u), std::out_of_range);
 }
 
 TEST(MaterialBankTest, GetMaterialByUnknownNameThrows) {
@@ -144,7 +144,7 @@ TEST(MaterialBankTest, GetMaterialByUnknownNameThrows) {
       WrapMaterials({{"mms_material", MakeMaterialJson(1.0, 2.0, 0.3, 2.4)}});
   MaterialBank bank(input);
 
-  EXPECT_THROW(bank.GetMaterial(std::string("does_not_exist")),
+  EXPECT_THROW(bank.GetByName(std::string("does_not_exist")),
                std::out_of_range);
 }
 
@@ -157,8 +157,8 @@ TEST(MaterialBankTest, EmptyMaterialsObjectProducesEmptyBank) {
   json input = WrapMaterials({});
   MaterialBank bank(input);
 
-  EXPECT_THROW(bank.GetMaterial(0u), std::out_of_range);
-  EXPECT_THROW(bank.GetMaterial(std::string("anything")), std::out_of_range);
+  EXPECT_THROW(bank.GetByID(0u), std::out_of_range);
+  EXPECT_THROW(bank.GetByName(std::string("anything")), std::out_of_range);
 }
 
 // ---------------------------------------------------------------------------
