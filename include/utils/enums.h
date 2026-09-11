@@ -4,12 +4,45 @@
 #ifndef HUMMINGBIRD_UTILS_ENUMS_H_
 #define HUMMINGBIRD_UTILS_ENUMS_H_
 
+#include <nlohmann/json.hpp>
+#include <stdexcept>
+#include <string>
+
 namespace hummingbird {
 /**
  * @brief Available boundary conditions
  *
  */
 enum class BC { VACUUM, REFLECTIVE, NONE };
+
+// TODO(https://github.com/lipohlmann/hummingbird/issues/41): Replace with
+// NLOHMANN_JSON_SERIALIZE_ENUM_STRICT once nlohmann_json >=3.13.0 is
+// available on conda-forge; that macro throws json::out_of_range on an
+// unmapped value, matching this hand-written behavior, without custom code.
+inline void to_json(nlohmann::json& j, const BC& bc) {
+  switch (bc) {
+    case BC::VACUUM:
+      j = "vacuum";
+      return;
+    case BC::REFLECTIVE:
+      j = "reflective";
+      return;
+    case BC::NONE:
+      break;
+  }
+  throw std::invalid_argument("BC::NONE has no JSON representation");
+}
+
+inline void from_json(const nlohmann::json& j, BC& bc) {
+  const std::string value = j.get<std::string>();
+  if (value == "vacuum") {
+    bc = BC::VACUUM;
+  } else if (value == "reflective") {
+    bc = BC::REFLECTIVE;
+  } else {
+    throw std::invalid_argument("Unrecognized BC type: \"" + value + "\"");
+  }
+}
 
 /**
  * @brief Boundary locations
