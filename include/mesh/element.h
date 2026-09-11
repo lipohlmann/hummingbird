@@ -4,6 +4,7 @@
 #ifndef HUMMINGBIRD_MESH_ELEMENT_H_
 #define HUMMINGBIRD_MESH_ELEMENT_H_
 
+#include <armadillo>
 #include <memory>
 #include <vector>
 
@@ -68,6 +69,8 @@ class Element {
    * @param new_id New ID
    */
   void SetNewNodeID(const size_t prev_id, const size_t new_id);
+
+  arma::Mat<double> LocalStiffnessMatrix();
 
  protected:
   /// @brief Material ID
