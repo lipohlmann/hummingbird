@@ -30,6 +30,8 @@ add_library(
   quadrature/angular/ordinate.cc
   utils/misc.cc
   utils/tinyexpr.cpp
+  utils/json.cc
+  input_parameters.cc
   )
 
 target_compile_features(hummingbird_lib PRIVATE cxx_std_20)
@@ -43,4 +45,7 @@ target_include_directories(hummingbird_lib
 target_sources(hummingbird_lib PRIVATE ${SOURCES})
 
 add_executable(hummingbird main.cc)
-target_link_libraries(hummingbird PRIVATE hummingbird_lib)
+target_compile_features(hummingbird PRIVATE cxx_std_20)
+target_include_directories(hummingbird
+                           PRIVATE ${PROJECT_SOURCE_DIR}/include)
+target_link_libraries(hummingbird PRIVATE hummingbird_lib nlohmann_json::nlohmann_json Armadillo::Armadillo fmt::fmt)

@@ -1,15 +1,15 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (c) 2026, Liam Pohlmann
 
-#ifndef STARLING_UTILS_JSON_H_
-#define STARLING_UTILS_JSON_H_
+#ifndef HUMMINGBIRD_UTILS_JSON_H_
+#define HUMMINGBIRD_UTILS_JSON_H_
 
 #include <nlohmann/json.hpp>
 #include <string>
 
 using nlohmann::json;
 
-namespace starling::utils {
+namespace hummingbird {
 
 /**
  * @brief Create a json object from a string. Will throw an error if the file
@@ -20,6 +20,6 @@ namespace starling::utils {
  */
 json JSONFromFile(const std::string filename);
 
-}  // namespace starling::utils
+}  // namespace hummingbird
 
-#endif  // STARLING_UTILS_JSON_H_
+#endif  // HUMMINGBIRD_UTILS_JSON_H_

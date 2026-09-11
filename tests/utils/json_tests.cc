@@ -1,15 +1,16 @@
-// Unit tests for starling::utils::JSONFromFile.
-
 #include <gtest/gtest.h>
 
 #include <cstdio>
 #include <filesystem>
 #include <fstream>
+#include <nlohmann/json.hpp>
 #include <string>
 
 #include "utils/json.h"
 
-namespace starling::utils {
+using nlohmann::json;
+
+namespace hummingbird {
 
 // Helper: writes `contents` to a temp file and returns its path. File is
 // removed by the returned guard going out of scope.
@@ -120,4 +121,4 @@ TEST(JSONFromFile, AcceptsPathWithDirectoryComponent) {
   std::filesystem::remove_all(dir);
 }
 
-}  // namespace starling::utils
+}  // namespace hummingbird

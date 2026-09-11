@@ -2,11 +2,12 @@
 
 #include <filesystem>
 #include <fstream>
+#include <nlohmann/json.hpp>
 #include <stdexcept>
 
 using nlohmann::json;
 
-namespace starling::utils {
+namespace hummingbird {
 json JSONFromFile(const std::string filename) {
   std::filesystem::path file_path = filename;
   std::ifstream fs_file(filename);
@@ -18,4 +19,4 @@ json JSONFromFile(const std::string filename) {
 
   return json::parse(fs_file);
 }
-}  // namespace starling::utils
+}  // namespace hummingbird
