@@ -19,11 +19,6 @@ struct ProblemParams {
   OutputFormat output_format;
 };
 
-NLOHMANN_JSON_SERIALIZE_ENUM(RunMode,
-                             {{RunMode::FIXED_SOURCE, "fixed_source"}});
-NLOHMANN_JSON_SERIALIZE_ENUM(OutputFormat, {{OutputFormat::CSV, "csv"},
-                                            {OutputFormat::VTK, "vtk"}});
-
 /**
  * @brief Retrieve problem params from input
  *
@@ -51,9 +46,6 @@ struct BCParams {
   BC south = BC::NONE;
 };
 
-NLOHMANN_JSON_SERIALIZE_ENUM(BC, {{BC::VACUUM, "vacuum"},
-                                  {BC::REFLECTIVE, "reflective"}})
-
 /**
  * @brief Retrieve boundary condition params from input
  *
@@ -68,11 +60,6 @@ struct AngularTreatmentParams {
   unsigned int n_polar;
 };
 
-NLOHMANN_JSON_SERIALIZE_ENUM(AngularQuadSet,
-                             {{AngularQuadSet::GLT, "gauss_legendre_trapezoid"},
-                              {AngularQuadSet::GLC, "gauss_legendre_chebyshev"},
-                              {AngularQuadSet::GL, "gauss_legendre"}});
-
 /**
  * @brief Retrieve the angular treatment params from input
  *
@@ -86,9 +73,6 @@ struct SpectralElementParams {
   FEFormulation fe_formulation;
   unsigned int gll_order;
 };
-
-NLOHMANN_JSON_SERIALIZE_ENUM(TransportForm, {{TransportForm::SAAF, "saaf"}});
-NLOHMANN_JSON_SERIALIZE_ENUM(FEFormulation, {{FEFormulation::CG, "cg"}});
 
 /**
  * @brief Retrieve spectral element params from input
