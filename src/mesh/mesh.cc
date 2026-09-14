@@ -223,8 +223,8 @@ void Mesh::ReadElements(std::ifstream& file, GmshReadState& state) {
       std::array<size_t, 2> boundary_node_ids = {
           state.node_tag_to_id.at(node_tag_1),
           state.node_tag_to_id.at(node_tag_2)};
-      AddElement(
-          std::make_unique<Segment>(boundary_node_ids, material_id, source_id));
+      AddElement(std::make_unique<Segment>(boundary_node_ids, material_id,
+                                           source_id, *this));
     }
   }
 }
