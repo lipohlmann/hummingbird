@@ -71,6 +71,14 @@ class Mesh {
   const std::vector<Node>& nodes() const { return nodes_; }
 
   /**
+   * @brief Get Node by ID
+   *
+   * @param id NodeID
+   * @return const Node&
+   */
+  const Node& GetNode(const size_t id) const { return nodes_.at(id); }
+
+  /**
    * @brief Get the number of Elements in the mesh
    *
    * @return size_t
