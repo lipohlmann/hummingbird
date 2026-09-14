@@ -205,9 +205,10 @@ TEST(GLLQuadratureNonPolynomialTest,
 }
 
 // ---------------------------------------------------------------------------
-// Lagrange polynomial derivative tests: GetLagrangeDerivative(i, k) should
-// equal the derivative of the i-th Lagrange basis polynomial evaluated at
-// the k-th GLL node, l_i'(xi_k).
+// Lagrange polynomial derivative tests: GetLagrangeDerivative(node_idx,
+// polynomial_idx) should equal the derivative of the polynomial_idx-th
+// Lagrange basis polynomial evaluated at the node_idx-th GLL node,
+// l_{polynomial_idx}'(xi_{node_idx}).
 // ---------------------------------------------------------------------------
 
 TEST(GLLLagrangeDerivativeTest, MatchesHandDerivedValuesForTwoPoints) {
@@ -217,8 +218,8 @@ TEST(GLLLagrangeDerivativeTest, MatchesHandDerivedValuesForTwoPoints) {
   GaussLobattoLegendre quad(2);
 
   EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(0, 0), -0.5);
-  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(0, 1), -0.5);
-  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(1, 0), 0.5);
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(0, 1), 0.5);
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(1, 0), -0.5);
   EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(1, 1), 0.5);
 }
 
@@ -229,16 +230,19 @@ TEST(GLLLagrangeDerivativeTest, MatchesHandDerivedValuesForThreePoints) {
   // l_2(x) = x(x+1)/2, l_2'(x) = (2x+1)/2 -> -0.5,  0.5,  1.5
   GaussLobattoLegendre quad(3);
 
+  // Node 0 (xi = -1): l_0'(-1), l_1'(-1), l_2'(-1)
   EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(0, 0), -1.5);
-  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(0, 1), -0.5);
-  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(0, 2), 0.5);
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(0, 1), 2.0);
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(0, 2), -0.5);
 
-  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(1, 0), 2.0);
+  // Node 1 (xi = 0): l_0'(0), l_1'(0), l_2'(0)
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(1, 0), -0.5);
   EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(1, 1), 0.0);
-  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(1, 2), -2.0);
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(1, 2), 0.5);
 
-  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(2, 0), -0.5);
-  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(2, 1), 0.5);
+  // Node 2 (xi = 1): l_0'(1), l_1'(1), l_2'(1)
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(2, 0), 0.5);
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(2, 1), -2.0);
   EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(2, 2), 1.5);
 }
 
@@ -257,6 +261,11 @@ TEST(GLLLagrangeDerivativeTest, EndpointDerivativesMatchClosedFormForVariousN) {
 class GLLLagrangeDerivativeStructuralTest
     : public ::testing::TestWithParam<unsigned int> {};
 
+// Summing up to n differentiation-matrix entries (which grow like O(n^2))
+// accumulates more rounding error than TOLERANCE allows for larger n, so a
+// looser tolerance is used for these structural checks.
+constexpr double kStructuralTolerance = 1e-12;
+
 TEST_P(GLLLagrangeDerivativeStructuralTest,
        DerivativesOfAllLagrangePolynomialsSumToZeroAtEachNode) {
   // sum_i l_i(x) == 1 identically, so sum_i l_i'(x_k) == 0 for every node k.
@@ -266,9 +275,10 @@ TEST_P(GLLLagrangeDerivativeStructuralTest,
   for (unsigned int k = 0; k < n; ++k) {
     double sum = 0.0;
     for (unsigned int i = 0; i < n; ++i) {
-      sum += quad.GetLagrangeDerivative(i, k);
+      sum += quad.GetLagrangeDerivative(k, i);
     }
-    EXPECT_NEAR(sum, 0.0, TOLERANCE) << "Failed for n=" << n << ", node k=" << k;
+    EXPECT_NEAR(sum, 0.0, kStructuralTolerance)
+        << "Failed for n=" << n << ", node k=" << k;
   }
 }
 
@@ -285,12 +295,12 @@ TEST_P(GLLLagrangeDerivativeStructuralTest,
     for (unsigned int k = 0; k < n; ++k) {
       double sum = 0.0;
       for (unsigned int i = 0; i < n; ++i) {
-        sum += quad.GetLagrangeDerivative(i, k) *
+        sum += quad.GetLagrangeDerivative(k, i) *
                std::pow(quad.GetAbscissa(i), d);
       }
       const double expected =
           (d == 0) ? 0.0 : d * std::pow(quad.GetAbscissa(k), d - 1);
-      EXPECT_NEAR(sum, expected, TOLERANCE)
+      EXPECT_NEAR(sum, expected, kStructuralTolerance)
           << "Failed for n=" << n << ", degree d=" << d << ", node k=" << k;
     }
   }
