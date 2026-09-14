@@ -107,9 +107,6 @@ class Element {
 
   /// @brief IDs of nodes defining the element
   std::vector<size_t> node_ids_;
-
-  /// @brief Volume of the element
-  double volume_;
 };
 }  // namespace hummingbird
 
