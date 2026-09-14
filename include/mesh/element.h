@@ -91,7 +91,7 @@ class Element {
    * \f]
    *
    * @param gll_quad GaussLobattoLegendre set
-   * @param material_bank Material bank
+   * @param material_bank MaterialBank
    * @return arma::SpMat<double>
    */
   virtual arma::SpMat<double> LocalMassMatrix(
