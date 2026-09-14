@@ -21,6 +21,29 @@ std::vector<double> GaussLobattoLegendre::ComputeAbscissas(
   return abscissas;
 }
 
+void GaussLobattoLegendre::ComputeLagrangeDerivatives() {
+  auto n_points = this->n_points();
+  lagrange_derivatives_.reserve(n_points);
+  for (auto i = 0; i < n_points; i++) {
+    for (auto k = 0; k < n_points; k++) {
+      if (i == 0 && k == 0)
+        lagrange_derivatives_.push_back(-n_points * (n_points - 1) / 4.0);
+      else if (i == (n_points - 1) && k == (n_points - 1))
+        lagrange_derivatives_.push_back(n_points * (n_points - 1) / 4.0);
+      else if (i != k) {
+        auto abscissa_i = abscissas_.at(i);
+        auto abscissa_k = abscissas_.at(k);
+        double legendre_ratio = LegendrePolynomial(n_points - 1, abscissa_i) /
+                                LegendrePolynomial(n_points - 1, abscissa_k);
+        double abscissa_difference = abscissa_i - abscissa_k;
+        lagrange_derivatives_.push_back(legendre_ratio / abscissa_difference);
+      } else {
+        lagrange_derivatives_.push_back(0.0);
+      }
+    }
+  }
+}
+
 double GaussLobattoLegendre::ComputeWeight(const size_t k, const size_t n) {
   double double_n = static_cast<double>(n);
   double leading_coefficient = 2.0 / (double_n * (double_n - 1.0));

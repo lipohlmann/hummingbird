@@ -4,8 +4,8 @@
 #ifndef HUMMINGBIRD_QUADRATURE_GAUSS_LOBATTO_LEGENDRE_H_
 #define HUMMINGBIRD_QUADRATURE_GAUSS_LOBATTO_LEGENDRE_H_
 
+#include "math/legendre_polynomials.h"
 #include "quadrature/quadrature_base.h"
-
 namespace hummingbird {
 
 /**
@@ -26,7 +26,38 @@ class GaussLobattoLegendre : public QuadratureBase<double> {
  public:
   GaussLobattoLegendre(const size_t n_points);
 
+  /**
+   * @brief Get the derivative of the specific Lagrange polynomial at the
+   * specified node. Note that both the polynomial index and the node index are
+   * zero-indexed.
+   *
+   * @param polynomial_idx Lagrange polynomial index
+   * @param node_idx GLL node index
+   * @return double
+   */
+  double GetLagrangeDerivative(const size_t polynomial_idx,
+                               const size_t node_idx) const {
+    size_t flattened_idx = polynomial_idx * this->n_points() + node_idx;
+    return lagrange_derivatives_.at(flattened_idx);
+  };
+
  private:
+  /// @brief Derivatives of the Lagrange polynomials at the GLL nodes. These are
+  /// stored as a flattened array and are indexed using the polynomial number
+  /// and the node number in GetLagrangeDerivative. See the extended description
+  /// in ComputeLagrangeDerivatives().
+  std::vector<double> lagrange_derivatives_;
+
+  /**
+   * @brief Computes and sets the Lagrange polynomial derivatives at the GLL
+   * nodes. The vector lagrange_derivatives_ is constructed with the node number
+   * being the "fast" counting index, and the Lagrange polynomial index being
+   * the "slow" counting index. That is, the derivative of the N=1 polynomial at
+   * the 3rd GLL node of 5 has a flattened index of 8.
+   *
+   */
+  void ComputeLagrangeDerivatives();
+
   /**
    * @brief Computes the abscissa values, given by:
    *
