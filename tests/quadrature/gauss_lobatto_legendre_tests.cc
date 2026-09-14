@@ -204,4 +204,100 @@ TEST(GLLQuadratureNonPolynomialTest,
   EXPECT_LT(previous_error, 1e-8);
 }
 
+// ---------------------------------------------------------------------------
+// Lagrange polynomial derivative tests: GetLagrangeDerivative(i, k) should
+// equal the derivative of the i-th Lagrange basis polynomial evaluated at
+// the k-th GLL node, l_i'(xi_k).
+// ---------------------------------------------------------------------------
+
+TEST(GLLLagrangeDerivativeTest, MatchesHandDerivedValuesForTwoPoints) {
+  // Nodes: xi_0 = -1, xi_1 = 1.
+  // l_0(x) = (1 - x) / 2, l_0'(x) = -0.5 everywhere.
+  // l_1(x) = (1 + x) / 2, l_1'(x) = 0.5 everywhere.
+  GaussLobattoLegendre quad(2);
+
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(0, 0), -0.5);
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(0, 1), -0.5);
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(1, 0), 0.5);
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(1, 1), 0.5);
+}
+
+TEST(GLLLagrangeDerivativeTest, MatchesHandDerivedValuesForThreePoints) {
+  // Nodes: xi_0 = -1, xi_1 = 0, xi_2 = 1.
+  // l_0(x) = x(x-1)/2, l_0'(x) = (2x-1)/2 -> -1.5, -0.5,  0.5
+  // l_1(x) = 1 - x^2,  l_1'(x) = -2x      ->  2.0,  0.0, -2.0
+  // l_2(x) = x(x+1)/2, l_2'(x) = (2x+1)/2 -> -0.5,  0.5,  1.5
+  GaussLobattoLegendre quad(3);
+
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(0, 0), -1.5);
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(0, 1), -0.5);
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(0, 2), 0.5);
+
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(1, 0), 2.0);
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(1, 1), 0.0);
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(1, 2), -2.0);
+
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(2, 0), -0.5);
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(2, 1), 0.5);
+  EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(2, 2), 1.5);
+}
+
+TEST(GLLLagrangeDerivativeTest, EndpointDerivativesMatchClosedFormForVariousN) {
+  for (unsigned int n : {2u, 3u, 4u, 5u, 6u, 8u, 10u}) {
+    GaussLobattoLegendre quad(n);
+    const double expected_corner = n * (n - 1) / 4.0;
+    EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(0, 0), -expected_corner)
+        << "n=" << n;
+    EXPECT_DOUBLE_EQ(quad.GetLagrangeDerivative(n - 1, n - 1), expected_corner)
+        << "n=" << n;
+  }
+}
+
+// Parameter is the number of GLL points, n.
+class GLLLagrangeDerivativeStructuralTest
+    : public ::testing::TestWithParam<unsigned int> {};
+
+TEST_P(GLLLagrangeDerivativeStructuralTest,
+       DerivativesOfAllLagrangePolynomialsSumToZeroAtEachNode) {
+  // sum_i l_i(x) == 1 identically, so sum_i l_i'(x_k) == 0 for every node k.
+  const unsigned int n = GetParam();
+  GaussLobattoLegendre quad(n);
+
+  for (unsigned int k = 0; k < n; ++k) {
+    double sum = 0.0;
+    for (unsigned int i = 0; i < n; ++i) {
+      sum += quad.GetLagrangeDerivative(i, k);
+    }
+    EXPECT_NEAR(sum, 0.0, TOLERANCE) << "Failed for n=" << n << ", node k=" << k;
+  }
+}
+
+TEST_P(GLLLagrangeDerivativeStructuralTest,
+       DifferentiationMatrixIsExactForPolynomialsUpToDegreeNMinus1) {
+  // The Lagrange interpolant of any polynomial of degree <= n-1 through the
+  // n GLL nodes reproduces it exactly, so applying the derivatives of the
+  // Lagrange basis to its nodal values must reproduce its exact derivative
+  // at every node.
+  const unsigned int n = GetParam();
+  GaussLobattoLegendre quad(n);
+
+  for (unsigned int d = 0; d < n; ++d) {
+    for (unsigned int k = 0; k < n; ++k) {
+      double sum = 0.0;
+      for (unsigned int i = 0; i < n; ++i) {
+        sum += quad.GetLagrangeDerivative(i, k) *
+               std::pow(quad.GetAbscissa(i), d);
+      }
+      const double expected =
+          (d == 0) ? 0.0 : d * std::pow(quad.GetAbscissa(k), d - 1);
+      EXPECT_NEAR(sum, expected, TOLERANCE)
+          << "Failed for n=" << n << ", degree d=" << d << ", node k=" << k;
+    }
+  }
+}
+
+INSTANTIATE_TEST_SUITE_P(VariousPointCounts,
+                         GLLLagrangeDerivativeStructuralTest,
+                         ::testing::Values(2u, 3u, 4u, 5u, 6u, 8u, 10u));
+
 }  // namespace hummingbird
