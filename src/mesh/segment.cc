@@ -4,8 +4,18 @@
 
 namespace hummingbird {
 Segment::Segment(const std::array<size_t, 2> boundary_node_ids,
-                 const int material_id, const int source_id)
-    : boundary_node_ids_(boundary_node_ids), Element(material_id, source_id) {}
+                 const int material_id, const int source_id, const Mesh& mesh)
+    : boundary_node_ids_(boundary_node_ids),
+      length_(ComputeLength(boundary_node_ids, mesh)),
+      Element(material_id, source_id) {}
+
+double Segment::ComputeLength(const std::array<size_t, 2> boundary_node_ids,
+                              const Mesh& mesh) {
+  auto left_node = mesh.GetNode(boundary_node_ids.front());
+  auto right_node = mesh.GetNode(boundary_node_ids.back());
+  auto distance = DistanceBetweenNodes(left_node, right_node);
+  return distance;
+}
 
 std::vector<Node> Segment::CreateInteriorNodes(
 
@@ -37,5 +47,15 @@ std::vector<Node> Segment::CreateInteriorNodes(
     id++;
   }
   return nodes;
+}
+
+arma::SpMat<double> Segment::LocalMassMatrix(
+    const GaussLobattoLegendre& gll_quad, const MaterialBank& material_bank) {
+  auto sigma_t = material_bank.GetByID(material_id_).total_xs;
+  arma::SpMat<double> material_matrix = arma::speye<arma::SpMat<double>>(
+      gll_quad.n_points(), gll_quad.n_points());
+  for (auto k = 0; k < gll_quad.n_points(); k++)
+    material_matrix(k, k) = gll_quad.GetAbscissa(k) * length_ / 2.0 * sigma_t;
+  return material_matrix;
 }
 }  // namespace hummingbird
