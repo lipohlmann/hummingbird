@@ -6,6 +6,7 @@ namespace hummingbird {
 GaussLobattoLegendre::GaussLobattoLegendre(const size_t n_points)
     : QuadratureBase<double>(ComputeAbscissas(n_points)) {
   CreateWeightMap();
+  ComputeLagrangeDerivatives();
 }
 
 std::vector<double> GaussLobattoLegendre::ComputeAbscissas(
@@ -23,11 +24,11 @@ std::vector<double> GaussLobattoLegendre::ComputeAbscissas(
 
 void GaussLobattoLegendre::ComputeLagrangeDerivatives() {
   auto n_points = this->n_points();
-  lagrange_derivatives_.reserve(n_points);
+  lagrange_derivatives_.reserve(n_points * n_points);
   for (auto i = 0; i < n_points; i++) {
     for (auto k = 0; k < n_points; k++) {
       if (i == 0 && k == 0)
-        lagrange_derivatives_.push_back(-n_points * (n_points - 1) / 4.0);
+        lagrange_derivatives_.push_back(-(n_points * (n_points - 1) / 4.0));
       else if (i == (n_points - 1) && k == (n_points - 1))
         lagrange_derivatives_.push_back(n_points * (n_points - 1) / 4.0);
       else if (i != k) {
