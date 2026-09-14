@@ -6,7 +6,9 @@
 
 #include <array>
 
+#include "banks/material_bank.h"
 #include "mesh/element.h"
+#include "mesh/mesh.h"
 #include "mesh/node.h"
 
 namespace hummingbird {
@@ -20,7 +22,7 @@ class Segment : public Element {
    * @param source_id Source ID
    */
   Segment(const std::array<size_t, 2> boundary_node_ids, const int material_id,
-          const int source_id);
+          const int source_id, const Mesh& mesh);
 
   /**
    * @brief Create interior Node objects using the Gauss-Lobatto-Legendre
@@ -45,8 +47,26 @@ class Segment : public Element {
       const std::vector<Node>& existing_nodes,
       const GaussLobattoLegendre& gll_quadrature) override;
 
+  //   arma::Mat<double> LocalStiffnessMatrix() override;
+  arma::SpMat<double> LocalMassMatrix(
+      const GaussLobattoLegendre& gll_quad,
+      const MaterialBank& material_bank) override;
+
  private:
   std::array<size_t, 2> boundary_node_ids_;
+
+  /// @brief Length of the element
+  const double length_;
+
+  /**
+   * @brief Compute the length of the element on construction
+   *
+   * @param boundary_node_ids Boundary node IDs
+   * @param mesh Mesh
+   * @return double
+   */
+  double ComputeLength(const std::array<size_t, 2> boundary_node_ids,
+                       const Mesh& mesh);
 };
 }  // namespace hummingbird
 
