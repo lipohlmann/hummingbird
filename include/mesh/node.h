@@ -4,6 +4,7 @@
 #ifndef HUMMINGBIRD_MESH_NODE_H_
 #define HUMMINGBIRD_MESH_NODE_H_
 
+#include <cmath>
 #include <cstddef>
 #include <cstdint>
 
@@ -26,6 +27,20 @@ struct Node {
   /// @brief BC ID to access the boundary condition (BC) bank
   unsigned int bc_id;
 };
+
+/**
+ * @brief Compute the Euclidean distance between two nodes
+ *
+ * @param node_1 First node
+ * @param node_2 Second node
+ * @return Distance in units of the mesh
+ */
+inline double DistanceBetweenNodes(const Node& node_1, const Node& node_2) {
+  double x_part = node_1.x - node_2.x;
+  double y_part = node_1.y - node_2.y;
+  double z_part = node_1.z - node_2.z;
+  return std::sqrt(x_part * x_part + y_part * y_part + z_part * z_part);
+}
 }  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_MESH_NODE_H_
