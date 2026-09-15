@@ -17,10 +17,19 @@
 
 namespace hummingbird {
 struct Node {
+  /// @brief Unique identifier for the node
   size_t id;
+
+  /// @brief x-coordinate of the node
   double x;
+
+  /// @brief y-coordinate of the node
   double y;
+
+  /// @brief z-coordinate of the node
   double z;
+
+  /// @brief Boundary condition applied at the node
   BC boundary = BC::NONE;
 
   /// @brief Source ID to access Source Bank
