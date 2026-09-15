@@ -9,13 +9,14 @@
 #include <vector>
 
 #include "banks/material_bank.h"
-#include "banks/source_bank.h"
 #include "node.h"
 #include "physics/material.h"
 #include "quadrature/angular/ordinate.h"
 #include "quadrature/gauss_lobatto_legendre.h"
 
 namespace hummingbird {
+class Mesh;
+
 /**
  * @brief Defines a subset of the domain (an "element")
  *

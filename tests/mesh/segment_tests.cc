@@ -339,14 +339,6 @@ TEST_F(SegmentStiffnessMatrixTest,
   //   [[ 7/6, -4/3,  1/6],
   //    [-4/3,  8/3, -4/3],
   //    [ 1/6, -4/3,  7/6]]
-  // NOTE: as of this writing, LocalStiffnessMatrix calls
-  // GaussLobattoLegendre::GetLagrangeDerivative(i, k) intending "derivative
-  // of basis i at node k", but GetLagrangeDerivative's actual (tested)
-  // behavior is GetLagrangeDerivative(node_idx, polynomial_idx) -- see
-  // GLLLagrangeDerivativeTest in gauss_lobatto_legendre_tests.cc. This swaps
-  // which node/polynomial pairing gets used, so this test is expected to
-  // FAIL against the current implementation; see the PR description for
-  // details.
   const double length = 4.0;
   const double sigma_t = 2.0;
   std::vector<Node> nodes = {MakeNode(0, 0.0, 0.0, 0.0),
@@ -635,12 +627,6 @@ TEST_F(SegmentForcingVectorTest, TwoPointDistinctBoundarySourcesMatchHandDerived
   //   f_0 = h/2*Q_0 + (-0.5)*(Q_0 + Q_1)
   //   f_1 = h/2*Q_1 + ( 0.5)*(Q_0 + Q_1)
   // With h=4, Q_0=2, Q_1=6: f_0 = 4 - 4 = 0, f_1 = 12 + 4 = 16.
-  //
-  // NOTE: as of this writing, LocalForcingVector's call to
-  // GetLagrangeDerivative(i, k) is subject to the same argument-order issue
-  // described on SegmentStiffnessMatrixTest's
-  // ThreePointQuadraticElementMatchesHandDerivedValues above, so this test
-  // is expected to FAIL against the current implementation.
   const double length = 4.0;
   const double q0 = 2.0;
   const double q1 = 6.0;
@@ -684,9 +670,6 @@ TEST_F(SegmentForcingVectorTest,
   //   f_0 = 1/3 * 0.5        = 1/6
   //   f_1 = 1/3 * -2.0       = -2/3
   //   f_2 = 6/2*1/3 + 1/3*1.5 = 1 + 0.5 = 1.5
-  //
-  // NOTE: expected to FAIL against the current implementation for the same
-  // reason as the other forcing-vector/stiffness-matrix cases above.
   const double length = 6.0;
   Node left = MakeNode(0, 0.0, 0.0, 0.0);
   left.source_fluxes = {0.0};

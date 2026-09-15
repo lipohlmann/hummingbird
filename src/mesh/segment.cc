@@ -60,7 +60,7 @@ arma::Col<double> Segment::LocalForcingVector(
           mesh.GetNode(node_ids_.at(k)).source_fluxes.at(ordinate_index);
       double weight = gll_quad.GetWeight(k);
       if (i == k) sum += weight * node_source * length_ / 2.0;
-      sum += weight * node_source * gll_quad.GetLagrangeDerivative(i, k);
+      sum += weight * node_source * gll_quad.GetLagrangeDerivative(k, i);
     }
     forcing_vec(i) = sum;
   }
@@ -78,8 +78,8 @@ arma::Mat<double> Segment::LocalStiffnessMatrix(
     for (auto j = 0; j < gll_quad.n_points(); j++) {
       double sum = 0.0;
       for (auto k = 0; k < gll_quad.n_points(); k++) {
-        sum += gll_quad.GetLagrangeDerivative(i, k) *
-               gll_quad.GetLagrangeDerivative(j, k) * gll_quad.GetWeight(k);
+        sum += gll_quad.GetLagrangeDerivative(k, i) *
+               gll_quad.GetLagrangeDerivative(k, j) * gll_quad.GetWeight(k);
       }
       stiffness_mat(i, j) = front_coeff * sum;
     }
