@@ -24,6 +24,12 @@ void Mesh::AddElement(std::unique_ptr<Element> element) {
   elements_.push_back(std::move(element));
 }
 
+void Mesh::Prepare(const GaussLobattoLegendre& gll_quadrature) {
+  CreateInteriorElementNodes(gll_quadrature);
+  RenumberNodes();
+  CheckNodeIDs();
+}
+
 void Mesh::CreateInteriorElementNodes(
     const GaussLobattoLegendre& gll_quadrature) {
   for (auto& element : elements_) {
@@ -33,22 +39,37 @@ void Mesh::CreateInteriorElementNodes(
 }
 
 void Mesh::RenumberNodes() {
-  std::sort(nodes_.begin(), nodes_.end(),
-            [](const Node& first, const Node& second) {
-              return first.id < second.id;
-            });
+  std::unordered_map<size_t, size_t> old_to_new_id;
+  std::vector<Node> renumbered_nodes(nodes_.size());
 
+  // First, assign every old ID a new one and build the renumbered node
+  // storage, without touching any element yet: elements share nodes, so an
+  // ID may be seen again from a later element, but should only get a new ID
+  // (and a slot in renumbered_nodes) the first time.
   size_t new_node_id = 0;
   for (auto& element : elements_) {
-    auto node_ids = element->node_ids();
-    for (auto id : node_ids) {
-      // Elements will share nodes. Don't renumber if we've already set a new ID
-      if (id < new_node_id) continue;
-      nodes_.at(id).id = new_node_id;          // update global nodes
-      element->SetNewNodeID(id, new_node_id);  // update element nodes
+    for (auto old_id : element->node_ids()) {
+      if (old_to_new_id.contains(old_id)) continue;
+      Node node = nodes_.at(old_id);
+      node.id = new_node_id;
+      renumbered_nodes.at(new_node_id) = std::move(node);
+      old_to_new_id.emplace(old_id, new_node_id);
       new_node_id++;
     }
   }
+
+  // Now that every old ID maps to a final new ID, rebuild each element's
+  // node ID list from scratch. Updating one ID at a time in place (e.g. via
+  // SetNewNodeID) risks a new ID coincidentally colliding with a
+  // not-yet-remapped old ID elsewhere in the same list.
+  for (auto& element : elements_) {
+    std::vector<size_t> new_ids;
+    for (auto old_id : element->node_ids())
+      new_ids.push_back(old_to_new_id.at(old_id));
+    element->SetNodeIDs(std::move(new_ids));
+  }
+
+  nodes_ = std::move(renumbered_nodes);
 }
 
 void Mesh::CheckNodeIDs() {

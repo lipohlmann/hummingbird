@@ -2,6 +2,8 @@
 
 #include <vector>
 
+#include "banks/source_bank.h"
+
 namespace hummingbird {
 double DistanceBetweenNodes(const Node& node_1, const Node& node_2) {
   double x_part = node_1.x - node_2.x;

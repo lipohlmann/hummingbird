@@ -9,13 +9,14 @@
 #include <vector>
 
 #include "banks/material_bank.h"
-#include "banks/source_bank.h"
 #include "node.h"
 #include "physics/material.h"
 #include "quadrature/angular/ordinate.h"
 #include "quadrature/gauss_lobatto_legendre.h"
 
 namespace hummingbird {
+class Mesh;
+
 /**
  * @brief Defines a subset of the domain (an "element")
  *
@@ -72,6 +73,17 @@ class Element {
    * @param new_id New ID
    */
   void SetNewNodeID(const size_t prev_id, const size_t new_id);
+
+  /**
+   * @brief Replace all node IDs at once, e.g. when renumbering. Unlike
+   * SetNewNodeID, this does not search by value, so it is safe to use when
+   * remapped IDs could otherwise collide with not-yet-remapped IDs.
+   *
+   * @param node_ids New node IDs, in the same order as the existing ones
+   */
+  void SetNodeIDs(std::vector<size_t> node_ids) {
+    node_ids_ = std::move(node_ids);
+  }
 
   virtual arma::Col<double> LocalForcingVector(
       const GaussLobattoLegendre& gll_quad, const Mesh& mesh,
