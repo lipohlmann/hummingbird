@@ -47,7 +47,42 @@ class Segment : public Element {
       const std::vector<Node>& existing_nodes,
       const GaussLobattoLegendre& gll_quadrature) override;
 
-  //   arma::Mat<double> LocalStiffnessMatrix() override;
+  /**
+   * @brief Construct the dense local stiffness matrix using spectral elements
+   * on a Gauss-Lobatto-Legendre grid, defined as:
+   *
+   * \f[
+   * K_{ij}=\frac{\hat{\Omega}_x^2}{\Sigma_t^e}\frac{2}{h_e}\sum_{k=0}^{N_x}\rho_k
+   * \frac{d\ell_i}{d\xi}(\xi_k)\frac{d\ell_j}{d\xi}(\xi_k)
+   * \f]
+   *
+   * @return arma::Mat<double>
+   * @todo See about cutting the loops in half by leveraging symmetry.
+   */
+  arma::Mat<double> LocalStiffnessMatrix(const GaussLobattoLegendre& gll_quad,
+                                         const MaterialBank& material_bank,
+                                         const Ordinate& ordinate) override;
+
+  /**
+   * @brief Construct the sparse *diagonal* local mass matrix using spectral
+   * elements on a Gauss-Lobatto-Legendre grid, defined as:
+   *
+   * \f[
+   * M_{ij}=\Sigma_t^e\frac{h_e}{2}\sum_{k=0}^{N_x}\rho_k\ell_i(\xi_k)\ell_j(\xi_k)
+   * \f]
+   * Which, using the cardinality of Lagrange polynomials, greatly simplifies
+   * to:
+   * \f[
+   * \Sigma_t^eM_{ij}=\begin{cases}
+   * 0, & i\neq j \\
+   * \Sigma_t^e\frac{h_e}{2}\rho_i, &i=j
+   * \end{cases}
+   * \f]
+   *
+   * @param gll_quad GaussLobattoLegendre set
+   * @param material_bank MaterialBank
+   * @return arma::SpMat<double>
+   */
   arma::SpMat<double> LocalMassMatrix(
       const GaussLobattoLegendre& gll_quad,
       const MaterialBank& material_bank) override;

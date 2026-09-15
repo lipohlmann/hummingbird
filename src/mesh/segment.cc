@@ -49,6 +49,26 @@ std::vector<Node> Segment::CreateInteriorNodes(
   return nodes;
 }
 
+arma::Mat<double> Segment::LocalStiffnessMatrix(
+    const GaussLobattoLegendre& gll_quad, const MaterialBank& material_bank,
+    const Ordinate& ordinate) {
+  arma::Mat<double> stiffness_mat(gll_quad.n_points(), gll_quad.n_points(),
+                                  arma::fill::zeros);
+  double sigma_t = material_bank.GetByID(material_id_).total_xs;
+  double front_coeff = ordinate.x() * ordinate.x() / sigma_t * 2.0 / length_;
+  for (auto i = 0; i < gll_quad.n_points(); i++) {
+    for (auto j = 0; j < gll_quad.n_points(); j++) {
+      double sum = 0.0;
+      for (auto k = 0; k < gll_quad.n_points(); k++) {
+        sum += gll_quad.GetLagrangeDerivative(i, k) *
+               gll_quad.GetLagrangeDerivative(j, k) * gll_quad.GetAbscissa(k);
+      }
+      stiffness_mat(i, j) = front_coeff * sum;
+    }
+  }
+  return stiffness_mat;
+}
+
 arma::SpMat<double> Segment::LocalMassMatrix(
     const GaussLobattoLegendre& gll_quad, const MaterialBank& material_bank) {
   auto sigma_t = material_bank.GetByID(material_id_).total_xs;

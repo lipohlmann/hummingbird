@@ -11,6 +11,7 @@
 #include "banks/material_bank.h"
 #include "node.h"
 #include "physics/material.h"
+#include "quadrature/angular/ordinate.h"
 #include "quadrature/gauss_lobatto_legendre.h"
 
 namespace hummingbird {
@@ -71,29 +72,10 @@ class Element {
    */
   void SetNewNodeID(const size_t prev_id, const size_t new_id);
 
-  //   virtual arma::Mat<double> LocalStiffnessMatrix() = 0;
+  virtual arma::Mat<double> LocalStiffnessMatrix(
+      const GaussLobattoLegendre& gll_quad, const MaterialBank& material_bank,
+      const Ordinate& ordinate) = 0;
 
-  /**
-   * @brief Construct the sparse *diagonal* local mass matrix using spectral
-   * elements on a Gauss-Lobatto-Legendre grid, defined as:
-   *
-   * \f[
-   * \Sigma_t^e
-   * M_{ij}=\Sigma_t^e\frac{h_e}{2}\sum_{k=0}^{N_x}\rho_k\ell_i(\xi_k)\ell_j(\xi_k)
-   * \f]
-   * Which, using the cardinality of Lagrange polynomials, greatly simplifies
-   * to:
-   * \f[
-   * \Sigma_t^eM_{ij}=\begin{cases}
-   * 0, & i\neq j \\
-   * \Sigma_t^e\frac{h_e}{2}\rho_i, &i=j
-   * \end{cases}
-   * \f]
-   *
-   * @param gll_quad GaussLobattoLegendre set
-   * @param material_bank MaterialBank
-   * @return arma::SpMat<double>
-   */
   virtual arma::SpMat<double> LocalMassMatrix(
       const GaussLobattoLegendre& gll_quad,
       const MaterialBank& material_bank) = 0;
