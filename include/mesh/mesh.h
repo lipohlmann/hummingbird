@@ -95,6 +95,14 @@ class Mesh {
     return *elements_.at(index);
   }
 
+  /**
+   * @brief Initialize all node solution values to 0's with the correct vector
+   * lengths
+   *
+   * @param n_ordinates Number of ordinates
+   */
+  void InitializeNodeSolutions(const size_t n_ordinates);
+
  private:
   /// @brief Nodes in the mesh
   std::vector<Node> nodes_;

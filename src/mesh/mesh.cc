@@ -249,4 +249,12 @@ int Mesh::GetSourceID(
       "No Physical Group with a name prefixed \"source:\" was found for "
       "a curve entity.");
 }
+void Mesh::InitializeNodeSolutions(const size_t n_ordinates) {
+  for (Node& node : nodes_) {
+    node.scalar_flux = 0.0;
+    node.angular_fluxes.assign(n_ordinates, 0.0);
+    node.source_fluxes.assign(n_ordinates, 0.0);
+  }
+}
+
 }  // namespace hummingbird

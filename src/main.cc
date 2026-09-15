@@ -9,7 +9,7 @@
 using nlohmann::json;
 using namespace hummingbird;
 
-int main(int argc, char **argv) {
+int main(int argc, char** argv) {
   if (argc < 2) {
     printf("Usage: %s <input_file_name>\n", argv[0]);
     return 1;
@@ -23,6 +23,8 @@ int main(int argc, char **argv) {
   InputParams input_params = user_input_json.get<InputParams>();
 
   // build Mesh object
+
+  // // Make sure to initialize the nodes!
 
   // form local matrices
 
