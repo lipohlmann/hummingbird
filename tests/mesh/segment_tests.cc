@@ -53,17 +53,6 @@ Ordinate MakeOrdinateWithXCosine(double omega_x) {
   return Ordinate(std::acos(omega_x), M_PI / 2.0);
 }
 
-// Exposes a way to set Element::node_ids_ (protected, and otherwise never
-// populated by any public code path -- see
-// LocalForcingVectorThrowsBecauseNodeIdsAreNeverPopulatedByPublicAPI below)
-// so LocalForcingVector's math can be exercised directly in isolation.
-class TestSegment : public Segment {
- public:
-  using Segment::Segment;
-
-  void SetNodeIds(std::vector<size_t> ids) { node_ids_ = std::move(ids); }
-};
-
 }  // namespace
 
 // ---------------------------------------------------------------------------
@@ -141,6 +130,36 @@ TEST_F(SegmentTest, UsesNodesAtSpecifiedBCIndicesRegardlessOfPosition) {
   auto interior = segment.CreateInteriorNodes(nodes, gll);
   ASSERT_EQ(interior.size(), 1u);
   EXPECT_EQ(interior.at(0).id, nodes.size());
+}
+
+TEST_F(SegmentTest, CreateInteriorNodesPopulatesNodeIds) {
+  // node_ids() should end up as [left, interior IDs in order, right],
+  // regardless of the geometric mapping.
+  std::vector<Node> nodes = {MakeNode(0, 0.0, 0.0, 0.0),
+                             MakeNode(1, 10.0, 0.0, 0.0)};
+  mesh.AddNodes(nodes);
+  Segment segment({0, 1}, 1, 0, mesh);
+  GaussLobattoLegendre gll(5);  // 3 interior points -> IDs 2, 3, 4
+
+  EXPECT_TRUE(segment.node_ids().empty());
+  auto interior = segment.CreateInteriorNodes(nodes, gll);
+
+  ASSERT_EQ(interior.size(), 3u);
+  EXPECT_EQ(segment.node_ids(), (std::vector<size_t>{0, 2, 3, 4, 1}));
+}
+
+TEST_F(SegmentTest, CreateInteriorNodesNodeIdsFollowBoundaryOrder) {
+  // Reversing boundary_node_ids_ should reverse which endpoint's ID comes
+  // first in node_ids(), matching DirectionFollowsBCNodeIdOrder above.
+  std::vector<Node> nodes = {MakeNode(0, 0.0, 0.0, 0.0),
+                             MakeNode(1, 10.0, 0.0, 0.0)};
+  mesh.AddNodes(nodes);
+  Segment segment({1, 0}, 1, 0, mesh);
+  GaussLobattoLegendre gll(3);  // 1 interior point -> ID 2
+
+  auto interior = segment.CreateInteriorNodes(nodes, gll);
+  ASSERT_EQ(interior.size(), 1u);
+  EXPECT_EQ(segment.node_ids(), (std::vector<size_t>{1, 2, 0}));
 }
 
 // ---------------------------------------------------------------------------
@@ -610,11 +629,9 @@ TEST_F(SegmentMassMatrixTest, ScalesWithTotalXS) {
 // which, by the cardinality of the Lagrange basis (l_i(xi_k) = delta_ik),
 // simplifies the first term to h_e/2 * w_i * Q(xi_i).
 //
-// These tests use TestSegment::SetNodeIds to populate node_ids_ directly.
-// This is necessary because node_ids_ is otherwise *never* populated by any
-// public code path -- see
-// LocalForcingVectorThrowsBecauseNodeIdsAreNeverPopulatedByPublicAPI below,
-// which documents that separate bug.
+// These tests call CreateInteriorNodes through the real public API to
+// populate node_ids_ (see SegmentTest.CreateInteriorNodesPopulatesNodeIds),
+// rather than reaching into Segment's internals.
 // ---------------------------------------------------------------------------
 
 class SegmentForcingVectorTest : public testing::Test {
@@ -635,9 +652,9 @@ TEST_F(SegmentForcingVectorTest, TwoPointDistinctBoundarySourcesMatchHandDerived
   Node right = MakeNode(1, length, 0.0, 0.0);
   right.source_fluxes = {q1};
   mesh.AddNodes({left, right});
-  TestSegment segment({0, 1}, 0, 0, mesh);
-  segment.SetNodeIds({0, 1});
+  Segment segment({0, 1}, 0, 0, mesh);
   GaussLobattoLegendre gll(2);
+  segment.CreateInteriorNodes(mesh.nodes(), gll);  // no interior points; N=2
 
   auto forcing = segment.LocalForcingVector(gll, mesh, 0);
 
@@ -651,9 +668,9 @@ TEST_F(SegmentForcingVectorTest, TwoPointZeroSourceProducesZeroVector) {
   Node right = MakeNode(1, 4.0, 0.0, 0.0);
   right.source_fluxes = {0.0};
   mesh.AddNodes({left, right});
-  TestSegment segment({0, 1}, 0, 0, mesh);
-  segment.SetNodeIds({0, 1});
+  Segment segment({0, 1}, 0, 0, mesh);
   GaussLobattoLegendre gll(2);
+  segment.CreateInteriorNodes(mesh.nodes(), gll);  // no interior points; N=2
 
   auto forcing = segment.LocalForcingVector(gll, mesh, 0);
 
@@ -673,14 +690,15 @@ TEST_F(SegmentForcingVectorTest,
   const double length = 6.0;
   Node left = MakeNode(0, 0.0, 0.0, 0.0);
   left.source_fluxes = {0.0};
-  Node middle = MakeNode(2, length / 2.0, 0.0, 0.0);
-  middle.source_fluxes = {0.0};
   Node right = MakeNode(1, length, 0.0, 0.0);
   right.source_fluxes = {1.0};
-  mesh.AddNodes({left, right, middle});
-  TestSegment segment({0, 1}, 0, 0, mesh);
-  segment.SetNodeIds({0, 2, 1});
+  mesh.AddNodes({left, right});
+  Segment segment({0, 1}, 0, 0, mesh);
   GaussLobattoLegendre gll(3);
+  auto interior = segment.CreateInteriorNodes(mesh.nodes(), gll);
+  ASSERT_EQ(interior.size(), 1u);
+  interior.at(0).source_fluxes = {0.0};
+  mesh.AddNodes(interior);
 
   auto forcing = segment.LocalForcingVector(gll, mesh, 0);
 
@@ -706,24 +724,15 @@ TEST_P(SegmentForcingVectorConstantSourceTest,
   const double q0 = 3.0;
 
   GaussLobattoLegendre gll(n_points);
-  std::vector<Node> nodes;
-  std::vector<size_t> node_ids;
-  nodes.reserve(n_points);
-  node_ids.reserve(n_points);
-  for (size_t i = 0; i < n_points; ++i) {
-    Node node = MakeNode(i, static_cast<double>(i), 0.0, 0.0);
-    node.source_fluxes = {q0};
-    nodes.push_back(node);
-    node_ids.push_back(i);
-  }
-  // Fix the endpoint x-coordinates so length_ is computed correctly; the
-  // interior x-coordinates are irrelevant to LocalForcingVector.
-  nodes.front().x = 0.0;
-  nodes.back().x = length;
-
-  mesh.AddNodes(nodes);
-  TestSegment segment({0, static_cast<size_t>(n_points - 1)}, 0, 0, mesh);
-  segment.SetNodeIds(node_ids);
+  Node left = MakeNode(0, 0.0, 0.0, 0.0);
+  left.source_fluxes = {q0};
+  Node right = MakeNode(1, length, 0.0, 0.0);
+  right.source_fluxes = {q0};
+  mesh.AddNodes({left, right});
+  Segment segment({0, 1}, 0, 0, mesh);
+  auto interior = segment.CreateInteriorNodes(mesh.nodes(), gll);
+  for (auto& node : interior) node.source_fluxes = {q0};
+  mesh.AddNodes(interior);
 
   auto forcing = segment.LocalForcingVector(gll, mesh, 0);
 
@@ -742,26 +751,23 @@ INSTANTIATE_TEST_SUITE_P(VariousOrders,
 
 TEST_F(SegmentForcingVectorTest, IsLinearInSourceValues) {
   // f(Q_a + Q_b) == f(Q_a) + f(Q_b), since every term in the documented
-  // formula is linear in the nodal source values. This should hold
-  // regardless of the GetLagrangeDerivative argument-order issue noted
-  // above, since that issue only affects *which* derivative value is used,
-  // not the linearity of the resulting sum.
+  // formula is linear in the nodal source values. sources.at(k) is the
+  // source at local GLL position k (left, interior..., right).
   const double length = 5.0;
   GaussLobattoLegendre gll(4);
 
   auto build_and_evaluate = [&](std::vector<double> sources) {
     Mesh local_mesh;
-    std::vector<Node> nodes;
-    for (size_t i = 0; i < sources.size(); ++i) {
-      Node node = MakeNode(i, static_cast<double>(i), 0.0, 0.0);
-      node.source_fluxes = {sources.at(i)};
-      nodes.push_back(node);
-    }
-    nodes.front().x = 0.0;
-    nodes.back().x = length;
-    local_mesh.AddNodes(nodes);
-    TestSegment segment({0, 3}, 0, 0, local_mesh);
-    segment.SetNodeIds({0, 1, 2, 3});
+    Node left = MakeNode(0, 0.0, 0.0, 0.0);
+    left.source_fluxes = {sources.at(0)};
+    Node right = MakeNode(1, length, 0.0, 0.0);
+    right.source_fluxes = {sources.back()};
+    local_mesh.AddNodes({left, right});
+    Segment segment({0, 1}, 0, 0, local_mesh);
+    auto interior = segment.CreateInteriorNodes(local_mesh.nodes(), gll);
+    for (size_t k = 0; k < interior.size(); ++k)
+      interior.at(k).source_fluxes = {sources.at(k + 1)};
+    local_mesh.AddNodes(interior);
     return segment.LocalForcingVector(gll, local_mesh, 0);
   };
 
@@ -778,14 +784,11 @@ TEST_F(SegmentForcingVectorTest, IsLinearInSourceValues) {
 }
 
 TEST_F(SegmentForcingVectorTest,
-       LocalForcingVectorThrowsBecauseNodeIdsAreNeverPopulatedByPublicAPI) {
-  // BUG: Element::node_ids_ (used by LocalForcingVector to look up each
-  // node's source flux) is never assigned anywhere in the codebase outside
-  // of tests: not in Segment's constructor, not in
-  // Segment::CreateInteriorNodes, and not in Mesh::CreateInteriorElementNodes
-  // or Mesh::AddElement. A Segment built entirely through the public API
-  // therefore always has an empty node_ids_, so any call to
-  // LocalForcingVector fails immediately.
+       LocalForcingVectorThrowsWhenCalledBeforeCreateInteriorNodes) {
+  // node_ids_ is populated as a side effect of CreateInteriorNodes (see
+  // SegmentTest.CreateInteriorNodesPopulatesNodeIds), so a Segment built but
+  // not yet prepared has an empty node_ids_ and LocalForcingVector correctly
+  // fails rather than silently reading garbage.
   std::vector<Node> nodes = {MakeNode(0, 0.0, 0.0, 0.0),
                              MakeNode(1, 4.0, 0.0, 0.0)};
   nodes.at(0).source_fluxes = {1.0};
@@ -796,6 +799,33 @@ TEST_F(SegmentForcingVectorTest,
 
   EXPECT_TRUE(segment.node_ids().empty());
   EXPECT_THROW(segment.LocalForcingVector(gll, mesh, 0), std::out_of_range);
+}
+
+TEST_F(SegmentForcingVectorTest,
+       SucceedsAfterCreateInteriorNodesPopulatesNodeIdsThroughPublicAPI) {
+  // Regression test: once CreateInteriorNodes has populated node_ids_
+  // through the ordinary public API (no test-only backdoor), a Segment can
+  // successfully compute its local forcing vector, stiffness matrix, and
+  // mass matrix.
+  std::vector<Node> nodes = {MakeNode(0, 0.0, 0.0, 0.0),
+                             MakeNode(1, 4.0, 0.0, 0.0)};
+  nodes.at(0).source_fluxes = {1.0};
+  nodes.at(1).source_fluxes = {1.0};
+  mesh.AddNodes(nodes);
+  Segment segment({0, 1}, 0, 0, mesh);
+  GaussLobattoLegendre gll(3);
+
+  auto interior = segment.CreateInteriorNodes(mesh.nodes(), gll);
+  for (auto& node : interior) node.source_fluxes = {1.0};
+  mesh.AddNodes(interior);
+
+  EXPECT_FALSE(segment.node_ids().empty());
+  EXPECT_NO_THROW(segment.LocalForcingVector(gll, mesh, 0));
+
+  MaterialBank material_bank = MakeSingleMaterialBank(1.0);
+  Ordinate ordinate = MakeOrdinateWithXCosine(1.0);
+  EXPECT_NO_THROW(segment.LocalStiffnessMatrix(gll, material_bank, ordinate));
+  EXPECT_NO_THROW(segment.LocalMassMatrix(gll, material_bank));
 }
 
 }  // namespace hummingbird

@@ -2,10 +2,13 @@
 
 #include <gtest/gtest.h>
 
+#include <algorithm>
 #include <fstream>
+#include <memory>
 #include <stdexcept>
 #include <string>
 
+#include "mesh/segment.h"
 #include "quadrature/gauss_lobatto_legendre.h"
 #include "utils/constants.h"
 
@@ -70,6 +73,15 @@ std::string WriteTempMesh(const std::string& name, const std::string& contents) 
   return path;
 }
 
+Node MakeNode(size_t id, double x, double y, double z) {
+  Node node;
+  node.id = id;
+  node.x = x;
+  node.y = y;
+  node.z = z;
+  return node;
+}
+
 }  // namespace
 
 TEST(MeshGMSHTest, ReadsExpectedNumberOfNodesAndElements) {
@@ -121,6 +133,98 @@ TEST(MeshGMSHTest, SegmentConnectivityMatchesFileOrder) {
     EXPECT_NEAR(mesh.nodes().at(5 + i).x, expected_midpoints.at(i),
                 EXP_NEAR_TOLERANCE)
         << "Midpoint of element " << i << " is unexpected.";
+}
+
+TEST(MeshGMSHTest, CreateInteriorElementNodesPopulatesElementNodeIDs) {
+  // Element::node_ids_ is populated as a side effect of CreateInteriorNodes;
+  // each of the 4 segments should end up with all 3 of its GLL(3) node IDs.
+  Mesh mesh(WriteTempMesh("hummingbird_mesh_test_node_ids.msh", kOneDGmsh));
+  GaussLobattoLegendre gll(3);
+  mesh.CreateInteriorElementNodes(gll);
+
+  ASSERT_EQ(mesh.n_elements(), 4u);
+  for (size_t e = 0; e < mesh.n_elements(); e++)
+    EXPECT_EQ(mesh.GetElement(e).node_ids().size(), 3u)
+        << "Element " << e << " does not have all of its node IDs.";
+}
+
+// ---------------------------------------------------------------------------
+// Mesh::Prepare
+//
+// Prepare() creates interior nodes, renumbers all nodes (elements share
+// nodes, so a naive renumbering pass can produce ID collisions -- see
+// Mesh::RenumberNodes), then checks the result. These tests exercise the
+// full pipeline on the same 4-segment chain topology used above, since that
+// is exactly the shared-node case renumbering has to get right.
+// ---------------------------------------------------------------------------
+
+TEST(MeshPrepareTest, DoesNotThrowAndProducesContiguousZeroBasedIDs) {
+  Mesh mesh(WriteTempMesh("hummingbird_mesh_test_prepare_ids.msh", kOneDGmsh));
+  GaussLobattoLegendre gll(3);
+
+  EXPECT_NO_THROW(mesh.Prepare(gll));
+
+  ASSERT_EQ(mesh.nodes().size(), 9u);
+  for (size_t i = 0; i < mesh.nodes().size(); i++)
+    EXPECT_EQ(mesh.nodes().at(i).id, i)
+        << "Node at vector position " << i << " does not carry a matching ID "
+                                               "(GetNode indexes by ID).";
+}
+
+TEST(MeshPrepareTest, PreservesElementConnectivityAfterRenumbering) {
+  // The 4 segments form a chain: (1.0)-(0.75)-(0.5)-(0.25)-(0.0). After
+  // Prepare(), each element's shared boundary must still be the *same* ID as
+  // its neighbor's, and every ID must still resolve (via GetNode) to the
+  // correct physical location.
+  Mesh mesh(WriteTempMesh("hummingbird_mesh_test_prepare_connectivity.msh",
+                          kOneDGmsh));
+  GaussLobattoLegendre gll(3);
+  mesh.Prepare(gll);
+
+  ASSERT_EQ(mesh.n_elements(), 4u);
+  const std::vector<double> expected_endpoint_x = {1.0, 0.75, 0.5, 0.25, 0.0};
+  const std::vector<double> expected_midpoint_x = {0.875, 0.625, 0.375, 0.125};
+
+  size_t previous_right_id = mesh.GetElement(0).node_ids().front();
+  for (size_t e = 0; e < mesh.n_elements(); e++) {
+    auto ids = mesh.GetElement(e).node_ids();
+    ASSERT_EQ(ids.size(), 3u) << "element " << e;
+    EXPECT_EQ(ids.front(), previous_right_id)
+        << "element " << e << " does not connect to the previous element.";
+    EXPECT_NEAR(mesh.GetNode(ids.front()).x, expected_endpoint_x.at(e),
+                EXP_NEAR_TOLERANCE)
+        << "element " << e << " left endpoint";
+    EXPECT_NEAR(mesh.GetNode(ids.at(1)).x, expected_midpoint_x.at(e),
+                EXP_NEAR_TOLERANCE)
+        << "element " << e << " midpoint";
+    EXPECT_NEAR(mesh.GetNode(ids.back()).x, expected_endpoint_x.at(e + 1),
+                EXP_NEAR_TOLERANCE)
+        << "element " << e << " right endpoint";
+    previous_right_id = ids.back();
+  }
+}
+
+TEST(MeshPrepareTest, HandlesSharedNodeBetweenTwoElementsWithoutIDCollisions) {
+  // A minimal, hand-built (non-gmsh) case: two elements sharing a middle
+  // node, which is exactly the topology that previously produced duplicate
+  // IDs (see RenumberNodes).
+  Mesh mesh;
+  mesh.AddNodes({MakeNode(0, 0.0, 0.0, 0.0), MakeNode(1, 1.0, 0.0, 0.0),
+                MakeNode(2, 2.0, 0.0, 0.0)});
+  mesh.AddElement(
+      std::make_unique<Segment>(std::array<size_t, 2>{0, 1}, 0, 0, mesh));
+  mesh.AddElement(
+      std::make_unique<Segment>(std::array<size_t, 2>{1, 2}, 0, 0, mesh));
+  GaussLobattoLegendre gll(3);
+
+  EXPECT_NO_THROW(mesh.Prepare(gll));
+
+  ASSERT_EQ(mesh.nodes().size(), 5u);
+  std::vector<size_t> ids;
+  for (const auto& node : mesh.nodes()) ids.push_back(node.id);
+  std::sort(ids.begin(), ids.end());
+  for (size_t i = 0; i < ids.size(); i++)
+    EXPECT_EQ(ids.at(i), i) << "Node IDs are not unique and contiguous.";
 }
 
 TEST(MeshGMSHTest, ThrowsOnUnsupportedSurfaceEntities) {
