@@ -74,7 +74,8 @@ class Element {
   void SetNewNodeID(const size_t prev_id, const size_t new_id);
 
   virtual arma::Col<double> LocalForcingVector(
-      const SourceBank& source_bank) = 0;
+      const GaussLobattoLegendre& gll_quad, const Mesh& mesh,
+      const size_t ordinate_index) = 0;
 
   virtual arma::Mat<double> LocalStiffnessMatrix(
       const GaussLobattoLegendre& gll_quad, const MaterialBank& material_bank,

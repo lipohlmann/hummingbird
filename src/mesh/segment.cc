@@ -49,6 +49,24 @@ std::vector<Node> Segment::CreateInteriorNodes(
   return nodes;
 }
 
+arma::Col<double> Segment::LocalForcingVector(
+    const GaussLobattoLegendre& gll_quad, const Mesh& mesh,
+    const size_t ordinate_index) {
+  arma::Col<double> forcing_vec(gll_quad.n_points(), arma::fill::zeros);
+  for (auto i = 0; i < gll_quad.n_points(); i++) {
+    double sum = 0.0;
+    for (auto k = 0; k < gll_quad.n_points(); k++) {
+      double node_source =
+          mesh.GetNode(node_ids_.at(k)).source_fluxes.at(ordinate_index);
+      double weight = gll_quad.GetWeight(k);
+      if (i == k) sum += weight * node_source * length_ / 2.0;
+      sum += weight * node_source * gll_quad.GetLagrangeDerivative(i, k);
+    }
+    forcing_vec(i) = sum;
+  }
+  return forcing_vec;
+}
+
 arma::Mat<double> Segment::LocalStiffnessMatrix(
     const GaussLobattoLegendre& gll_quad, const MaterialBank& material_bank,
     const Ordinate& ordinate) {
@@ -61,7 +79,7 @@ arma::Mat<double> Segment::LocalStiffnessMatrix(
       double sum = 0.0;
       for (auto k = 0; k < gll_quad.n_points(); k++) {
         sum += gll_quad.GetLagrangeDerivative(i, k) *
-               gll_quad.GetLagrangeDerivative(j, k) * gll_quad.GetAbscissa(k);
+               gll_quad.GetLagrangeDerivative(j, k) * gll_quad.GetWeight(k);
       }
       stiffness_mat(i, j) = front_coeff * sum;
     }
@@ -75,7 +93,7 @@ arma::SpMat<double> Segment::LocalMassMatrix(
   arma::SpMat<double> material_matrix = arma::speye<arma::SpMat<double>>(
       gll_quad.n_points(), gll_quad.n_points());
   for (auto k = 0; k < gll_quad.n_points(); k++)
-    material_matrix(k, k) = gll_quad.GetAbscissa(k) * length_ / 2.0 * sigma_t;
+    material_matrix(k, k) = gll_quad.GetWeight(k) * length_ / 2.0 * sigma_t;
   return material_matrix;
 }
 }  // namespace hummingbird
