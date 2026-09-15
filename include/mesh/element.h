@@ -9,6 +9,7 @@
 #include <vector>
 
 #include "banks/material_bank.h"
+#include "banks/source_bank.h"
 #include "node.h"
 #include "physics/material.h"
 #include "quadrature/angular/ordinate.h"
@@ -71,6 +72,9 @@ class Element {
    * @param new_id New ID
    */
   void SetNewNodeID(const size_t prev_id, const size_t new_id);
+
+  virtual arma::Col<double> LocalForcingVector(
+      const SourceBank& source_bank) = 0;
 
   virtual arma::Mat<double> LocalStiffnessMatrix(
       const GaussLobattoLegendre& gll_quad, const MaterialBank& material_bank,
