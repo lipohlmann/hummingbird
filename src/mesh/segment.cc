@@ -21,6 +21,7 @@ std::vector<Node> Segment::CreateInteriorNodes(
 
     const std::vector<Node>& existing_nodes,
     const GaussLobattoLegendre& gll_quadrature) {
+  node_ids_.reserve(gll_quadrature.n_points());
   size_t id = existing_nodes.size();
 
   Node left_node = existing_nodes.at(boundary_node_ids_.at(0));
@@ -32,13 +33,14 @@ std::vector<Node> Segment::CreateInteriorNodes(
   BC interior_boundary = (left_node.boundary == right_node.boundary)
                              ? left_node.boundary
                              : BC::NONE;
-
+  node_ids_.push_back(left_node.id);
   std::vector<Node> nodes(gll_quadrature.n_points() - 2);
   for (auto i = 1; i < gll_quadrature.n_points() - 1; i++) {
     double xi = gll_quadrature.GetAbscissa(i);
     double fraction = (xi + 1.0) / 2.0;
     Node new_node;
     new_node.id = id;
+    node_ids_.push_back(id);
     new_node.x = left_node.x + fraction * direction_x;
     new_node.y = left_node.y + fraction * direction_y;
     new_node.z = left_node.z + fraction * direction_z;
@@ -46,6 +48,7 @@ std::vector<Node> Segment::CreateInteriorNodes(
     nodes.at(i - 1) = std::move(new_node);
     id++;
   }
+  node_ids_.push_back(right_node.id);
   return nodes;
 }
 

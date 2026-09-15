@@ -24,6 +24,12 @@ void Mesh::AddElement(std::unique_ptr<Element> element) {
   elements_.push_back(std::move(element));
 }
 
+void Mesh::Prepare(const GaussLobattoLegendre& gll_quadrature) {
+  CreateInteriorElementNodes(gll_quadrature);
+  RenumberNodes();
+  CheckNodeIDs();
+}
+
 void Mesh::CreateInteriorElementNodes(
     const GaussLobattoLegendre& gll_quadrature) {
   for (auto& element : elements_) {
