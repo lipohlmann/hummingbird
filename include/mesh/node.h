@@ -7,6 +7,7 @@
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
+#include <vector>
 
 #include "utils/enums.h"
 
@@ -26,6 +27,15 @@ struct Node {
 
   /// @brief BC ID to access the boundary condition (BC) bank
   unsigned int bc_id;
+
+  /// @brief Scalar flux on the node
+  double scalar_flux = 0;
+
+  /// @brief Angular flux values in order of the SN quadrature set
+  std::vector<double> angular_fluxes;
+
+  /// @brief Source flux values in order of the SN quadrature set
+  std::vector<double> source_fluxes;
 };
 
 /**
