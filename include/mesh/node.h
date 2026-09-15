@@ -9,6 +9,10 @@
 #include <cstdint>
 #include <vector>
 
+#include "banks/material_bank.h"
+#include "banks/source_bank.h"
+#include "quadrature/angular/ordinate.h"
+#include "quadrature/quadrature_base.h"
 #include "utils/enums.h"
 
 namespace hummingbird {
@@ -29,7 +33,7 @@ struct Node {
   unsigned int bc_id;
 
   /// @brief Scalar flux on the node
-  double scalar_flux = 0;
+  double scalar_flux;
 
   /// @brief Angular flux values in order of the SN quadrature set
   std::vector<double> angular_fluxes;
@@ -45,12 +49,19 @@ struct Node {
  * @param node_2 Second node
  * @return Distance in units of the mesh
  */
-inline double DistanceBetweenNodes(const Node& node_1, const Node& node_2) {
-  double x_part = node_1.x - node_2.x;
-  double y_part = node_1.y - node_2.y;
-  double z_part = node_1.z - node_2.z;
-  return std::sqrt(x_part * x_part + y_part * y_part + z_part * z_part);
-}
+double DistanceBetweenNodes(const Node& node_1, const Node& node_2);
+
+/**
+ * @brief Update the source terms at each angular quadrature point
+ *
+ * @param node Node to modify
+ * @param material_bank Material bank
+ * @param source_bank Source bank
+ * @param angular_quadrature Angular quadrature set
+ */
+void UpdateSourceFluxes(Node& node, const MaterialBank& material_bank,
+                        const SourceBank& source_bank,
+                        const QuadratureBase<Ordinate>& angular_quadrature);
 }  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_MESH_NODE_H_
