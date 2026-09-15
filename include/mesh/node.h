@@ -18,10 +18,19 @@ namespace hummingbird {
 class SourceBank;
 
 struct Node {
+  /// @brief Unique identifier for the node
   size_t id;
+
+  /// @brief X-coordinate of the node
   double x;
+
+  /// @brief Y-coordinate of the node
   double y;
+
+  /// @brief Z-coordinate of the node
   double z;
+
+  /// @brief Boundary condition type applied at the node
   BC boundary = BC::NONE;
 
   /// @brief Source ID to access Source Bank
