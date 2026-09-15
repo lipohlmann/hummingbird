@@ -52,6 +52,15 @@ struct Node {
 double DistanceBetweenNodes(const Node& node_1, const Node& node_2);
 
 /**
+ * @brief Update the scalar flux of a node using the angular quadrature set
+ *
+ * @param node Node to update
+ * @param angular_quadrature Angular quadrature set
+ */
+void UpdateScalarFlux(Node& node,
+                      const QuadratureBase<Ordinate> angular_quadrature);
+
+/**
  * @brief Update the source terms at each angular quadrature point
  *
  * @param node Node to modify

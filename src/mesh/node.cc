@@ -1,11 +1,22 @@
 #include "mesh/node.h"
 
+#include <vector>
+
 namespace hummingbird {
 double DistanceBetweenNodes(const Node& node_1, const Node& node_2) {
   double x_part = node_1.x - node_2.x;
   double y_part = node_1.y - node_2.y;
   double z_part = node_1.z - node_2.z;
   return std::sqrt(x_part * x_part + y_part * y_part + z_part * z_part);
+}
+
+void UpdateScalarFlux(Node& node,
+                      const QuadratureBase<Ordinate> angular_quadrature) {
+  std::vector<QuadraturePair> quad_pairs;
+  quad_pairs.reserve(angular_quadrature.n_points());
+  for (auto i = 0; i < angular_quadrature.n_points(); i++)
+    quad_pairs.push_back(QuadraturePair(i, node.angular_fluxes.at(i)));
+  node.scalar_flux = angular_quadrature.Integrate(quad_pairs);
 }
 
 void UpdateSourceFluxes(Node& node, const MaterialBank& material_bank,
