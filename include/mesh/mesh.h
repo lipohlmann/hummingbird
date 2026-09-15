@@ -103,6 +103,15 @@ class Mesh {
    */
   void InitializeNodeSolutions(const size_t n_ordinates);
 
+  /**
+   * @brief Prepare the mesh for running a simulation by generating interior
+   * nodes using the GLL quadrature set, renumbering nodes, then checking these
+   * nodes.
+   *
+   * @param gll_quadrature GaussLegendreLobatto quadrature set
+   */
+  void Prepare(const GaussLobattoLegendre& gll_quadrature);
+
  private:
   /// @brief Nodes in the mesh
   std::vector<Node> nodes_;

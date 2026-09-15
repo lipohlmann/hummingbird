@@ -10,12 +10,13 @@
 #include <vector>
 
 #include "banks/material_bank.h"
-#include "banks/source_bank.h"
 #include "quadrature/angular/ordinate.h"
 #include "quadrature/quadrature_base.h"
 #include "utils/enums.h"
 
 namespace hummingbird {
+class SourceBank;
+
 struct Node {
   /// @brief Unique identifier for the node
   size_t id;

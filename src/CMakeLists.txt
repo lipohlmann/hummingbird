@@ -16,6 +16,7 @@ add_library(
   math/legendre_polynomials.cc
   mesh/element.cc
   mesh/mesh.cc
+  mesh/node.cc
   mesh/segment.cc
   physics/parsed_volumetric_source.cc
   physics/constant_volumetric_source.cc
