@@ -41,6 +41,7 @@ class Element {
    * @param gll_quadrature GaussLobattoLegendre quadrature set
    */
   virtual std::vector<Node> CreateInteriorNodes(
+
       const std::vector<Node>& existing_nodes,
       const GaussLobattoLegendre& gll_quadrature) = 0;
 
