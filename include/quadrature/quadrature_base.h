@@ -35,7 +35,7 @@ class QuadratureBase {
    *
    * @param abscissas Vector of abscissa values for the quadrature
    */
-  QuadratureBase(const std::vector<T> abscissas) : abscissas_(abscissas){};
+  QuadratureBase(const std::vector<T> abscissas) : abscissas_(abscissas) {};
 
   /**
    * @brief Get the weight value corresponding to a given abscissa value
@@ -62,7 +62,7 @@ class QuadratureBase {
    * @param quad_pairs QuadraturePair object
    * @return Approximated integral using the quadrature set
    */
-  double Integrate(const std::vector<QuadraturePair>& quad_pairs) {
+  double Integrate(const std::vector<QuadraturePair>& quad_pairs) const {
     double sum = 0;
     for (auto& pair : quad_pairs) {
       auto weight = GetWeight(pair.abscissa_index);
