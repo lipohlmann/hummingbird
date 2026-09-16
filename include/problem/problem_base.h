@@ -46,6 +46,14 @@ struct GlobalForcingData {
 class ProblemBase {
  public:
   /**
+   * @brief Construct a new Problem Base object
+   *
+   * @param n_dofs Number of Degrees of Freedom
+   * @param n_ordinates Number of ordinates in angular mesh
+   */
+  ProblemBase(const size_t n_dofs, const size_t n_ordinates);
+
+  /**
    * @brief Assemble the global element system. That is, form the matrix \f$A\f$
    * in \f$ Ax=b\f$. This only should be called once per ordinate per
    * simulation. This method assumes that the length of the forcing vector is

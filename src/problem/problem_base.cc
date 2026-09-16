@@ -6,6 +6,15 @@
 #include <stdexcept>
 
 namespace hummingbird {
+ProblemBase::ProblemBase(const size_t n_dofs, const size_t n_ordinates) {
+  arma::SpMat<double> global_system_template(n_dofs, n_dofs);
+  arma::Col<double> global_vector_template(n_dofs, arma::fill::zeros);
+
+  global_system_matrices_.assign(n_ordinates, global_system_template);
+  global_forcing_vectors_.assign(n_ordinates, global_vector_template);
+  solution_vectors_.assign(n_ordinates, global_vector_template);
+}
+
 void ProblemBase::AssembleGlobalSystem(
     const std::vector<GlobalMatrixData>& global_matrix_data,
     const size_t ordinate_index) {
