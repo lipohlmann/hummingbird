@@ -30,8 +30,9 @@ struct Node {
   /// @brief Z-coordinate of the node
   double z;
 
-  /// @brief Source ID to access Source Bank
-  unsigned int source_id;
+  /// @brief Source ID to access Source Bank. ID of 0 is always NONE, meaning
+  /// the node has no external source.
+  unsigned int source_id = 0;
 
   /// @brief Material ID to access Material Bank
   unsigned int material_id;
