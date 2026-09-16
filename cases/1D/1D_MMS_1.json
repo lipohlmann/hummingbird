@@ -9,7 +9,7 @@
   },
   "boundary_conditions": {
     "west": {
-      "type": "reflecting"
+      "type": "reflective"
     },
     "east": {
       "type": "vacuum"
