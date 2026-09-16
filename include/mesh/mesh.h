@@ -158,9 +158,20 @@ class Mesh {
   void ResolveIDs(const MaterialBank& material_bank,
                   const SourceBank& source_bank, const BCBank& bc_bank);
 
+  /**
+   * @brief Populates the boundary_node_ids_ member. Must be called after
+   * ResolveIDs!
+   *
+   */
+  void FindBoundaryNodes();
+
  private:
   /// @brief Nodes in the mesh
   std::vector<Node> nodes_;
+
+  /// @brief Nodes in the mesh that exist on the mesh boundaries (that is, they
+  /// have a boundary condition assigned)
+  std::vector<size_t> boundary_node_ids_;
 
   /// @brief Elements in the mesh
   std::vector<std::unique_ptr<Element>> elements_;
@@ -307,9 +318,8 @@ class Mesh {
    * @param physical_names Map from Physical Group tag to name
    * @return int
    */
-  int GetBCID(
-      const std::vector<int>& point_physical_tags,
-      const std::unordered_map<int, std::string>& physical_names) const;
+  int GetBCID(const std::vector<int>& point_physical_tags,
+              const std::unordered_map<int, std::string>& physical_names) const;
 
   /**
    * @brief Extract the name after the ":" in a Physical Group name (e.g.

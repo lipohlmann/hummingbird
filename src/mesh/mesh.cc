@@ -338,4 +338,8 @@ std::string Mesh::ExtractName(const std::string& physical_name) const {
   return physical_name.substr(physical_name.find(':') + 1);
 }
 
+void Mesh::FindBoundaryNodes() {
+  for (const auto& node : nodes_)
+    if (node.bc_id != 0) boundary_node_ids_.push_back(node.bc_id);
+}
 }  // namespace hummingbird
