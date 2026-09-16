@@ -110,10 +110,26 @@ class ProblemBase {
   /// ordinates in angular quadrature set
   std::vector<arma::Col<double>> solution_vectors_;
 
-  // needs to check for unique ids
+  /**
+   * @brief Validate a vector of GlobalMatrixData before it is used to
+   * assemble the global system matrix. row_id/col_id pairs are expected to
+   * repeat (shared nodes get summed contributions from multiple elements),
+   * so unique (row_id, col_id) pairs are not required. Instead, this checks
+   * that the set of distinct row/col IDs referenced is contiguous starting
+   * from 0, i.e. no node ID is missing from the data.
+   *
+   * @param gmd Vector of GlobalMatrixData structs
+   */
   void CheckGlobalMatrixData(const std::vector<GlobalMatrixData>& gmd);
 
-  // needs to check for unique ids
+  /**
+   * @brief Validate a vector of GlobalForcingData before it is used to
+   * assemble the global forcing vector. Requires that row_id values are
+   * unique and contiguous starting from 0, i.e. there is exactly one entry
+   * per DOF and no DOF is missing from the data.
+   *
+   * @param gfd Vector of GlobalForcingData structs
+   */
   void CheckGlobalForcingData(const std::vector<GlobalForcingData>& gfd);
 };
 }  // namespace hummingbird

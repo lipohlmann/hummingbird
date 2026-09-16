@@ -43,9 +43,6 @@ void ProblemBase::Solve(const size_t ordinate_index) {
 
 void ProblemBase::CheckGlobalMatrixData(
     const std::vector<GlobalMatrixData>& gmd) {
-  // row_id/col_id pairs are expected to repeat (shared nodes get summed
-  // contributions from multiple elements), so only the set of distinct IDs
-  // referenced is checked for gaps.
   std::set<size_t> ids;
   for (const auto& data : gmd) {
     ids.insert(data.row_id);
