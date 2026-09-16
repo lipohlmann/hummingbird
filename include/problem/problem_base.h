@@ -103,7 +103,7 @@ class ProblemBase {
 
   virtual std::vector<GlobalForcingData> AssembleGlobalForcingData(
       const GaussLobattoLegendre& gll_quad, const Mesh& mesh,
-      const size_t ordinate_index, const BCBank& bc_bank) = 0;
+      const size_t ordinate_index) = 0;
 
  protected:
   /// @brief Global system matrices in order of ordinates in angular

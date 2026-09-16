@@ -29,7 +29,7 @@ class CGProblem : public ProblemBase {
   // this method will need to apply boundary conditions as well if needed
   std::vector<GlobalForcingData> AssembleGlobalForcingData(
       const GaussLobattoLegendre& gll_quad, const Mesh& mesh,
-      const size_t ordinate_index, const BCBank& bc_bank) override;
+      const size_t ordinate_index) override;
 };
 }  // namespace hummingbird
 

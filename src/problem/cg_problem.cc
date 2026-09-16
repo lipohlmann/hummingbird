@@ -27,4 +27,23 @@ std::vector<GlobalMatrixData> CGProblem::AssembleGlobalMatrixData(
   }
   return global_matrix_data;
 }
+
+std::vector<GlobalForcingData> CGProblem::AssembleGlobalForcingData(
+    const GaussLobattoLegendre& gll_quad, const Mesh& mesh,
+    const size_t ordinate_index) {
+  std::vector<GlobalForcingData> assembled_global_forcing_data;
+
+  for (const auto& elem : mesh.elements()) {
+    auto local_forcing_vector =
+        elem->LocalForcingVector(gll_quad, mesh, ordinate_index);
+    for (auto i = 0; i < gll_quad.n_points(); i++) {
+      auto node_id = elem->node_ids().at(i);
+      GlobalForcingData gfd;
+      gfd.row_id = i + node_id - 1;
+      gfd.value = local_forcing_vector(i);
+      assembled_global_forcing_data.push_back(std::move(gfd));
+    }
+  }
+  return assembled_global_forcing_data;
+}
 }  // namespace hummingbird
