@@ -23,6 +23,15 @@ class Ordinate {
   Ordinate(const double azimuth, const double polar);
 
   /**
+   * @brief Construct a new Ordinate object in the reflected direction given a
+   * starting direction and surface normal vector
+   *
+   * @param ordinate Initial direction
+   * @param surface_normal Surface normal vector
+   */
+  Ordinate Reflect(const Ordinate& ordinate, const arma::vec3 surface_normal);
+
+  /**
    * @brief Getter for azimuthal angle
    *
    * @return double

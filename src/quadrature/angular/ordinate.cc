@@ -9,6 +9,17 @@ Ordinate::Ordinate(const double azimuth, const double polar)
   CheckInput(azimuth, polar);
 }
 
+Ordinate Ordinate::Reflect(const Ordinate& ordinate,
+                           const arma::vec3 surface_normal) {
+  auto initial_direction = ordinate.CartesianUnitVector();
+  arma::vec3 new_direction = initial_direction * 2.0 *
+                             arma::dot(initial_direction, surface_normal) *
+                             surface_normal;
+  arma::vec3 normalized_direction = arma::normalise(new_direction);
+  return Ordinate(std::acos(normalized_direction(2)),
+                  std::atan2(normalized_direction(1), normalized_direction(0)));
+}
+
 void Ordinate::CheckInput(const double azimuth, const double polar) {
   if (polar > M_PI) throw std::invalid_argument("Polar angle must be <= pi.");
   if (polar < 0) throw std::invalid_argument("Polar angle must be >= 0.");
