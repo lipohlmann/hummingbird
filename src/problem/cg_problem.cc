@@ -16,11 +16,10 @@ std::vector<GlobalMatrixData> CGProblem::AssembleGlobalMatrixData(
         elem->LocalStiffnessMatrix(gll_quad, material_bank, ordinate);
     for (auto i = 0; i < gll_quad.n_points(); i++) {
       for (auto j = 0; j < gll_quad.n_points(); j++) {
-        auto node_id = elem->node_ids().at(j);
         GlobalMatrixData gmd;
         gmd.value = local_mass_matrix(i, j) + local_stiffness_matrix(i, j);
-        gmd.row_id = i + node_id - 1;
-        gmd.col_id = j + node_id - 1;
+        gmd.row_id = elem->node_ids().at(i);
+        gmd.col_id = elem->node_ids().at(j);
         global_matrix_data.push_back(std::move(gmd));
       }
     }
@@ -37,9 +36,8 @@ std::vector<GlobalForcingData> CGProblem::AssembleGlobalForcingData(
     auto local_forcing_vector =
         elem->LocalForcingVector(gll_quad, mesh, ordinate_index);
     for (auto i = 0; i < gll_quad.n_points(); i++) {
-      auto node_id = elem->node_ids().at(i);
       GlobalForcingData gfd;
-      gfd.row_id = i + node_id - 1;
+      gfd.row_id = elem->node_ids().at(i);
       gfd.value = local_forcing_vector(i);
       assembled_global_forcing_data.push_back(std::move(gfd));
     }
