@@ -215,8 +215,9 @@ class Mesh {
 
   /**
    * @brief Read the $Elements section, adding Segment elements to the mesh
-   * for 2-node line elements. Point elements are consumed but otherwise
-   * ignored, since they only mark boundary entities in gmsh.
+   * for 2-node line elements. Point elements are consumed and used to tag
+   * the boundary/bc_id of the Node they reference, since they mark boundary
+   * entities in gmsh.
    *
    * @throw std::runtime_error for any element type other than a point or a
    * 2-node line, since only 1D meshes are currently supported
@@ -254,6 +255,21 @@ class Mesh {
    */
   int GetSourceID(
       const std::vector<int>& curve_physical_tags,
+      const std::unordered_map<int, std::string>& physical_names) const;
+
+  /**
+   * @brief Find the BC ID for a point entity, defined as the tag of the
+   * Physical Group on that point whose name is prefixed with "bc_" (see
+   * cases/README.md)
+   *
+   * @throw std::runtime_error if no such Physical Group is found
+   *
+   * @param point_physical_tags Physical Group tags assigned to the point
+   * @param physical_names Map from Physical Group tag to name
+   * @return int
+   */
+  int GetBCID(
+      const std::vector<int>& point_physical_tags,
       const std::unordered_map<int, std::string>& physical_names) const;
 };
 }  // namespace hummingbird

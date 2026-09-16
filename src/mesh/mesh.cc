@@ -5,10 +5,12 @@
 #include <format>
 #include <functional>
 #include <iomanip>
+#include <nlohmann/json.hpp>
 #include <stdexcept>
 #include <unordered_map>
 
 #include "mesh/segment.h"
+#include "utils/enums.h"
 
 namespace hummingbird {
 
@@ -216,12 +218,23 @@ void Mesh::ReadElements(std::ifstream& file, GmshReadState& state) {
     file >> entity_dim >> entity_tag >> element_type >> n_elements_in_block;
 
     if (element_type == kPointType) {
-      // Point elements only mark boundary entities in gmsh; they don't map
-      // to their own hummingbird Element.
+      // Point elements mark boundary entities in gmsh; they don't map to
+      // their own hummingbird Element, but tag the Node they reference.
+      const auto bc_id = GetBCID(state.point_physical_tags.at(entity_tag),
+                                 state.physical_names);
+      const auto& bc_name = state.physical_names.at(bc_id);
+      BC boundary;
+      from_json(nlohmann::json(bc_name.substr(bc_name.find(':') + 1)),
+               boundary);
+
       size_t element_tag = 0;
       size_t node_tag = 0;
-      for (size_t i = 0; i < n_elements_in_block; i++)
+      for (size_t i = 0; i < n_elements_in_block; i++) {
         file >> element_tag >> node_tag;
+        Node& node = nodes_.at(state.node_tag_to_id.at(node_tag));
+        node.bc_id = bc_id;
+        node.boundary = boundary;
+      }
       continue;
     }
 
@@ -270,6 +283,17 @@ int Mesh::GetSourceID(
       "No Physical Group with a name prefixed \"source:\" was found for "
       "a curve entity.");
 }
+
+int Mesh::GetBCID(
+    const std::vector<int>& point_physical_tags,
+    const std::unordered_map<int, std::string>& physical_names) const {
+  for (int tag : point_physical_tags)
+    if (physical_names.at(tag).starts_with("bc_")) return tag;
+  throw std::runtime_error(
+      "No Physical Group with a name prefixed \"bc_\" was found for "
+      "a point entity.");
+}
+
 void Mesh::InitializeNodeSolutions(const size_t n_ordinates) {
   for (Node& node : nodes_) {
     node.scalar_flux = 0.0;

@@ -3,6 +3,7 @@
 #include <gtest/gtest.h>
 
 #include <algorithm>
+#include <cmath>
 #include <fstream>
 #include <memory>
 #include <stdexcept>
@@ -11,6 +12,7 @@
 #include "mesh/segment.h"
 #include "quadrature/gauss_lobatto_legendre.h"
 #include "utils/constants.h"
+#include "utils/enums.h"
 
 namespace hummingbird {
 
@@ -117,6 +119,56 @@ TEST(MeshGMSHTest, ElementsHaveSourceIDFromSourcePhysicalGroup) {
         << "Element " << i << " has an unexpected source ID.";
 }
 
+TEST(MeshGMSHTest, BoundaryNodesHaveBCFromBCPhysicalGroup) {
+  Mesh mesh(WriteTempMesh("hummingbird_mesh_test_bc.msh", kOneDGmsh));
+  ASSERT_EQ(mesh.nodes().size(), 5u);
+  EXPECT_EQ(mesh.nodes().at(0).boundary, BC::VACUUM);
+  EXPECT_EQ(mesh.nodes().at(0).bc_id, 2u);
+  EXPECT_EQ(mesh.nodes().at(1).boundary, BC::VACUUM);
+  EXPECT_EQ(mesh.nodes().at(1).bc_id, 3u);
+}
+
+TEST(MeshGMSHTest, NonBoundaryNodesHaveNoBC) {
+  Mesh mesh(
+      WriteTempMesh("hummingbird_mesh_test_no_bc_interior.msh", kOneDGmsh));
+  ASSERT_EQ(mesh.nodes().size(), 5u);
+  for (size_t i = 2; i < mesh.nodes().size(); i++)
+    EXPECT_EQ(mesh.nodes().at(i).boundary, BC::NONE)
+        << "Node " << i << " should not have a boundary condition.";
+}
+
+TEST(MeshGMSHTest, ThrowsWhenPointEntityHasNoBCPhysicalGroup) {
+  // The point's only Physical Group name doesn't start with "bc_", so
+  // Mesh::GetBCID has nothing to find.
+  constexpr char kNoBCPointMesh[] = R"(
+$MeshFormat
+4.1 0 8
+$EndMeshFormat
+$PhysicalNames
+1
+0 2 "not_a_bc"
+$EndPhysicalNames
+$Entities
+1 0 0 0
+1 0 0 0 1 2
+$EndEntities
+$Nodes
+1 1 1 1
+0 1 0 1
+1
+0 0 0
+$EndNodes
+$Elements
+1 1 1 1
+0 1 15 1
+1 1
+$EndElements
+)";
+  EXPECT_THROW(Mesh mesh(WriteTempMesh("hummingbird_mesh_test_no_bc_group.msh",
+                                       kNoBCPointMesh)),
+              std::runtime_error);
+}
+
 TEST(MeshGMSHTest, SegmentConnectivityMatchesFileOrder) {
   // Segment::CreateInteriorNodes maps each element's boundary nodes to the
   // segment midpoint when using a 3-point GLL rule, so the resulting
@@ -201,6 +253,26 @@ TEST(MeshPrepareTest, PreservesElementConnectivityAfterRenumbering) {
                 EXP_NEAR_TOLERANCE)
         << "element " << e << " right endpoint";
     previous_right_id = ids.back();
+  }
+}
+
+TEST(MeshPrepareTest, BoundaryConditionsSurviveRenumberingAndInteriorNodeCreation) {
+  // The chain's two true endpoints (x=0.0 "bc_west", x=1.0 "bc_east") are
+  // both tagged BC::VACUUM in kOneDGmsh. After Prepare() (interior node
+  // creation + renumbering), those two nodes must still carry BC::VACUUM,
+  // while every other node -- the pre-existing curve nodes and the newly
+  // created GLL interior nodes -- must remain BC::NONE.
+  Mesh mesh(WriteTempMesh("hummingbird_mesh_test_prepare_bc.msh", kOneDGmsh));
+  GaussLobattoLegendre gll(3);
+  mesh.Prepare(gll);
+
+  ASSERT_EQ(mesh.nodes().size(), 9u);
+  for (const auto& node : mesh.nodes()) {
+    bool is_true_endpoint = std::abs(node.x - 0.0) < EXP_NEAR_TOLERANCE ||
+                            std::abs(node.x - 1.0) < EXP_NEAR_TOLERANCE;
+    EXPECT_EQ(node.boundary, is_true_endpoint ? BC::VACUUM : BC::NONE)
+        << "Node " << node.id << " at x=" << node.x
+        << " has an unexpected boundary condition.";
   }
 }
 
