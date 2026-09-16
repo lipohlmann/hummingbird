@@ -16,6 +16,10 @@ namespace {
 // AssembleGlobalForcingData override isn't implemented yet.
 class TestableProblem : public ProblemBase {
  public:
+  // n_dofs/n_ordinates are irrelevant here since these tests only exercise
+  // CheckGlobalMatrixData/CheckGlobalForcingData directly.
+  TestableProblem() : ProblemBase(0, 0) {}
+
   using ProblemBase::CheckGlobalForcingData;
   using ProblemBase::CheckGlobalMatrixData;
 
@@ -26,8 +30,7 @@ class TestableProblem : public ProblemBase {
   }
 
   std::vector<GlobalForcingData> AssembleGlobalForcingData(
-      const GaussLobattoLegendre&, const Mesh&, const size_t,
-      const BCBank&) override {
+      const GaussLobattoLegendre&, const Mesh&, const size_t) override {
     return {};
   }
 };
