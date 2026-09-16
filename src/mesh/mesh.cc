@@ -2,6 +2,7 @@
 
 #include <algorithm>
 #include <array>
+#include <cassert>
 #include <format>
 #include <functional>
 #include <iomanip>
@@ -341,5 +342,6 @@ std::string Mesh::ExtractName(const std::string& physical_name) const {
 void Mesh::FindBoundaryNodes() {
   for (const auto& node : nodes_)
     if (node.bc_id != 0) boundary_node_ids_.push_back(node.bc_id);
+  if (dimension_ == 1) assert(boundary_node_ids_.size() == 2);
 }
 }  // namespace hummingbird
