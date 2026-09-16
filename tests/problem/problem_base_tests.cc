@@ -33,6 +33,9 @@ class TestableProblem : public ProblemBase {
       const GaussLobattoLegendre&, const Mesh&, const size_t) override {
     return {};
   }
+
+  void Apply1DBCs(const Mesh&, const QuadratureBase<Ordinate>,
+                  const BCBank&) override {}
 };
 
 }  // namespace
