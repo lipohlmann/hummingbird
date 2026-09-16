@@ -4,6 +4,8 @@ namespace hummingbird {
 void ProblemBase::AssembleGlobalSystem(
     const std::vector<GlobalMatrixData>& global_matrix_data,
     const size_t ordinate_index) {
+  CheckGlobalMatrixData(global_matrix_data);
+
   auto n_vals = global_matrix_data.size();
   arma::umat locations(2, n_vals);
   std::vector<double> values(n_vals);
@@ -19,6 +21,8 @@ void ProblemBase::AssembleGlobalSystem(
 void ProblemBase::AssembleGlobalForcing(
     const std::vector<GlobalForcingData>& global_forcing_data,
     const size_t ordinate_index) {
+  CheckGlobalForcingData(global_forcing_data);
+
   arma::Col<double> global_forcing_vector(global_forcing_data.size(),
                                           arma::fill::zeros);
   for (const auto& data : global_forcing_data)

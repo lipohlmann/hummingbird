@@ -109,6 +109,12 @@ class ProblemBase {
   /// @brief Column vector of the angular flux at the nodes in order of
   /// ordinates in angular quadrature set
   std::vector<arma::Col<double>> solution_vectors_;
+
+  // needs to check for unique ids
+  void CheckGlobalMatrixData(const std::vector<GlobalMatrixData>& gmd);
+
+  // needs to check for unique ids
+  void CheckGlobalForcingData(const std::vector<GlobalForcingData>& gfd);
 };
 }  // namespace hummingbird
 
