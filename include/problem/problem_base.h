@@ -60,7 +60,9 @@ class ProblemBase {
    * simulation. The global matrix is sized from the n_dofs supplied at
    * construction, not from global_matrix_data; row_id/col_id pairs are
    * expected to repeat (shared nodes get summed contributions from multiple
-   * elements) and are summed by Armadillo's batch SpMat constructor.
+   * elements) and are summed via Armadillo's batch SpMat constructor's
+   * add_values=true overload (the default overload errors on duplicate
+   * locations instead of summing them).
    *
    * @param global_matrix_data Vector of GlobalMatrixData structs
    */

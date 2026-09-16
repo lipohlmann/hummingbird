@@ -8,10 +8,12 @@
 #include <nlohmann/json.hpp>
 
 #include "banks/bc_bank.h"
+#include "banks/material_bank.h"
 #include "mesh/mesh.h"
 #include "mesh/node.h"
 #include "mesh/segment.h"
 #include "quadrature/angular/ordinate.h"
+#include "quadrature/gauss_lobatto_legendre.h"
 #include "utils/constants.h"
 
 using nlohmann::json;
@@ -20,17 +22,63 @@ namespace hummingbird {
 
 namespace {
 
-// Exposes the protected forcing/solution vectors so a known lagged solution
-// value can be seeded and the resulting forcing vector inspected, without
-// needing to drive a full assemble/solve cycle. Apply1DBCs itself stays
-// private on CGProblem -- exercised through the public, non-virtual
-// ProblemBase::ApplyBCs dispatcher instead.
+// Exposes the protected system/forcing/solution vectors so known values can
+// be seeded and assembled results inspected directly, without needing a
+// full solve cycle. Apply1DBCs itself stays private on CGProblem --
+// exercised through the public, non-virtual ProblemBase::ApplyBCs
+// dispatcher instead.
 class TestableCGProblem : public CGProblem {
  public:
   using CGProblem::CGProblem;
   using ProblemBase::global_forcing_vectors_;
+  using ProblemBase::global_system_matrices_;
   using ProblemBase::solution_vectors_;
 };
+
+Node MakeNode(size_t id, double x, double y, double z) {
+  Node node;
+  node.id = id;
+  node.x = x;
+  node.y = y;
+  node.z = z;
+  return node;
+}
+
+// Builds a MaterialBank containing a single material (looked up by
+// GetIDByName("m")) with the given total cross section and zero
+// scattering/fission/nu, matching segment_tests.cc's MakeSingleMaterialBank.
+MaterialBank MakeSingleMaterialBank(double total_xs) {
+  json input = {{"materials",
+                 {{"m",
+                   {{"scattering_xs", 0.0},
+                    {"total_xs", total_xs},
+                    {"fission_xs", 0.0},
+                    {"nu", 0.0}}}}}};
+  return MaterialBank(input);
+}
+
+// Builds a MaterialBank with two distinct materials, "mat_a" and "mat_b".
+MaterialBank MakeTwoMaterialBank(double total_xs_a, double total_xs_b) {
+  json input = {
+      {"materials",
+       {{"mat_a",
+         {{"scattering_xs", 0.0},
+          {"total_xs", total_xs_a},
+          {"fission_xs", 0.0},
+          {"nu", 0.0}}},
+        {"mat_b",
+         {{"scattering_xs", 0.0},
+          {"total_xs", total_xs_b},
+          {"fission_xs", 0.0},
+          {"nu", 0.0}}}}}};
+  return MaterialBank(input);
+}
+
+// Builds an Ordinate whose x-direction cosine is exactly omega_x, matching
+// segment_tests.cc's MakeOrdinateWithXCosine.
+Ordinate MakeOrdinateWithXCosine(double omega_x) {
+  return Ordinate(std::acos(omega_x), M_PI / 2.0);
+}
 
 // A minimal 1D, 2-node mesh (one Segment) with both endpoints tagged VACUUM
 // and their outward normals set by hand, bypassing gmsh/ResolveIDs so the
@@ -108,6 +156,217 @@ TEST(CGProblemVacuumBCTest, IncomingOrdinateAddsNothing) {
 
   EXPECT_NEAR(problem.global_forcing_vectors_.at(0)(0), 0.0,
              EXP_NEAR_TOLERANCE);
+}
+
+// ---------------------------------------------------------------------------
+// Global assembly: AssembleGlobalMatrixData/AssembleGlobalSystem and
+// AssembleGlobalForcingData/AssembleGlobalForcing, built directly (no input
+// files). Local element matrices/vectors are reused from already-verified
+// values in segment_tests.cc; these tests are about assembly (global row/
+// col placement, shared-node summation) rather than re-proving local
+// element math. Not testing Solve() -- assembly correctness only.
+// ---------------------------------------------------------------------------
+
+TEST(CGProblemAssemblyTest,
+     TwoUniformElementsThreePointsMatchesHandDerivedGlobalSystem) {
+  // Chain of 2 elements, 3 GLL points each, identical length/material:
+  // nodes 0,1,2 (element A) and 2,3,4 (element B), node 2 shared. Mesh::
+  // Prepare's renumbering (see MeshPrepareTest.PreservesElementConnectivity
+  // AfterRenumbering in mesh_tests.cc) gives this exact monotonic
+  // left-to-right numbering for a chain built from 3 corner nodes.
+  //
+  // Reuses the already-verified GLL-3 local stiffness
+  // ([[7/6,-4/3,1/6],[-4/3,8/3,-4/3],[1/6,-4/3,7/6]], segment_tests.cc
+  // ThreePointQuadraticElementMatchesHandDerivedValues) and mass (weights
+  // {1/3,4/3,1/3}, ThreePointMatchesHandDerivedWeights) matrices. With
+  // length=4, sigma_t=2, mu_x=1: coeff_K = (1/2)*(2/4) = 1/4, mass diag =
+  // sigma_t*length/2*{1/3,4/3,1/3} = {4/3,16/3,4/3}, giving the per-element
+  // combined (stiffness+mass) block:
+  //   [[13/8, -1/3, 1/24], [-1/3, 6, -1/3], [1/24, -1/3, 13/8]]
+  // placed at global {0,1,2} and {2,3,4}; node 2's diagonal sums both
+  // elements' (2,2)/(0,0) entries: 13/8 + 13/8 = 13/4.
+  //
+  // Forcing: source only at the far-right node (global 4, Q=1 elsewhere 0)
+  // matches segment_tests.cc's ThreePointSingleBoundarySourceMatchesHand
+  // DerivedValues pattern (Q=[0,0,1] in element B's local order), scaled to
+  // length=4: f_B_local = [1/6, -2/3, 7/6]. Element A's local source is all
+  // zero, so node 2's forcing is untouched by A (0 + 1/6 = 1/6).
+  const double length = 4.0;
+  const double sigma_t = 2.0;
+  MaterialBank material_bank = MakeSingleMaterialBank(sigma_t);
+  Ordinate ordinate = MakeOrdinateWithXCosine(1.0);
+  GaussLobattoLegendre gll(3);
+
+  Mesh mesh;
+  mesh.AddNodes({MakeNode(0, 0.0, 0.0, 0.0), MakeNode(1, length, 0.0, 0.0),
+                MakeNode(2, 2.0 * length, 0.0, 0.0)});
+  mesh.AddElement(
+      std::make_unique<Segment>(std::array<size_t, 2>{0, 1}, 0, 0, mesh));
+  mesh.AddElement(
+      std::make_unique<Segment>(std::array<size_t, 2>{1, 2}, 0, 0, mesh));
+  mesh.Prepare(gll);
+  mesh.InitializeNodeSolutions(1);
+  // Mesh exposes nodes by const reference only; the underlying Mesh (and
+  // its nodes) are genuinely non-const here, so mutating a specific
+  // already-added node's fields this way is well-defined.
+  const_cast<Node&>(mesh.GetNode(4)).source_fluxes.at(0) = 1.0;
+
+  TestableCGProblem problem(/*n_dofs=*/5, /*n_ordinates=*/1);
+  auto gmd =
+      problem.AssembleGlobalMatrixData(mesh, gll, material_bank, ordinate);
+  problem.AssembleGlobalSystem(gmd, 0);
+  auto gfd = problem.AssembleGlobalForcingData(gll, mesh, 0);
+  problem.AssembleGlobalForcing(gfd, 0);
+
+  const auto& k = problem.global_system_matrices_.at(0);
+  ASSERT_EQ(k.n_rows, 5u);
+  ASSERT_EQ(k.n_cols, 5u);
+  EXPECT_NEAR(k(0, 0), 13.0 / 8.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(0, 1), -1.0 / 3.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(0, 2), 1.0 / 24.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(0, 3), 0.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(0, 4), 0.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(1, 1), 6.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(1, 2), -1.0 / 3.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(2, 2), 13.0 / 4.0, EXP_NEAR_TOLERANCE)
+      << "Shared node's diagonal should sum both elements' contributions.";
+  EXPECT_NEAR(k(2, 3), -1.0 / 3.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(2, 4), 1.0 / 24.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(3, 3), 6.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(3, 4), -1.0 / 3.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(4, 4), 13.0 / 8.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(1, 0), k(0, 1), EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(2, 0), k(0, 2), EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(2, 1), k(1, 2), EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(3, 2), k(2, 3), EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(4, 2), k(2, 4), EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(4, 3), k(3, 4), EXP_NEAR_TOLERANCE);
+
+  const auto& f = problem.global_forcing_vectors_.at(0);
+  ASSERT_EQ(f.n_elem, 5u);
+  EXPECT_NEAR(f(0), 0.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(f(1), 0.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(f(2), 1.0 / 6.0, EXP_NEAR_TOLERANCE)
+      << "Shared node's forcing should sum both elements' contributions.";
+  EXPECT_NEAR(f(3), -2.0 / 3.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(f(4), 7.0 / 6.0, EXP_NEAR_TOLERANCE);
+}
+
+TEST(CGProblemAssemblyTest,
+     TwoElementsDifferentMaterialsAndLengthsSumSharedNodeCorrectly) {
+  // Same 2-element chain topology, but element A (length=2, sigma_t=1) and
+  // element B (length=4, sigma_t=2) now differ, so the two local blocks
+  // placed into the global matrix are not identical -- a stronger check
+  // that assembly places/sums genuinely different per-element contributions
+  // rather than coincidentally matching due to symmetry.
+  //
+  // Element A: coeff_K = (1/1)*(2/2) = 1, mass diag =
+  // 1*2/2*{1/3,4/3,1/3} = {1/3,4/3,1/3}:
+  //   [[3/2, -4/3, 1/6], [-4/3, 4, -4/3], [1/6, -4/3, 3/2]]
+  // Element B: same as the uniform test above:
+  //   [[13/8, -1/3, 1/24], [-1/3, 6, -1/3], [1/24, -1/3, 13/8]]
+  // Shared node 2: A's right diagonal (3/2) + B's left diagonal (13/8).
+  //
+  // Forcing: source only at the shared node (global 2, Q=1 elsewhere 0).
+  // For element A (k=2 term, length=2): f_A_local = [1/6, -2/3, 5/6].
+  // For element B (k=0 term, length=4): f_B_local = [1/6, 2/3, -1/6].
+  // Node 2 sums A's right component (5/6) and B's left component (1/6).
+  const double length_a = 2.0;
+  const double sigma_t_a = 1.0;
+  const double length_b = 4.0;
+  const double sigma_t_b = 2.0;
+  MaterialBank material_bank = MakeTwoMaterialBank(sigma_t_a, sigma_t_b);
+  const int mat_a = material_bank.GetIDByName("mat_a");
+  const int mat_b = material_bank.GetIDByName("mat_b");
+  Ordinate ordinate = MakeOrdinateWithXCosine(1.0);
+  GaussLobattoLegendre gll(3);
+
+  Mesh mesh;
+  mesh.AddNodes({MakeNode(0, 0.0, 0.0, 0.0),
+                MakeNode(1, length_a, 0.0, 0.0),
+                MakeNode(2, length_a + length_b, 0.0, 0.0)});
+  mesh.AddElement(std::make_unique<Segment>(std::array<size_t, 2>{0, 1},
+                                            mat_a, 0, mesh));
+  mesh.AddElement(std::make_unique<Segment>(std::array<size_t, 2>{1, 2},
+                                            mat_b, 0, mesh));
+  mesh.Prepare(gll);
+  mesh.InitializeNodeSolutions(1);
+  const_cast<Node&>(mesh.GetNode(2)).source_fluxes.at(0) = 1.0;
+
+  TestableCGProblem problem(/*n_dofs=*/5, /*n_ordinates=*/1);
+  auto gmd =
+      problem.AssembleGlobalMatrixData(mesh, gll, material_bank, ordinate);
+  problem.AssembleGlobalSystem(gmd, 0);
+  auto gfd = problem.AssembleGlobalForcingData(gll, mesh, 0);
+  problem.AssembleGlobalForcing(gfd, 0);
+
+  const auto& k = problem.global_system_matrices_.at(0);
+  EXPECT_NEAR(k(0, 0), 3.0 / 2.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(0, 2), 1.0 / 6.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(1, 1), 4.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(2, 4), 1.0 / 24.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(3, 3), 6.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(4, 4), 13.0 / 8.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(2, 2), 3.0 / 2.0 + 13.0 / 8.0, EXP_NEAR_TOLERANCE)
+      << "Shared node's diagonal should sum two different per-element "
+         "values.";
+
+  const auto& f = problem.global_forcing_vectors_.at(0);
+  EXPECT_NEAR(f(0), 1.0 / 6.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(f(1), -2.0 / 3.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(f(2), 5.0 / 6.0 + 1.0 / 6.0, EXP_NEAR_TOLERANCE)
+      << "Shared node's forcing should sum both elements' contributions.";
+  EXPECT_NEAR(f(3), 2.0 / 3.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(f(4), -1.0 / 6.0, EXP_NEAR_TOLERANCE);
+}
+
+TEST(CGProblemAssemblyTest, ThreeUniformElementsSumBothSharedNodes) {
+  // Extends the chain to 3 elements (2 shared nodes: global 2 and 4),
+  // checking that placement/summation generalizes past a single shared
+  // node. Same per-element block as the first test above (length=4,
+  // sigma_t=2, mu_x=1):
+  //   [[13/8, -1/3, 1/24], [-1/3, 6, -1/3], [1/24, -1/3, 13/8]]
+  const double length = 4.0;
+  const double sigma_t = 2.0;
+  MaterialBank material_bank = MakeSingleMaterialBank(sigma_t);
+  Ordinate ordinate = MakeOrdinateWithXCosine(1.0);
+  GaussLobattoLegendre gll(3);
+
+  Mesh mesh;
+  mesh.AddNodes({MakeNode(0, 0.0, 0.0, 0.0), MakeNode(1, length, 0.0, 0.0),
+                MakeNode(2, 2.0 * length, 0.0, 0.0),
+                MakeNode(3, 3.0 * length, 0.0, 0.0)});
+  mesh.AddElement(
+      std::make_unique<Segment>(std::array<size_t, 2>{0, 1}, 0, 0, mesh));
+  mesh.AddElement(
+      std::make_unique<Segment>(std::array<size_t, 2>{1, 2}, 0, 0, mesh));
+  mesh.AddElement(
+      std::make_unique<Segment>(std::array<size_t, 2>{2, 3}, 0, 0, mesh));
+  mesh.Prepare(gll);
+
+  TestableCGProblem problem(/*n_dofs=*/7, /*n_ordinates=*/1);
+  auto gmd =
+      problem.AssembleGlobalMatrixData(mesh, gll, material_bank, ordinate);
+  problem.AssembleGlobalSystem(gmd, 0);
+
+  const auto& k = problem.global_system_matrices_.at(0);
+  ASSERT_EQ(k.n_rows, 7u);
+  EXPECT_NEAR(k(0, 0), 13.0 / 8.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(1, 1), 6.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(2, 2), 13.0 / 4.0, EXP_NEAR_TOLERANCE)
+      << "First shared node.";
+  EXPECT_NEAR(k(3, 3), 6.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(4, 4), 13.0 / 4.0, EXP_NEAR_TOLERANCE)
+      << "Second shared node.";
+  EXPECT_NEAR(k(5, 5), 6.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(6, 6), 13.0 / 8.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(2, 3), -1.0 / 3.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(3, 4), -1.0 / 3.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(2, 4), 1.0 / 24.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(0, 4), 0.0, EXP_NEAR_TOLERANCE)
+      << "Non-adjacent elements have no direct coupling.";
+  EXPECT_NEAR(k(0, 6), 0.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(k(2, 6), 0.0, EXP_NEAR_TOLERANCE);
 }
 
 }  // namespace hummingbird

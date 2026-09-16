@@ -28,7 +28,11 @@ void ProblemBase::AssembleGlobalSystem(
     locations(1, i) = global_matrix_data[i].col_id;
     values[i] = global_matrix_data[i].value;
   }
-  arma::SpMat<double> global_system_matrix(locations, values, n_dofs, n_dofs);
+  // add_values=true: sum duplicate (row,col) locations rather than
+  // erroring on them -- shared nodes between elements are expected to
+  // contribute more than one entry at the same location.
+  arma::SpMat<double> global_system_matrix(true, locations, values, n_dofs,
+                                           n_dofs);
   global_system_matrices_.at(ordinate_index) = global_system_matrix;
 }
 
