@@ -6,6 +6,7 @@
 #include <cmath>
 #include <fstream>
 #include <memory>
+#include <nlohmann/json.hpp>
 #include <stdexcept>
 #include <string>
 
@@ -13,14 +14,15 @@
 #include "mesh/segment.h"
 #include "quadrature/gauss_lobatto_legendre.h"
 #include "utils/constants.h"
-#include "utils/enums.h"
+
+using nlohmann::json;
 
 namespace hummingbird {
 
 namespace {
 
 // Mirrors cases/1D/1D_MMS_1_gmsh.msh: a unit-length 1D domain split into 4
-// segments, with "bc_west"/"bc_east" boundary points and a single
+// segments, with "bc:west"/"bc:east" boundary points and a single
 // "material:mms_material" / "source:mms_source" curve region.
 constexpr char kOneDGmsh[] = R"(
 $MeshFormat
@@ -28,8 +30,8 @@ $MeshFormat
 $EndMeshFormat
 $PhysicalNames
 4
-0 2 "bc_west:vacuum"
-0 3 "bc_east:vacuum"
+0 2 "bc:west"
+0 3 "bc:east"
 1 4 "material:mms_material"
 1 5 "source:mms_source"
 $EndPhysicalNames
@@ -115,6 +117,28 @@ class FakeElement : public Element {
   unsigned int dimension() const override { return 2; }
 };
 
+// Helpers for building the banks ResolveIDs resolves kOneDGmsh's raw gmsh
+// tags against.
+json MakeMaterialBankJson(const std::string& name) {
+  return json{{"materials",
+              {{name,
+                {{"scattering_xs", 0.0},
+                 {"total_xs", 1.0},
+                 {"fission_xs", 0.0},
+                 {"nu", 0.0}}}}}};
+}
+
+json MakeSourceBankJson(const std::string& name) {
+  return json{
+      {"sources", {{name, {{"type", "constant"}, {"strength", 1.0}}}}}};
+}
+
+json MakeBCBankJson() {
+  return json{{"boundary_conditions",
+              {{"west", {{"type", "vacuum"}}},
+               {"east", {{"type", "vacuum"}}}}}};
+}
+
 }  // namespace
 
 TEST(MeshGMSHTest, ReadsExpectedNumberOfNodesAndElements) {
@@ -151,11 +175,12 @@ TEST(MeshGMSHTest, ElementsHaveSourceIDFromSourcePhysicalGroup) {
 }
 
 TEST(MeshGMSHTest, BoundaryNodesHaveBCFromBCPhysicalGroup) {
+  // Pre-ResolveIDs, bc_id is still the raw gmsh Physical Group tag (2 for
+  // "bc:west", 3 for "bc:east" -- see ResolveIDs tests below for the
+  // resolved-to-bank-ID behavior).
   Mesh mesh(WriteTempMesh("hummingbird_mesh_test_bc.msh", kOneDGmsh));
   ASSERT_EQ(mesh.nodes().size(), 5u);
-  EXPECT_EQ(mesh.nodes().at(0).boundary, BC::VACUUM);
   EXPECT_EQ(mesh.nodes().at(0).bc_id, 2u);
-  EXPECT_EQ(mesh.nodes().at(1).boundary, BC::VACUUM);
   EXPECT_EQ(mesh.nodes().at(1).bc_id, 3u);
 }
 
@@ -164,8 +189,51 @@ TEST(MeshGMSHTest, NonBoundaryNodesHaveNoBC) {
       WriteTempMesh("hummingbird_mesh_test_no_bc_interior.msh", kOneDGmsh));
   ASSERT_EQ(mesh.nodes().size(), 5u);
   for (size_t i = 2; i < mesh.nodes().size(); i++)
-    EXPECT_EQ(mesh.nodes().at(i).boundary, BC::NONE)
+    EXPECT_EQ(mesh.nodes().at(i).bc_id, 0u)
         << "Node " << i << " should not have a boundary condition.";
+}
+
+// ---------------------------------------------------------------------------
+// Mesh::ResolveIDs
+// ---------------------------------------------------------------------------
+
+TEST(MeshResolveIDsTest, ResolvesMaterialSourceAndBCIDsToBankAssignedIDs) {
+  Mesh mesh(WriteTempMesh("hummingbird_mesh_test_resolve.msh", kOneDGmsh));
+  MaterialBank material_bank(MakeMaterialBankJson("mms_material"));
+  SourceBank source_bank(MakeSourceBankJson("mms_source"));
+  BCBank bc_bank(MakeBCBankJson());
+
+  mesh.ResolveIDs(material_bank, source_bank, bc_bank);
+
+  ASSERT_EQ(mesh.n_elements(), 4u);
+  for (size_t i = 0; i < mesh.n_elements(); i++) {
+    EXPECT_EQ(mesh.GetElement(i).material_id(),
+              static_cast<int>(material_bank.GetIDByName("mms_material")))
+        << "Element " << i;
+    EXPECT_EQ(mesh.GetElement(i).source_id(),
+              static_cast<int>(source_bank.GetIDByName("mms_source")))
+        << "Element " << i;
+  }
+
+  ASSERT_EQ(mesh.nodes().size(), 5u);
+  EXPECT_EQ(mesh.nodes().at(0).bc_id, bc_bank.GetIDByName("west"));
+  EXPECT_EQ(mesh.nodes().at(1).bc_id, bc_bank.GetIDByName("east"));
+  for (size_t i = 2; i < mesh.nodes().size(); i++)
+    EXPECT_EQ(mesh.nodes().at(i).bc_id, 0u)
+        << "Node " << i << " was never tagged, should stay unresolved (0).";
+}
+
+TEST(MeshResolveIDsTest, ThrowsWhenMaterialNameNotInMaterialBank) {
+  // kOneDGmsh's curves are tagged "material:mms_material", but this bank
+  // only defines "some_other_material".
+  Mesh mesh(WriteTempMesh("hummingbird_mesh_test_resolve_bad_material.msh",
+                          kOneDGmsh));
+  MaterialBank material_bank(MakeMaterialBankJson("some_other_material"));
+  SourceBank source_bank(MakeSourceBankJson("mms_source"));
+  BCBank bc_bank(MakeBCBankJson());
+
+  EXPECT_THROW(mesh.ResolveIDs(material_bank, source_bank, bc_bank),
+              std::runtime_error);
 }
 
 // ---------------------------------------------------------------------------
@@ -192,7 +260,7 @@ TEST(MeshDimensionTest, ThrowsWhenElementDimensionsMismatch) {
 }
 
 TEST(MeshGMSHTest, ThrowsWhenPointEntityHasNoBCPhysicalGroup) {
-  // The point's only Physical Group name doesn't start with "bc_", so
+  // The point's only Physical Group name doesn't start with "bc:", so
   // Mesh::GetBCID has nothing to find.
   constexpr char kNoBCPointMesh[] = R"(
 $MeshFormat
@@ -311,20 +379,22 @@ TEST(MeshPrepareTest, PreservesElementConnectivityAfterRenumbering) {
 }
 
 TEST(MeshPrepareTest, BoundaryConditionsSurviveRenumberingAndInteriorNodeCreation) {
-  // The chain's two true endpoints (x=0.0 "bc_west", x=1.0 "bc_east") are
-  // both tagged BC::VACUUM in kOneDGmsh. After Prepare() (interior node
-  // creation + renumbering), those two nodes must still carry BC::VACUUM,
-  // while every other node -- the pre-existing curve nodes and the newly
-  // created GLL interior nodes -- must remain BC::NONE.
+  // The chain's two true endpoints are tagged by kOneDGmsh's point entities:
+  // x=0.0 by "bc:west" (raw tag 2), x=1.0 by "bc:east" (raw tag 3). After
+  // Prepare() (interior node creation + renumbering), those two nodes must
+  // still carry their original bc_id, while every other node -- the
+  // pre-existing curve nodes and the newly created GLL interior nodes --
+  // must remain untagged (bc_id == 0).
   Mesh mesh(WriteTempMesh("hummingbird_mesh_test_prepare_bc.msh", kOneDGmsh));
   GaussLobattoLegendre gll(3);
   mesh.Prepare(gll);
 
   ASSERT_EQ(mesh.nodes().size(), 9u);
   for (const auto& node : mesh.nodes()) {
-    bool is_true_endpoint = std::abs(node.x - 0.0) < EXP_NEAR_TOLERANCE ||
-                            std::abs(node.x - 1.0) < EXP_NEAR_TOLERANCE;
-    EXPECT_EQ(node.boundary, is_true_endpoint ? BC::VACUUM : BC::NONE)
+    unsigned int expected_bc_id = 0u;
+    if (std::abs(node.x - 0.0) < EXP_NEAR_TOLERANCE) expected_bc_id = 2u;
+    if (std::abs(node.x - 1.0) < EXP_NEAR_TOLERANCE) expected_bc_id = 3u;
+    EXPECT_EQ(node.bc_id, expected_bc_id)
         << "Node " << node.id << " at x=" << node.x
         << " has an unexpected boundary condition.";
   }

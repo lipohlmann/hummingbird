@@ -1,7 +1,5 @@
 #include "mesh/segment.h"
 
-#include "utils/enums.h"
-
 namespace hummingbird {
 Segment::Segment(const std::array<size_t, 2> boundary_node_ids,
                  const int material_id, const int source_id, const Mesh& mesh)
@@ -30,9 +28,8 @@ std::vector<Node> Segment::CreateInteriorNodes(
   double direction_y = right_node.y - left_node.y;
   double direction_z = right_node.z - left_node.z;
 
-  BC interior_boundary = (left_node.boundary == right_node.boundary)
-                             ? left_node.boundary
-                             : BC::NONE;
+  unsigned int interior_bc_id =
+      (left_node.bc_id == right_node.bc_id) ? left_node.bc_id : 0;
   node_ids_.push_back(left_node.id);
   std::vector<Node> nodes(gll_quadrature.n_points() - 2);
   for (auto i = 1; i < gll_quadrature.n_points() - 1; i++) {
@@ -44,7 +41,7 @@ std::vector<Node> Segment::CreateInteriorNodes(
     new_node.x = left_node.x + fraction * direction_x;
     new_node.y = left_node.y + fraction * direction_y;
     new_node.z = left_node.z + fraction * direction_z;
-    new_node.boundary = interior_boundary;
+    new_node.bc_id = interior_bc_id;
     nodes.at(i - 1) = std::move(new_node);
     id++;
   }

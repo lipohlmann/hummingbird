@@ -120,6 +120,8 @@ void Mesh::ReadGMSH(const std::string& msh_file) {
     auto handler = section_handlers.find(line);
     if (handler != section_handlers.end()) handler->second(file);
   }
+
+  physical_names_ = std::move(state.physical_names);
 }
 
 void Mesh::ReadPhysicalNames(std::ifstream& file, GmshReadState& state) {
@@ -231,10 +233,6 @@ void Mesh::ReadElements(std::ifstream& file, GmshReadState& state) {
       // their own hummingbird Element, but tag the Node they reference.
       const auto bc_id = GetBCID(state.point_physical_tags.at(entity_tag),
                                  state.physical_names);
-      const auto& bc_name = state.physical_names.at(bc_id);
-      BC boundary;
-      from_json(nlohmann::json(bc_name.substr(bc_name.find(':') + 1)),
-                boundary);
 
       size_t element_tag = 0;
       size_t node_tag = 0;
@@ -308,6 +306,36 @@ void Mesh::InitializeNodeSolutions(const size_t n_ordinates) {
     node.angular_fluxes.assign(n_ordinates, 0.0);
     node.source_fluxes.assign(n_ordinates, 0.0);
   }
+}
+
+void Mesh::ResolveIDs(const MaterialBank& material_bank,
+                      const SourceBank& source_bank, const BCBank& bc_bank) {
+  for (auto& element : elements_) {
+    const auto material_name =
+        ExtractName(physical_names_.at(element->material_id()));
+    try {
+      element->SetMaterialID(material_bank.GetIDByName(material_name));
+    } catch (const std::out_of_range&) {
+      throw std::runtime_error(std::format(
+          "Material \"{}\" passed to the mesh is not defined in the input "
+          "file.",
+          material_name));
+    }
+
+    const auto source_name =
+        ExtractName(physical_names_.at(element->source_id()));
+    element->SetSourceID(source_bank.GetIDByName(source_name));
+  }
+
+  for (auto& node : nodes_) {
+    if (node.bc_id == 0) continue;
+    const auto bc_name = ExtractName(physical_names_.at(node.bc_id));
+    node.bc_id = bc_bank.GetIDByName(bc_name);
+  }
+}
+
+std::string Mesh::ExtractName(const std::string& physical_name) const {
+  return physical_name.substr(physical_name.find(':') + 1);
 }
 
 }  // namespace hummingbird

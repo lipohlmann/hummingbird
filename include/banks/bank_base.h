@@ -34,6 +34,16 @@ class BankBase {
     return GetByID(name_id_map_.at(name));
   }
 
+  /**
+   * @brief Get the ID of an object by its name in the JSON input file
+   *
+   * @param name Object name
+   * @return unsigned int
+   */
+  unsigned int GetIDByName(const std::string& name) const {
+    return name_id_map_.at(name);
+  }
+
  protected:
   /// @brief ID to object map
   std::unordered_map<unsigned int, T> id_object_map_;

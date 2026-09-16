@@ -9,6 +9,9 @@
 #include <unordered_map>
 #include <vector>
 
+#include "banks/bc_bank.h"
+#include "banks/material_bank.h"
+#include "banks/source_bank.h"
 #include "mesh/element.h"
 #include "mesh/node.h"
 #include "quadrature/gauss_lobatto_legendre.h"
@@ -137,6 +140,24 @@ class Mesh {
    */
   void Prepare(const GaussLobattoLegendre& gll_quadrature);
 
+  /**
+   * @brief Resolve the raw gmsh Physical Group tags currently stored in
+   * material_id()/source_id()/bc_id (set from the .msh file alone, with no
+   * bank access) into the real IDs assigned by the given banks, by looking
+   * up the name each tag's Physical Group carries (e.g. "mms_material" from
+   * "material:mms_material") via BankBase::GetIDByName. Nodes with
+   * bc_id == 0 (never tagged by a point element) are left alone.
+   *
+   * @throw std::runtime_error if a material name from the mesh has no match
+   * in material_bank
+   *
+   * @param material_bank Material bank
+   * @param source_bank Source bank
+   * @param bc_bank BC bank
+   */
+  void ResolveIDs(const MaterialBank& material_bank,
+                  const SourceBank& source_bank, const BCBank& bc_bank);
+
  private:
   /// @brief Nodes in the mesh
   std::vector<Node> nodes_;
@@ -147,6 +168,11 @@ class Mesh {
   /// @brief Spatial dimension of the mesh's elements, set by the first call
   /// to AddElement. 0 if no elements have been added yet.
   unsigned int dimension_ = 0;
+
+  /// @brief Map from Physical Group tag to its name (e.g. "material:foo"),
+  /// persisted from GmshReadState::physical_names for use by ResolveIDs
+  /// after reading is done.
+  std::unordered_map<int, std::string> physical_names_;
 
   /**
    * @brief Renumber nodes in mesh to keep node IDs near each other in a single
@@ -272,7 +298,7 @@ class Mesh {
 
   /**
    * @brief Find the BC ID for a point entity, defined as the tag of the
-   * Physical Group on that point whose name is prefixed with "bc_" (see
+   * Physical Group on that point whose name is prefixed with "bc:" (see
    * cases/README.md)
    *
    * @throw std::runtime_error if no such Physical Group is found
@@ -284,6 +310,15 @@ class Mesh {
   int GetBCID(
       const std::vector<int>& point_physical_tags,
       const std::unordered_map<int, std::string>& physical_names) const;
+
+  /**
+   * @brief Extract the name after the ":" in a Physical Group name (e.g.
+   * "mms_material" from "material:mms_material")
+   *
+   * @param physical_name Physical Group name
+   * @return std::string
+   */
+  std::string ExtractName(const std::string& physical_name) const;
 };
 }  // namespace hummingbird
 

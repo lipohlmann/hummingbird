@@ -67,6 +67,22 @@ class Element {
   int source_id() const { return source_id_; }
 
   /**
+   * @brief Set the Material ID, e.g. once it has been resolved from a raw
+   * gmsh tag to a MaterialBank-assigned ID (see Mesh::ResolveIDs)
+   *
+   * @param material_id Material ID
+   */
+  void SetMaterialID(const int material_id) { material_id_ = material_id; }
+
+  /**
+   * @brief Set the Source ID, e.g. once it has been resolved from a raw
+   * gmsh tag to a SourceBank-assigned ID (see Mesh::ResolveIDs)
+   *
+   * @param source_id Source ID
+   */
+  void SetSourceID(const int source_id) { source_id_ = source_id; }
+
+  /**
    * @brief Set the new Node ID
    *
    * @param prev_id Previous ID (currently stored in object)
@@ -107,10 +123,10 @@ class Element {
 
  protected:
   /// @brief Material ID
-  const int material_id_;
+  int material_id_;
 
   /// @brief Source ID
-  const int source_id_;
+  int source_id_;
 
   /// @brief IDs of nodes defining the element
   std::vector<size_t> node_ids_;

@@ -15,7 +15,6 @@
 #include "quadrature/angular/ordinate.h"
 #include "quadrature/gauss_lobatto_legendre.h"
 #include "utils/constants.h"
-#include "utils/enums.h"
 
 using nlohmann::json;
 
@@ -23,13 +22,13 @@ namespace hummingbird {
 
 namespace {
 
-Node MakeNode(size_t id, double x, double y, double z, BC boundary = BC::NONE) {
+Node MakeNode(size_t id, double x, double y, double z, unsigned int bc_id = 0) {
   Node node;
   node.id = id;
   node.x = x;
   node.y = y;
   node.z = z;
-  node.boundary = boundary;
+  node.bc_id = bc_id;
   return node;
 }
 
@@ -268,13 +267,9 @@ TEST_F(SegmentTest, DirectionFollowsBCNodeIdOrder) {
 // ---------------------------------------------------------------------------
 
 TEST_F(SegmentTest, InteriorBCMatchesSharedEndpointBC) {
-  // NOTE: BC::NONE is the only enumerator visible from the provided
-  // source; static_cast<BC>(1) stands in for "some other boundary
-  // value" and should be replaced with the real enumerator name if it
-  // differs from the underlying value 1.
-  const BC kSharedBC = static_cast<BC>(1);
-  Node left = MakeNode(0, 0.0, 0.0, 0.0, kSharedBC);
-  Node right = MakeNode(1, 10.0, 0.0, 0.0, kSharedBC);
+  const unsigned int kSharedBCID = 7u;
+  Node left = MakeNode(0, 0.0, 0.0, 0.0, kSharedBCID);
+  Node right = MakeNode(1, 10.0, 0.0, 0.0, kSharedBCID);
   std::vector<Node> nodes = {left, right};
   mesh.AddNodes(nodes);
   Segment segment({0, 1}, 1, 0, mesh);
@@ -283,13 +278,13 @@ TEST_F(SegmentTest, InteriorBCMatchesSharedEndpointBC) {
   auto interior = segment.CreateInteriorNodes(nodes, gll);
   ASSERT_FALSE(interior.empty());
   for (const auto& node : interior) {
-    EXPECT_EQ(node.boundary, kSharedBC);
+    EXPECT_EQ(node.bc_id, kSharedBCID);
   }
 }
 
 TEST_F(SegmentTest, InteriorBCIsNoneWhenEndpointBoundariesDiffer) {
-  Node left = MakeNode(0, 0.0, 0.0, 0.0, BC::NONE);
-  Node right = MakeNode(1, 10.0, 0.0, 0.0, static_cast<BC>(1));
+  Node left = MakeNode(0, 0.0, 0.0, 0.0, 0u);
+  Node right = MakeNode(1, 10.0, 0.0, 0.0, 7u);
   std::vector<Node> nodes = {left, right};
   mesh.AddNodes(nodes);
   Segment segment({0, 1}, 1, 0, mesh);
@@ -298,15 +293,15 @@ TEST_F(SegmentTest, InteriorBCIsNoneWhenEndpointBoundariesDiffer) {
   auto interior = segment.CreateInteriorNodes(nodes, gll);
   ASSERT_FALSE(interior.empty());
   for (const auto& node : interior) {
-    EXPECT_EQ(node.boundary, BC::NONE);
+    EXPECT_EQ(node.bc_id, 0u);
   }
 }
 
 TEST_F(SegmentTest, InteriorBCIsNoneWhenBothEndpointsAreNone) {
   // Degenerate but common case: neither endpoint is on a boundary, so
   // interior nodes shouldn't be either.
-  std::vector<Node> nodes = {MakeNode(0, 0.0, 0.0, 0.0, BC::NONE),
-                             MakeNode(1, 10.0, 0.0, 0.0, BC::NONE)};
+  std::vector<Node> nodes = {MakeNode(0, 0.0, 0.0, 0.0, 0u),
+                             MakeNode(1, 10.0, 0.0, 0.0, 0u)};
   mesh.AddNodes(nodes);
   Segment segment({0, 1}, 1, 0, mesh);
   GaussLobattoLegendre gll(4);  // 2 interior points
@@ -314,7 +309,7 @@ TEST_F(SegmentTest, InteriorBCIsNoneWhenBothEndpointsAreNone) {
   auto interior = segment.CreateInteriorNodes(nodes, gll);
   ASSERT_FALSE(interior.empty());
   for (const auto& node : interior) {
-    EXPECT_EQ(node.boundary, BC::NONE);
+    EXPECT_EQ(node.bc_id, 0u);
   }
 }
 
