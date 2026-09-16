@@ -1,5 +1,10 @@
 #include "problem/problem_base.h"
 
+#include <algorithm>
+#include <format>
+#include <set>
+#include <stdexcept>
+
 namespace hummingbird {
 void ProblemBase::AssembleGlobalSystem(
     const std::vector<GlobalMatrixData>& global_matrix_data,
@@ -34,6 +39,43 @@ void ProblemBase::Solve(const size_t ordinate_index) {
   solution_vectors_.at(ordinate_index) =
       arma::spsolve(global_system_matrices_.at(ordinate_index),
                     global_forcing_vectors_.at(ordinate_index));
+}
+
+void ProblemBase::CheckGlobalMatrixData(
+    const std::vector<GlobalMatrixData>& gmd) {
+  // row_id/col_id pairs are expected to repeat (shared nodes get summed
+  // contributions from multiple elements), so only the set of distinct IDs
+  // referenced is checked for gaps.
+  std::set<size_t> ids;
+  for (const auto& data : gmd) {
+    ids.insert(data.row_id);
+    ids.insert(data.col_id);
+  }
+
+  size_t expected_id = 0;
+  for (auto id : ids) {
+    if (id != expected_id)
+      throw std::runtime_error(std::format(
+          "Global matrix data is missing node ID {}. Node IDs referenced by "
+          "global matrix data must be contiguous starting from 0.",
+          expected_id));
+    expected_id++;
+  }
+}
+
+void ProblemBase::CheckGlobalForcingData(
+    const std::vector<GlobalForcingData>& gfd) {
+  std::vector<size_t> ids;
+  ids.reserve(gfd.size());
+  for (const auto& data : gfd) ids.push_back(data.row_id);
+  std::sort(ids.begin(), ids.end());
+
+  for (size_t i = 0; i < ids.size(); i++)
+    if (ids.at(i) != i)
+      throw std::runtime_error(std::format(
+          "Global forcing data row ID expected to be {} but was instead {}. "
+          "Row IDs must be unique and contiguous starting from 0.",
+          i, ids.at(i)));
 }
 
 }  // namespace hummingbird
