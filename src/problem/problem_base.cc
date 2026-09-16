@@ -1,6 +1,5 @@
 #include "problem/problem_base.h"
 
-#include <algorithm>
 #include <format>
 #include <set>
 #include <stdexcept>
@@ -20,6 +19,7 @@ void ProblemBase::AssembleGlobalSystem(
     const size_t ordinate_index) {
   CheckGlobalMatrixData(global_matrix_data);
 
+  const auto n_dofs = global_system_matrices_.at(ordinate_index).n_rows;
   auto n_vals = global_matrix_data.size();
   arma::umat locations(2, n_vals);
   arma::Col<double> values(n_vals);
@@ -28,7 +28,7 @@ void ProblemBase::AssembleGlobalSystem(
     locations(1, i) = global_matrix_data[i].col_id;
     values[i] = global_matrix_data[i].value;
   }
-  arma::SpMat<double> global_system_matrix(locations, values, n_vals, n_vals);
+  arma::SpMat<double> global_system_matrix(locations, values, n_dofs, n_dofs);
   global_system_matrices_.at(ordinate_index) = global_system_matrix;
 }
 
@@ -37,10 +37,10 @@ void ProblemBase::AssembleGlobalForcing(
     const size_t ordinate_index) {
   CheckGlobalForcingData(global_forcing_data);
 
-  arma::Col<double> global_forcing_vector(global_forcing_data.size(),
-                                          arma::fill::zeros);
+  const auto n_dofs = global_forcing_vectors_.at(ordinate_index).n_elem;
+  arma::Col<double> global_forcing_vector(n_dofs, arma::fill::zeros);
   for (const auto& data : global_forcing_data)
-    global_forcing_vector(data.row_id) = data.value;
+    global_forcing_vector(data.row_id) += data.value;
   global_forcing_vectors_.at(ordinate_index) = std::move(global_forcing_vector);
 }
 
@@ -85,17 +85,18 @@ void ProblemBase::CheckGlobalMatrixData(
 
 void ProblemBase::CheckGlobalForcingData(
     const std::vector<GlobalForcingData>& gfd) {
-  std::vector<size_t> ids;
-  ids.reserve(gfd.size());
-  for (const auto& data : gfd) ids.push_back(data.row_id);
-  std::sort(ids.begin(), ids.end());
+  std::set<size_t> ids;
+  for (const auto& data : gfd) ids.insert(data.row_id);
 
-  for (size_t i = 0; i < ids.size(); i++)
-    if (ids.at(i) != i)
+  size_t expected_id = 0;
+  for (auto id : ids) {
+    if (id != expected_id)
       throw std::runtime_error(std::format(
-          "Global forcing data row ID expected to be {} but was instead {}. "
-          "Row IDs must be unique and contiguous starting from 0.",
-          i, ids.at(i)));
+          "Global forcing data is missing row ID {}. Row IDs referenced by "
+          "global forcing data must be contiguous starting from 0.",
+          expected_id));
+    expected_id++;
+  }
 }
 
 }  // namespace hummingbird

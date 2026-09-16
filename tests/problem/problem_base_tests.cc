@@ -56,10 +56,13 @@ TEST(CheckGlobalForcingDataTest, AcceptsEmptyData) {
   EXPECT_NO_THROW(problem.CheckGlobalForcingData(gfd));
 }
 
-TEST(CheckGlobalForcingDataTest, ThrowsOnDuplicateRowID) {
+TEST(CheckGlobalForcingDataTest, AcceptsDuplicateRowIDsFromSharedNodes) {
+  // Two elements both contributing to node 1 (a shared node) produce
+  // duplicate row_ids -- expected/correct FE assembly behavior (summed by
+  // AssembleGlobalForcing) and must not throw.
   TestableProblem problem;
-  std::vector<GlobalForcingData> gfd = {{0, 1.0}, {0, 2.0}, {1, 3.0}};
-  EXPECT_THROW(problem.CheckGlobalForcingData(gfd), std::runtime_error);
+  std::vector<GlobalForcingData> gfd = {{0, 1.0}, {1, 2.0}, {1, 3.0}, {2, 4.0}};
+  EXPECT_NO_THROW(problem.CheckGlobalForcingData(gfd));
 }
 
 TEST(CheckGlobalForcingDataTest, ThrowsOnGapInRowIDs) {

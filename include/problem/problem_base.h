@@ -57,9 +57,10 @@ class ProblemBase {
   /**
    * @brief Assemble the global element system. That is, form the matrix \f$A\f$
    * in \f$ Ax=b\f$. This only should be called once per ordinate per
-   * simulation. This method assumes that the length of the forcing vector is
-   * equal to the length of the global_matrix_data supplied (that is, each
-   * object in the vector as a unique row_id and col_id pair).
+   * simulation. The global matrix is sized from the n_dofs supplied at
+   * construction, not from global_matrix_data; row_id/col_id pairs are
+   * expected to repeat (shared nodes get summed contributions from multiple
+   * elements) and are summed by Armadillo's batch SpMat constructor.
    *
    * @param global_matrix_data Vector of GlobalMatrixData structs
    */
@@ -68,10 +69,10 @@ class ProblemBase {
       const size_t ordinate_index);
 
   /**
-   * @brief Assemble the global forcing vector for a given ordinate index. This
-   * method assumes that the length of the forcing vector is equal to the length
-   * of the global_forcing_data supplied (that is, each object in the vector
-   * supplied has a unique row_id member).
+   * @brief Assemble the global forcing vector for a given ordinate index. The
+   * global vector is sized from the n_dofs supplied at construction, not from
+   * global_forcing_data; row_id values are expected to repeat (shared nodes
+   * get summed contributions from multiple elements).
    *
    * @param global_forcing_data Vector of GlobalForcingData structs
    * @param ordinate_index Ordinate index
@@ -154,9 +155,11 @@ class ProblemBase {
 
   /**
    * @brief Validate a vector of GlobalForcingData before it is used to
-   * assemble the global forcing vector. Requires that row_id values are
-   * unique and contiguous starting from 0, i.e. there is exactly one entry
-   * per DOF and no DOF is missing from the data.
+   * assemble the global forcing vector. row_id values are expected to repeat
+   * (shared nodes get summed contributions from multiple elements), so
+   * unique row_ids are not required. Instead, this checks that the set of
+   * distinct row IDs referenced is contiguous starting from 0, i.e. no DOF
+   * is missing from the data.
    *
    * @param gfd Vector of GlobalForcingData structs
    */
