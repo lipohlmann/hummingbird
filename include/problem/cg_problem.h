@@ -17,6 +17,11 @@ class CGProblem : public ProblemBase {
   std::vector<GlobalMatrixData> AssembleGlobalMatrixData(
       const Mesh& mesh, const GaussLobattoLegendre& gll_quad,
       const MaterialBank& material_bank, const Ordinate& ordinate) override;
+
+  // this method will need to apply boundary conditions as well if needed
+  std::vector<GlobalForcingData> AssembleGlobalForcingData(
+      const GaussLobattoLegendre& gll_quad, const Mesh& mesh,
+      const size_t ordinate_index, const BCBank& bc_bank) override;
 };
 }  // namespace hummingbird
 

@@ -7,6 +7,8 @@
 #include <armadillo>
 #include <vector>
 
+#include "banks/bc_bank.h"
+#include "banks/material_bank.h"
 #include "mesh/mesh.h"
 
 namespace hummingbird {
@@ -91,9 +93,13 @@ class ProblemBase {
       const Mesh& mesh, const GaussLobattoLegendre& gll_quad,
       const MaterialBank& material_bank, const Ordinate& ordinate) = 0;
 
+  virtual std::vector<GlobalForcingData> AssembleGlobalForcingData(
+      const GaussLobattoLegendre& gll_quad, const Mesh& mesh,
+      const size_t ordinate_index, const BCBank& bc_bank) = 0;
+
  protected:
-  /// @brief Global system matrices in order of ordinates in angular quadrature
-  /// set
+  /// @brief Global system matrices in order of ordinates in angular
+  /// quadrature set
   std::vector<arma::SpMat<double>> global_system_matrices_;
 
   /// @brief Global forcing vectors in order of ordinates in angular quadrature
