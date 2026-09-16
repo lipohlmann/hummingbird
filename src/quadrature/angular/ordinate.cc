@@ -23,4 +23,11 @@ double Ordinate::x() const { return std::cos(azimuth_) * std::sin(polar_); }
 double Ordinate::y() const { return std::sin(azimuth_) * std::sin(polar_); }
 
 double Ordinate::z() const { return std::cos(polar_); }
+
+arma::vec3 Ordinate::CartesianUnitVector() {
+  arma::vec3 vec3;
+  vec3(0) = this->x();
+  vec3(1) = this->y();
+  vec3(2) = this->z();
+}
 }  // namespace hummingbird

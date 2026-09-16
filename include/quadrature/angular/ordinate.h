@@ -4,6 +4,8 @@
 #ifndef HUMMINGBIRD_ORDINATE_H_
 #define HUMMINGBIRD_ORDINATE_H_
 
+#include <armadillo>
+
 namespace hummingbird {
 
 /**
@@ -54,6 +56,13 @@ class Ordinate {
    * @return double
    */
   double z() const;
+
+  /**
+   * @brief Returns the Ordinate as a Cartesian unit vector
+   *
+   * @return arma::vec3
+   */
+  arma::vec3 CartesianUnitVector();
 
  private:
   /// @brief Azimuthal angle in radians
