@@ -50,6 +50,21 @@ void ProblemBase::Solve(const size_t ordinate_index) {
                     global_forcing_vectors_.at(ordinate_index));
 }
 
+void ProblemBase::ApplyBCs(const Mesh& mesh,
+                           const QuadratureBase<Ordinate> angular_quadrature,
+                           const BCBank& bc_bank) {
+  switch (mesh.dimension()) {
+    case 1:
+      Apply1DBCs(mesh, angular_quadrature, bc_bank);
+      break;
+
+    default:
+      throw std::runtime_error(
+          "Invalid mesh ID passed in ProblemBase::ApplyBCs.");
+      break;
+  }
+}
+
 void ProblemBase::CheckGlobalMatrixData(
     const std::vector<GlobalMatrixData>& gmd) {
   std::set<size_t> ids;

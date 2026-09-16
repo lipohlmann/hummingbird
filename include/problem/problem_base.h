@@ -10,6 +10,7 @@
 #include "banks/bc_bank.h"
 #include "banks/material_bank.h"
 #include "mesh/mesh.h"
+#include "quadrature/quadrature_base.h"
 
 namespace hummingbird {
 /**
@@ -114,6 +115,19 @@ class ProblemBase {
       const GaussLobattoLegendre& gll_quad, const Mesh& mesh,
       const size_t ordinate_index) = 0;
 
+  /**
+   * @brief Apply boundary conditions by adding in values needed at boundary
+   * nodes. Internally, a switch calls the correct methods depending on the mesh
+   * dimension.
+   *
+   * @param mesh Mesh
+   * @param angular_quadrature Angular quadrature
+   * @param bc_bank BCBank object
+   */
+  void ApplyBCs(const Mesh& mesh,
+                const QuadratureBase<Ordinate> angular_quadrature,
+                const BCBank& bc_bank);
+
  protected:
   /// @brief Global system matrices in order of ordinates in angular
   /// quadrature set
@@ -148,6 +162,17 @@ class ProblemBase {
    * @param gfd Vector of GlobalForcingData structs
    */
   void CheckGlobalForcingData(const std::vector<GlobalForcingData>& gfd);
+
+  /**
+   * @brief Apply boundary conditions to a 1D problem.
+   *
+   * @param mesh Mesh
+   * @param angular_quadrature Angular quadrature
+   * @param bc_bank BCBank object
+   */
+  virtual void Apply1DBCs(const Mesh& mesh,
+                          const QuadratureBase<Ordinate> angular_quadrature,
+                          const BCBank& bc_bank) = 0;
 };
 }  // namespace hummingbird
 
