@@ -141,7 +141,7 @@ TEST(UpdateSourceFluxesTest,
 
   Node node(0, 0.0, 0.0, 0.0);
   node.material_id = 0;
-  node.source_id = 0;
+  node.source_id = 1;  // id 0 is reserved for the zero-strength "none" source
   node.scalar_flux = 3.0;
   node.source_fluxes.resize(quad.n_points());
 
@@ -164,7 +164,7 @@ TEST(UpdateSourceFluxesTest, ZeroScatteringIsolatesIndependentSource) {
 
   Node node(0, 0.0, 0.0, 0.0);
   node.material_id = 0;
-  node.source_id = 0;
+  node.source_id = 1;  // id 0 is reserved for the zero-strength "none" source
   node.scalar_flux = 100.0;  // should be irrelevant since scattering_xs == 0
   node.source_fluxes.resize(quad.n_points());
 
@@ -183,7 +183,7 @@ TEST(UpdateSourceFluxesTest, ParsedSourcePassesEachAbscissaThrough) {
 
   Node node(0, 0.0, 0.0, 0.0);
   node.material_id = 0;
-  node.source_id = 0;
+  node.source_id = 1;  // id 0 is reserved for the zero-strength "none" source
   node.scalar_flux = 0.0;
   node.source_fluxes.resize(quad.n_points());
 

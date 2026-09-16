@@ -43,12 +43,25 @@ json WrapSources(const std::unordered_map<std::string, json>& sources) {
 // Construction / derived-type tests
 // ---------------------------------------------------------------------------
 
+TEST(SourceBankTest, IndexZeroIsAlwaysAZeroStrengthSource) {
+  // ID 0 is reserved for a zero-strength ConstantVolumetricSource named
+  // "none", regardless of what's in the input file.
+  json input = WrapSources({{"mms_source", MakeParsedSourceJson("x^2")}});
+  SourceBank bank(input);
+
+  const std::unique_ptr<SourceBase>& none = bank.GetByID(0u);
+  ASSERT_NE(dynamic_cast<ConstantVolumetricSource*>(none.get()), nullptr);
+  EXPECT_DOUBLE_EQ(none->EvaluateAtNode(Node(0, 0, 0, 0), Ordinate(0, 0)),
+                   0.0);
+  EXPECT_EQ(bank.GetByName(std::string("none")).get(), none.get());
+}
+
 TEST(SourceBankTest, ConstructsParsedFunctionSource) {
   json input = WrapSources({{"mms_source", MakeParsedSourceJson("x^2")}});
 
   SourceBank bank(input);
 
-  const std::unique_ptr<SourceBase>& by_id = bank.GetByID(0u);
+  const std::unique_ptr<SourceBase>& by_id = bank.GetByID(1u);
   const std::unique_ptr<SourceBase>& by_name =
       bank.GetByName(std::string("mms_source"));
 
@@ -63,7 +76,7 @@ TEST(SourceBankTest, ConstructsConstantSource) {
 
   SourceBank bank(input);
 
-  const std::unique_ptr<SourceBase>& by_id = bank.GetByID(0u);
+  const std::unique_ptr<SourceBase>& by_id = bank.GetByID(1u);
   const std::unique_ptr<SourceBase>& by_name =
       bank.GetByName(std::string("flat_source"));
 
@@ -77,7 +90,7 @@ TEST(SourceBankTest, ConstantSourceEvaluatesToStrengthOverFourPi) {
   json input = WrapSources({{"flat_source", MakeConstantSourceJson(3.5)}});
   SourceBank bank(input);
 
-  const std::unique_ptr<SourceBase>& source = bank.GetByID(0u);
+  const std::unique_ptr<SourceBase>& source = bank.GetByID(1u);
   const double expected = 3.5 / 4.0 / M_PI;
 
   // Dispatch through the SourceBase* to confirm the override is actually
@@ -92,7 +105,7 @@ TEST(SourceBankTest, ParsedSourceEvaluateAtNodeIsReachableThroughBasePointer) {
   json input = WrapSources({{"mms_source", MakeParsedSourceJson("1")}});
   SourceBank bank(input);
 
-  const std::unique_ptr<SourceBase>& source = bank.GetByID(0u);
+  const std::unique_ptr<SourceBase>& source = bank.GetByID(1u);
 
   // Only checking that virtual dispatch reaches ParsedVolumetricSource's
   // override without throwing; the exact numeric result of expression
@@ -106,7 +119,7 @@ TEST(SourceBankTest, ParsedSourceBuiltFromJsonEvaluatesCorrectly) {
       {{"mms_source", MakeParsedSourceJson("x^2 + y^2 + z^2 + mu^2")}});
   SourceBank bank(input);
 
-  const std::unique_ptr<SourceBase>& source = bank.GetByID(0u);
+  const std::unique_ptr<SourceBase>& source = bank.GetByID(1u);
   Node node(0, 2, 3, 4);
   Ordinate ordinate(0.5, 0.25);
 
@@ -131,18 +144,19 @@ TEST(SourceBankTest, ConstructsMultipleMixedSources) {
   EXPECT_NE(dynamic_cast<ParsedVolumetricSource*>(parsed.get()), nullptr);
   EXPECT_NE(dynamic_cast<ConstantVolumetricSource*>(constant.get()), nullptr);
 
-  // Both were assigned valid, distinct ids reachable through GetSource(id).
-  EXPECT_NO_THROW(bank.GetByID(0u));
+  // Both were assigned valid, distinct ids reachable through GetSource(id),
+  // after the reserved id 0 ("none").
   EXPECT_NO_THROW(bank.GetByID(1u));
-  // Only two sources were built, so id 2 should not exist.
-  EXPECT_THROW(bank.GetByID(2u), std::out_of_range);
+  EXPECT_NO_THROW(bank.GetByID(2u));
+  // Only two real sources were built, so id 3 should not exist.
+  EXPECT_THROW(bank.GetByID(3u), std::out_of_range);
 }
 
 TEST(SourceBankTest, NameAndIdMapToSameSourceInstance) {
   json input = WrapSources({{"only_source", MakeConstantSourceJson(1.0)}});
   SourceBank bank(input);
 
-  const std::unique_ptr<SourceBase>& by_id = bank.GetByID(0u);
+  const std::unique_ptr<SourceBase>& by_id = bank.GetByID(1u);
   const std::unique_ptr<SourceBase>& by_name =
       bank.GetByName(std::string("only_source"));
 
@@ -177,11 +191,12 @@ TEST(SourceBankTest, ThrowsWhenSourcesKeyMissing) {
   EXPECT_THROW(SourceBank{input}, json::out_of_range);
 }
 
-TEST(SourceBankTest, EmptySourcesObjectProducesEmptyBank) {
+TEST(SourceBankTest, EmptySourcesObjectOnlyHasNoneEntry) {
   json input = WrapSources({});
   SourceBank bank(input);
 
-  EXPECT_THROW(bank.GetByID(0u), std::out_of_range);
+  EXPECT_NE(bank.GetByID(0u).get(), nullptr);
+  EXPECT_THROW(bank.GetByID(1u), std::out_of_range);
   EXPECT_THROW(bank.GetByName(std::string("anything")), std::out_of_range);
 }
 
@@ -229,8 +244,9 @@ TEST(SourceBankTest, SkipsUnrecognizedSourceTypeWithoutThrowing) {
 TEST(SourceBankTest, IdsRemainContiguousWhenUnrecognizedTypeIsInterspersed) {
   // "mystery_source" is alphabetically between the two valid names, but
   // since Build() only increments its id counter on a successful emplace,
-  // the two valid sources must still end up with contiguous ids {0, 1}
-  // regardless of where the skipped entry falls in iteration order.
+  // the two valid sources must still end up with contiguous ids {1, 2}
+  // (after the reserved id 0, "none") regardless of where the skipped entry
+  // falls in iteration order.
   json input = WrapSources({
       {"a_source", MakeConstantSourceJson(1.0)},
       {"m_mystery_source", json{{"type", "waveform"}, {"amplitude", 1.0}}},
@@ -239,8 +255,8 @@ TEST(SourceBankTest, IdsRemainContiguousWhenUnrecognizedTypeIsInterspersed) {
 
   SourceBank bank(input);
 
-  EXPECT_NO_THROW(bank.GetByID(0u));
   EXPECT_NO_THROW(bank.GetByID(1u));
-  EXPECT_THROW(bank.GetByID(2u), std::out_of_range);
+  EXPECT_NO_THROW(bank.GetByID(2u));
+  EXPECT_THROW(bank.GetByID(3u), std::out_of_range);
 }
 }  // namespace hummingbird
