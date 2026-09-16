@@ -14,4 +14,9 @@ void ProblemBase::AssembleGlobalSystem(
   arma::SpMat<double> global_system_matrix(true, locations, values, n_vals,
                                            n_vals);
 }
+
+void ProblemBase::Solve() {
+  solution_vector_ =
+      arma::spsolve(global_system_matrix_, global_forcing_vector_);
+}
 }  // namespace hummingbird

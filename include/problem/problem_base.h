@@ -39,11 +39,11 @@ class ProblemBase {
       const std::vector<GlobalMatrixData>& global_matrix_data);
 
   /**
-   * @brief Solve the linear system. Stores the results in the solution_vector_
-   * member
+   * @brief Solve the linear system using Armadillo's sparse matrix solver.
+   * Stores the results in the solution_vector_ member
    *
    */
-  virtual void Solve() = 0;
+  void Solve();
 
  protected:
   /// @brief Global system matrix
