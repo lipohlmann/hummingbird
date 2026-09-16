@@ -44,7 +44,7 @@ class ProblemBase {
    * Stores the results in the solution_vector_ member
    *
    */
-  void Solve();
+  void Solve(const size_t ordinate_index);
 
   /**
    * @brief Assemble the vector of GlobalMatrixData structs that will be used in
@@ -61,14 +61,17 @@ class ProblemBase {
       const MaterialBank& material_bank, const Ordinate& ordinate) = 0;
 
  protected:
-  /// @brief Global system matrix
-  arma::SpMat<double> global_system_matrix_;
+  /// @brief Global system matrices in order of ordinates in angular quadrature
+  /// set
+  std::vector<arma::SpMat<double>> global_system_matrices_;
 
-  /// @brief Global forcing vector
-  arma::Col<double> global_forcing_vector_;
+  /// @brief Global forcing vectors in order of ordinates in angular quadrature
+  /// set
+  std::vector<arma::Col<double>> global_forcing_vectors_;
 
-  /// @brief Column vector of the angular flux at the nodes
-  arma::Col<double> solution_vector_;
+  /// @brief Column vector of the angular flux at the nodes in order of
+  /// ordinates in angular quadrature set
+  std::vector<arma::Col<double>> solution_vectors_;
 };
 }  // namespace hummingbird
 
