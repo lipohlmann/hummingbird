@@ -4,6 +4,7 @@
 #ifndef HUMMINGBIRD_MESH_NODE_H_
 #define HUMMINGBIRD_MESH_NODE_H_
 
+#include <armadillo>
 #include <cmath>
 #include <cstddef>
 #include <cstdint>
@@ -40,6 +41,10 @@ struct Node {
   /// @brief BC ID to access the boundary condition (BC) bank. ID of 0 is always
   /// NONE, meaning the node is internal to the mesh.
   unsigned int bc_id = 0;
+
+  /// @brief Outward pointing normal vector. This vector is only relevant if the
+  /// node is on a boundary
+  arma::vec3 outward_normal;
 
   /// @brief Scalar flux on the node
   double scalar_flux;
