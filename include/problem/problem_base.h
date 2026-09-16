@@ -101,6 +101,15 @@ class ProblemBase {
       const Mesh& mesh, const GaussLobattoLegendre& gll_quad,
       const MaterialBank& material_bank, const Ordinate& ordinate) = 0;
 
+  /**
+   * @brief Assemble the vector of GlobalForcingData structs that will be using
+   * in AssembleGlobalForcing to create the global forcing vector
+   *
+   * @param gll_quad GaussLobattoLegendre quadrature set
+   * @param mesh Mesh
+   * @param ordinate_index Index in the angular quadrature
+   * @return std::vector<GlobalForcingData>
+   */
   virtual std::vector<GlobalForcingData> AssembleGlobalForcingData(
       const GaussLobattoLegendre& gll_quad, const Mesh& mesh,
       const size_t ordinate_index) = 0;
