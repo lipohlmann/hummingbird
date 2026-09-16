@@ -30,17 +30,15 @@ struct Node {
   /// @brief Z-coordinate of the node
   double z;
 
-  /// @brief Boundary condition type applied at the node
-  BC boundary = BC::NONE;
-
   /// @brief Source ID to access Source Bank
   unsigned int source_id;
 
   /// @brief Material ID to access Material Bank
   unsigned int material_id;
 
-  /// @brief BC ID to access the boundary condition (BC) bank
-  unsigned int bc_id;
+  /// @brief BC ID to access the boundary condition (BC) bank. ID of 0 is always
+  /// NONE, meaning the node is internal to the mesh.
+  unsigned int bc_id = 0;
 
   /// @brief Scalar flux on the node
   double scalar_flux;

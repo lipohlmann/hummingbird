@@ -242,7 +242,6 @@ void Mesh::ReadElements(std::ifstream& file, GmshReadState& state) {
         file >> element_tag >> node_tag;
         Node& node = nodes_.at(state.node_tag_to_id.at(node_tag));
         node.bc_id = bc_id;
-        node.boundary = boundary;
       }
       continue;
     }
