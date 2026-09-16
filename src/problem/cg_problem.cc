@@ -57,12 +57,13 @@ void CGProblem::Apply1DBCs(const Mesh& mesh, const Ordinate& ordinate,
       case BC::VACUUM: {
         double direction_dot_product =
             arma::norm_dot(node.outward_normal, ordinate.CartesianUnitVector());
-        if (direction_dot_product < 0)
+        // Incoming (direction_dot_product < 0): vacuum means psi = 0, so
+        // there is nothing to add. Outgoing (> 0): psi is unknown, so the
+        // lagged solution value is used as the boundary source term.
+        if (direction_dot_product > 0)
           global_forcing_vectors_.at(ordinate_index)(boundary_node_id) +=
-              direction_dot_product *
+              -direction_dot_product *
               solution_vectors_.at(ordinate_index)(boundary_node_id);
-        else
-          return;
         break;
       }
       case BC::REFLECTIVE:
