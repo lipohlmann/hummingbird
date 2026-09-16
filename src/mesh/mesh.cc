@@ -341,7 +341,20 @@ std::string Mesh::ExtractName(const std::string& physical_name) const {
 
 void Mesh::FindBoundaryNodes() {
   for (const auto& node : nodes_)
-    if (node.bc_id != 0) boundary_node_ids_.push_back(node.bc_id);
+    if (node.bc_id != 0) boundary_node_ids_.push_back(node.id);
   if (dimension_ == 1) assert(boundary_node_ids_.size() == 2);
+}
+
+void Mesh::SetOutwardNormals() {
+  if (dimension_ != 1)
+    throw std::runtime_error(
+        "SetOutwardNormals is only implemented for 1D meshes.");
+
+  Node& node_a = nodes_.at(boundary_node_ids_.at(0));
+  Node& node_b = nodes_.at(boundary_node_ids_.at(1));
+
+  arma::vec3 direction_a = {node_a.x - node_b.x, 0.0, 0.0};
+  node_a.outward_normal = arma::normalise(direction_a);
+  node_b.outward_normal = -node_a.outward_normal;
 }
 }  // namespace hummingbird

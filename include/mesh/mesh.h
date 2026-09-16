@@ -174,6 +174,17 @@ class Mesh {
    */
   void FindBoundaryNodes();
 
+  /**
+   * @brief Set the outward-pointing unit normal vector on each boundary
+   * node (Node::outward_normal), normalized via arma::normalise. Must be
+   * called after FindBoundaryNodes (needs boundary_node_ids_ populated) and
+   * after Prepare (needs final, renumbered node ids).
+   *
+   * @throw std::runtime_error if the mesh is not 1D (not yet implemented for
+   * other dimensions)
+   */
+  void SetOutwardNormals();
+
  private:
   /// @brief Nodes in the mesh
   std::vector<Node> nodes_;

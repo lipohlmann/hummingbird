@@ -78,12 +78,14 @@ std::string WriteTempMesh(const std::string& name, const std::string& contents) 
   return path;
 }
 
-Node MakeNode(size_t id, double x, double y, double z) {
+Node MakeNode(size_t id, double x, double y, double z,
+             unsigned int bc_id = 0) {
   Node node;
   node.id = id;
   node.x = x;
   node.y = y;
   node.z = z;
+  node.bc_id = bc_id;
   return node;
 }
 
@@ -234,6 +236,86 @@ TEST(MeshResolveIDsTest, ThrowsWhenMaterialNameNotInMaterialBank) {
 
   EXPECT_THROW(mesh.ResolveIDs(material_bank, source_bank, bc_bank),
               std::runtime_error);
+}
+
+// ---------------------------------------------------------------------------
+// Mesh::FindBoundaryNodes / Mesh::SetOutwardNormals
+// ---------------------------------------------------------------------------
+
+TEST(MeshBoundaryTest, FindBoundaryNodesPopulatesRealNodeIDs) {
+  Mesh mesh(WriteTempMesh("hummingbird_mesh_test_boundary_nodes.msh",
+                          kOneDGmsh));
+  GaussLobattoLegendre gll(3);
+  mesh.Prepare(gll);
+  MaterialBank material_bank(MakeMaterialBankJson("mms_material"));
+  SourceBank source_bank(MakeSourceBankJson("mms_source"));
+  BCBank bc_bank(MakeBCBankJson());
+  mesh.ResolveIDs(material_bank, source_bank, bc_bank);
+
+  mesh.FindBoundaryNodes();
+
+  // boundary_node_ids_ must hold real node ids (usable with GetNode), not
+  // the nodes' bc_id values.
+  ASSERT_EQ(mesh.boundary_node_ids().size(), 2u);
+  for (auto node_id : mesh.boundary_node_ids()) {
+    EXPECT_NE(mesh.GetNode(node_id).bc_id, 0u);
+    bool is_true_endpoint =
+        std::abs(mesh.GetNode(node_id).x - 0.0) < EXP_NEAR_TOLERANCE ||
+        std::abs(mesh.GetNode(node_id).x - 1.0) < EXP_NEAR_TOLERANCE;
+    EXPECT_TRUE(is_true_endpoint)
+        << "boundary_node_ids() entry " << node_id
+        << " does not resolve to one of the mesh's true endpoints.";
+  }
+}
+
+TEST(MeshBoundaryDeathTest, AssertFiresWhenBoundaryNodeCountIsNotTwoIn1D) {
+  // Mesh::FindBoundaryNodes guards the 1D case with assert(), which aborts
+  // the process rather than throwing a C++ exception (and is compiled out
+  // entirely in an NDEBUG/release build -- this repo's debug preset, used
+  // by `pixi run dev`, does not define NDEBUG). That means this needs
+  // EXPECT_DEATH, not EXPECT_THROW.
+  Mesh mesh;
+  mesh.AddNodes({MakeNode(0, 0.0, 0.0, 0.0, /*bc_id=*/1),
+                MakeNode(1, 1.0, 0.0, 0.0)});
+  mesh.AddElement(
+      std::make_unique<Segment>(std::array<size_t, 2>{0, 1}, 0, 0, mesh));
+
+  EXPECT_DEATH(mesh.FindBoundaryNodes(), "");
+}
+
+TEST(MeshBoundaryTest, SetOutwardNormalsPointsAwayFromDomain) {
+  Mesh mesh(WriteTempMesh("hummingbird_mesh_test_normals.msh", kOneDGmsh));
+  GaussLobattoLegendre gll(3);
+  mesh.Prepare(gll);
+  MaterialBank material_bank(MakeMaterialBankJson("mms_material"));
+  SourceBank source_bank(MakeSourceBankJson("mms_source"));
+  BCBank bc_bank(MakeBCBankJson());
+  mesh.ResolveIDs(material_bank, source_bank, bc_bank);
+  mesh.FindBoundaryNodes();
+
+  mesh.SetOutwardNormals();
+
+  for (const auto& node : mesh.nodes()) {
+    arma::vec3 expected;
+    if (std::abs(node.x - 0.0) < EXP_NEAR_TOLERANCE)
+      expected = {-1.0, 0.0, 0.0};
+    else if (std::abs(node.x - 1.0) < EXP_NEAR_TOLERANCE)
+      expected = {1.0, 0.0, 0.0};
+    else
+      continue;  // interior node, outward_normal is unspecified
+
+    EXPECT_NEAR(node.outward_normal(0), expected(0), EXP_NEAR_TOLERANCE)
+        << "Node " << node.id;
+    EXPECT_NEAR(node.outward_normal(1), expected(1), EXP_NEAR_TOLERANCE)
+        << "Node " << node.id;
+    EXPECT_NEAR(node.outward_normal(2), expected(2), EXP_NEAR_TOLERANCE)
+        << "Node " << node.id;
+  }
+}
+
+TEST(MeshBoundaryTest, SetOutwardNormalsThrowsForUnimplementedDimensions) {
+  Mesh mesh;  // dimension() == 0: no elements added
+  EXPECT_THROW(mesh.SetOutwardNormals(), std::runtime_error);
 }
 
 // ---------------------------------------------------------------------------
