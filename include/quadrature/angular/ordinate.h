@@ -29,7 +29,8 @@ class Ordinate {
    * @param ordinate Initial direction
    * @param surface_normal Surface normal vector
    */
-  Ordinate Reflect(const Ordinate& ordinate, const arma::vec3 surface_normal);
+  static Ordinate Reflect(const Ordinate& ordinate,
+                          const arma::vec3 surface_normal);
 
   /**
    * @brief Getter for azimuthal angle

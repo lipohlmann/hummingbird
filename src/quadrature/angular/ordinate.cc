@@ -11,13 +11,13 @@ Ordinate::Ordinate(const double azimuth, const double polar)
 
 Ordinate Ordinate::Reflect(const Ordinate& ordinate,
                            const arma::vec3 surface_normal) {
-  auto initial_direction = ordinate.CartesianUnitVector();
-  arma::vec3 new_direction = initial_direction * 2.0 *
-                             arma::dot(initial_direction, surface_normal) *
-                             surface_normal;
+  arma::vec3 initial_direction = ordinate.CartesianUnitVector();
+  arma::vec3 new_direction =
+      initial_direction -
+      2.0 * arma::dot(initial_direction, surface_normal) * surface_normal;
   arma::vec3 normalized_direction = arma::normalise(new_direction);
-  return Ordinate(std::acos(normalized_direction(2)),
-                  std::atan2(normalized_direction(1), normalized_direction(0)));
+  return Ordinate(std::atan2(normalized_direction(1), normalized_direction(0)),
+                  std::acos(normalized_direction(2)));
 }
 
 void Ordinate::CheckInput(const double azimuth, const double polar) {
@@ -40,5 +40,6 @@ arma::vec3 Ordinate::CartesianUnitVector() const {
   vec3(0) = this->x();
   vec3(1) = this->y();
   vec3(2) = this->z();
+  return vec3;
 }
 }  // namespace hummingbird
