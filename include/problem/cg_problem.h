@@ -14,6 +14,14 @@ namespace hummingbird {
  */
 class CGProblem : public ProblemBase {
  public:
+  /**
+   * @brief Construct a new CGProblem object
+   *
+   * @param n_dofs Number of Degrees of Freedom
+   * @param n_ordinates Number of ordinates in angular quadrature
+   */
+  CGProblem(const size_t n_dofs, const size_t n_ordinates);
+
   std::vector<GlobalMatrixData> AssembleGlobalMatrixData(
       const Mesh& mesh, const GaussLobattoLegendre& gll_quad,
       const MaterialBank& material_bank, const Ordinate& ordinate) override;

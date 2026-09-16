@@ -2,6 +2,9 @@
 
 namespace hummingbird {
 
+CGProblem::CGProblem(const size_t n_dofs, const size_t n_ordinates)
+    : ProblemBase(n_dofs, n_ordinates) {}
+
 std::vector<GlobalMatrixData> CGProblem::AssembleGlobalMatrixData(
     const Mesh& mesh, const GaussLobattoLegendre& gll_quad,
     const MaterialBank& material_bank, const Ordinate& ordinate) {
