@@ -33,12 +33,21 @@ json WrapBCs(const std::unordered_map<std::string, json>& bcs) {
 // Construction / arbitrary-name tests
 // ---------------------------------------------------------------------------
 
+TEST(BCBankTest, IndexZeroIsAlwaysNone) {
+  // ID 0 is reserved for BC::NONE regardless of what's in the input file.
+  json input = WrapBCs({{"left_wall", MakeBCJson("vacuum")}});
+  BCBank bank(input);
+
+  EXPECT_EQ(bank.GetByID(0u), BC::NONE);
+  EXPECT_EQ(bank.GetByName(std::string("none")), BC::NONE);
+}
+
 TEST(BCBankTest, ConstructsVacuumBC) {
   json input = WrapBCs({{"left_wall", MakeBCJson("vacuum")}});
 
   BCBank bank(input);
 
-  EXPECT_EQ(bank.GetByID(0u), BC::VACUUM);
+  EXPECT_EQ(bank.GetByID(1u), BC::VACUUM);
   EXPECT_EQ(bank.GetByName(std::string("left_wall")), BC::VACUUM);
 }
 
@@ -47,7 +56,7 @@ TEST(BCBankTest, ConstructsReflectiveBC) {
 
   BCBank bank(input);
 
-  EXPECT_EQ(bank.GetByID(0u), BC::REFLECTIVE);
+  EXPECT_EQ(bank.GetByID(1u), BC::REFLECTIVE);
   EXPECT_EQ(bank.GetByName(std::string("symmetry_plane")), BC::REFLECTIVE);
 }
 
@@ -82,14 +91,15 @@ TEST(BCBankTest, ConstructsMultipleMixedBCs) {
   EXPECT_EQ(bank.GetByName(std::string("east")), BC::REFLECTIVE);
   EXPECT_NO_THROW(bank.GetByID(0u));
   EXPECT_NO_THROW(bank.GetByID(1u));
-  EXPECT_THROW(bank.GetByID(2u), std::out_of_range);
+  EXPECT_NO_THROW(bank.GetByID(2u));
+  EXPECT_THROW(bank.GetByID(3u), std::out_of_range);
 }
 
 TEST(BCBankTest, NameAndIdMapToSameBC) {
   json input = WrapBCs({{"only_bc", MakeBCJson("vacuum")}});
   BCBank bank(input);
 
-  EXPECT_EQ(bank.GetByID(0u), bank.GetByName(std::string("only_bc")));
+  EXPECT_EQ(bank.GetByID(1u), bank.GetByName(std::string("only_bc")));
 }
 
 // ---------------------------------------------------------------------------
@@ -151,11 +161,12 @@ TEST(BCBankTest, ThrowsWhenBoundaryConditionsKeyMissing) {
   EXPECT_THROW(BCBank{input}, json::out_of_range);
 }
 
-TEST(BCBankTest, EmptyBoundaryConditionsObjectProducesEmptyBank) {
+TEST(BCBankTest, EmptyBoundaryConditionsObjectOnlyHasNoneEntry) {
   json input = WrapBCs({});
   BCBank bank(input);
 
-  EXPECT_THROW(bank.GetByID(0u), std::out_of_range);
+  EXPECT_EQ(bank.GetByID(0u), BC::NONE);
+  EXPECT_THROW(bank.GetByID(1u), std::out_of_range);
   EXPECT_THROW(bank.GetByName(std::string("anything")), std::out_of_range);
 }
 
