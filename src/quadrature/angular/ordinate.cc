@@ -24,7 +24,7 @@ double Ordinate::y() const { return std::sin(azimuth_) * std::sin(polar_); }
 
 double Ordinate::z() const { return std::cos(polar_); }
 
-arma::vec3 Ordinate::CartesianUnitVector() {
+arma::vec3 Ordinate::CartesianUnitVector() const {
   arma::vec3 vec3;
   vec3(0) = this->x();
   vec3(1) = this->y();

@@ -62,7 +62,7 @@ class Ordinate {
    *
    * @return arma::vec3
    */
-  arma::vec3 CartesianUnitVector();
+  arma::vec3 CartesianUnitVector() const;
 
  private:
   /// @brief Azimuthal angle in radians
