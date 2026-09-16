@@ -31,7 +31,8 @@ struct GlobalMatrixData {
 class ProblemBase {
  public:
   /**
-   * @brief Assemble the global element system. That is, form \f$ Ax=b\f$.
+   * @brief Assemble the global element system. That is, form the matrix \f$A\f$
+   * in \f$ Ax=b\f$. This only should be called once per ordinate per simulation
    *
    * @param global_matrix_data Vector of GlobalMatrixData structs
    */
@@ -44,6 +45,20 @@ class ProblemBase {
    *
    */
   void Solve();
+
+  /**
+   * @brief Assemble the vector of GlobalMatrixData structs that will be used in
+   * AssembleGlobalSystem to create the global system matrix.
+   *
+   * @param mesh Mesh
+   * @param gll_quad GaussLobattoLegendre quadrature set
+   * @param material_bank Material bank
+   * @param ordinate Ordinate for equation
+   * @return std::vector<GlobalMatrixData>
+   */
+  virtual std::vector<GlobalMatrixData> AssembleGlobalMatrixData(
+      const Mesh& mesh, const GaussLobattoLegendre& gll_quad,
+      const MaterialBank& material_bank, const Ordinate& ordinate) = 0;
 
  protected:
   /// @brief Global system matrix
