@@ -56,7 +56,7 @@ void CGProblem::Apply1DBCs(const Mesh& mesh, const Ordinate& ordinate,
     switch (bc_bank.GetByID(node.bc_id)) {
       case BC::VACUUM:
         double direction_dot_product =
-            arma::dot(node.outward_normal, ordinate.CartesianUnitVector());
+            arma::norm_dot(node.outward_normal, ordinate.CartesianUnitVector());
         if (direction_dot_product < 1)
           global_forcing_vectors_.at(ordinate_index)(boundary_node_id) +=
               direction_dot_product *
