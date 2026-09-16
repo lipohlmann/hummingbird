@@ -5,28 +5,55 @@
 #define HUMMINGBIRD_PROBLEM_PROBLEM_BASE_H_
 
 #include <armadillo>
-#include <array>
+#include <vector>
 
 #include "mesh/mesh.h"
 
 namespace hummingbird {
+/**
+ * @brief Convenience struct for holding the contribution for an entry in a
+ * single element to the global matrix.
+ *
+ */
 struct GlobalMatrixData {
+  /// @brief Global matrix row ID
   size_t row_id;
+
+  /// @brief Global matrix column ID
   size_t col_id;
-  double stiffness_contrib;
-  double mass_contrib;
+
+  /// @brief Value to be placed in the global matrix. This could be an entry
+  /// from a local stiffness or mass matrix, or other depending on the
+  /// formulation
+  double value;
 };
 
 class ProblemBase {
  public:
-  void AssembleGlobalSystem(const GlobalMatrixData& global_matrix_data);
+  /**
+   * @brief Assemble the global element system. That is, form \f$ Ax=b\f$.
+   *
+   * @param global_matrix_data Vector of GlobalMatrixData structs
+   */
+  void AssembleGlobalSystem(
+      const std::vector<GlobalMatrixData>& global_matrix_data);
+
+  /**
+   * @brief Solve the linear system. Stores the results in the solution_vector_
+   * member
+   *
+   */
   virtual void Solve() = 0;
 
  protected:
+  /// @brief Global system matrix
   arma::SpMat<double> global_system_matrix_;
-  arma::SpMat<double> global_mass_matrix_;
-  arma::SpMat<double> global_stiffness_matrix_;
+
+  /// @brief Global forcing vector
   arma::Col<double> global_forcing_vector_;
+
+  /// @brief Column vector of the angular flux at the nodes
+  arma::Col<double> solution_vector_;
 };
 }  // namespace hummingbird
 
