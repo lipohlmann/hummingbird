@@ -2,7 +2,8 @@
 
 namespace hummingbird {
 void ProblemBase::AssembleGlobalSystem(
-    const std::vector<GlobalMatrixData>& global_matrix_data) {
+    const std::vector<GlobalMatrixData>& global_matrix_data,
+    const size_t ordinate_index) {
   auto n_vals = global_matrix_data.size();
   arma::umat locations(2, n_vals);
   std::vector<double> values(n_vals);
@@ -12,6 +13,7 @@ void ProblemBase::AssembleGlobalSystem(
     values[i] = global_matrix_data[i].value;
   }
   arma::SpMat<double> global_system_matrix(locations, values, n_vals, n_vals);
+  global_system_matrices_.at(ordinate_index) = global_system_matrix;
 }
 
 void ProblemBase::Solve(const size_t ordinate_index) {

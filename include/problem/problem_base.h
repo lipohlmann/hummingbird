@@ -37,11 +37,13 @@ class ProblemBase {
    * @param global_matrix_data Vector of GlobalMatrixData structs
    */
   void AssembleGlobalSystem(
-      const std::vector<GlobalMatrixData>& global_matrix_data);
+      const std::vector<GlobalMatrixData>& global_matrix_data,
+      const size_t ordinate_index);
 
   /**
    * @brief Solve the linear system using Armadillo's sparse matrix solver.
-   * Stores the results in the solution_vector_ member
+   * Stores the results in the solution_vectors_ member at the ordinate_index
+   * index
    *
    */
   void Solve(const size_t ordinate_index);
