@@ -54,7 +54,7 @@ void CGProblem::Apply1DBCs(const Mesh& mesh, const Ordinate& ordinate,
   for (const auto boundary_node_id : boundary_node_ids) {
     auto& node = mesh.GetNode(boundary_node_id);
     switch (bc_bank.GetByID(node.bc_id)) {
-      case BC::VACUUM:
+      case BC::VACUUM: {
         double direction_dot_product =
             arma::norm_dot(node.outward_normal, ordinate.CartesianUnitVector());
         if (direction_dot_product < 1)
@@ -64,6 +64,7 @@ void CGProblem::Apply1DBCs(const Mesh& mesh, const Ordinate& ordinate,
         else
           return;
         break;
+      }
       case BC::REFLECTIVE:
         throw std::runtime_error(
             "Reflective BCs have not been implemented for 1D yet.");

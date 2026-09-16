@@ -34,8 +34,8 @@ class TestableProblem : public ProblemBase {
     return {};
   }
 
-  void Apply1DBCs(const Mesh&, const QuadratureBase<Ordinate>,
-                  const BCBank&) override {}
+  void Apply1DBCs(const Mesh&, const Ordinate&, const BCBank&,
+                  const size_t) override {}
 };
 
 }  // namespace
