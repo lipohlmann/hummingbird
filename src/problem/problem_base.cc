@@ -8,7 +8,7 @@ void ProblemBase::AssembleGlobalSystem(
 
   auto n_vals = global_matrix_data.size();
   arma::umat locations(2, n_vals);
-  std::vector<double> values(n_vals);
+  arma::Col<double> values(n_vals);
   for (auto i = 0; i < n_vals; i++) {
     locations(0, i) = global_matrix_data[i].row_id;
     locations(1, i) = global_matrix_data[i].col_id;

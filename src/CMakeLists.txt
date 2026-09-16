@@ -23,6 +23,8 @@ add_library(
   banks/bc_bank.cc
   banks/material_bank.cc
   banks/source_bank.cc
+  problem/problem_base.cc
+  problem/cg_problem.cc
   quadrature/gauss_chebyshev.cc
   quadrature/gauss_legendre.cc
   quadrature/gauss_lobatto_legendre.cc
