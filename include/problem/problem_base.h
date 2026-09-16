@@ -28,6 +28,19 @@ struct GlobalMatrixData {
   double value;
 };
 
+/**
+ * @brief Convenience struct for hold the contribution for an entry in a single
+ * element to the global forcing vector.
+ *
+ */
+struct GlobalForcingData {
+  /// @brief Global forcing vector row ID
+  size_t row_id;
+
+  /// @brief Value to be placed in the global vector
+  double value;
+};
+
 class ProblemBase {
  public:
   /**
