@@ -124,9 +124,8 @@ class ProblemBase {
    * @param angular_quadrature Angular quadrature
    * @param bc_bank BCBank object
    */
-  void ApplyBCs(const Mesh& mesh,
-                const QuadratureBase<Ordinate> angular_quadrature,
-                const BCBank& bc_bank);
+  void ApplyBCs(const Mesh& mesh, const Ordinate& ordinate,
+                const BCBank& bc_bank, const size_t ordinate_index);
 
  protected:
   /// @brief Global system matrices in order of ordinates in angular
@@ -170,9 +169,9 @@ class ProblemBase {
    * @param angular_quadrature Angular quadrature
    * @param bc_bank BCBank object
    */
-  virtual void Apply1DBCs(const Mesh& mesh,
-                          const QuadratureBase<Ordinate> angular_quadrature,
-                          const BCBank& bc_bank) = 0;
+  virtual void Apply1DBCs(const Mesh& mesh, const Ordinate& Ordinate,
+                          const BCBank& bc_bank,
+                          const size_t ordinate_index) = 0;
 };
 }  // namespace hummingbird
 

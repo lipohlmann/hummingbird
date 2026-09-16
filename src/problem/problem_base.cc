@@ -50,12 +50,11 @@ void ProblemBase::Solve(const size_t ordinate_index) {
                     global_forcing_vectors_.at(ordinate_index));
 }
 
-void ProblemBase::ApplyBCs(const Mesh& mesh,
-                           const QuadratureBase<Ordinate> angular_quadrature,
-                           const BCBank& bc_bank) {
+void ProblemBase::ApplyBCs(const Mesh& mesh, const Ordinate& ordinate,
+                           const BCBank& bc_bank, const size_t ordinate_index) {
   switch (mesh.dimension()) {
     case 1:
-      Apply1DBCs(mesh, angular_quadrature, bc_bank);
+      Apply1DBCs(mesh, ordinate, bc_bank, ordinate_index);
       break;
 
     default:

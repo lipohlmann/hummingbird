@@ -30,6 +30,13 @@ class CGProblem : public ProblemBase {
   std::vector<GlobalForcingData> AssembleGlobalForcingData(
       const GaussLobattoLegendre& gll_quad, const Mesh& mesh,
       const size_t ordinate_index) override;
+
+ private:
+  /**
+   * @todo Need to implement reflective BCs.
+   */
+  void Apply1DBCs(const Mesh& mesh, const Ordinate& ordinate,
+                  const BCBank& bc_bank, const size_t ordinate_index) override;
 };
 }  // namespace hummingbird
 

@@ -46,4 +46,34 @@ std::vector<GlobalForcingData> CGProblem::AssembleGlobalForcingData(
   }
   return assembled_global_forcing_data;
 }
+
+void CGProblem::Apply1DBCs(const Mesh& mesh, const Ordinate& ordinate,
+                           const BCBank& bc_bank, const size_t ordinate_index) {
+  const auto& boundary_node_ids = mesh.boundary_node_ids();
+
+  for (const auto boundary_node_id : boundary_node_ids) {
+    auto& node = mesh.GetNode(boundary_node_id);
+    switch (bc_bank.GetByID(node.bc_id)) {
+      case BC::VACUUM:
+        double direction_dot_product =
+            arma::dot(node.outward_normal, ordinate.CartesianUnitVector());
+        if (direction_dot_product < 1)
+          global_forcing_vectors_.at(ordinate_index)(boundary_node_id) +=
+              direction_dot_product *
+              solution_vectors_.at(ordinate_index)(boundary_node_id);
+        else
+          return;
+        break;
+      case BC::REFLECTIVE:
+        throw std::runtime_error(
+            "Reflective BCs have not been implemented for 1D yet.");
+        break;
+
+      default:
+        throw std::runtime_error(
+            "Invalid or unsupported BC type passed to Apply1D BCs");
+        break;
+    }
+  }
+}
 }  // namespace hummingbird
