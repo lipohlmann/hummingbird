@@ -16,9 +16,20 @@ void ProblemBase::AssembleGlobalSystem(
   global_system_matrices_.at(ordinate_index) = global_system_matrix;
 }
 
+void ProblemBase::AssembleGlobalForcing(
+    const std::vector<GlobalForcingData>& global_forcing_data,
+    const size_t ordinate_index) {
+  arma::Col<double> global_forcing_vector(global_forcing_data.size(),
+                                          arma::fill::zeros);
+  for (const auto& data : global_forcing_data)
+    global_forcing_vector(data.row_id) = data.value;
+  global_forcing_vectors_.at(ordinate_index) = std::move(global_forcing_vector);
+}
+
 void ProblemBase::Solve(const size_t ordinate_index) {
   solution_vectors_.at(ordinate_index) =
       arma::spsolve(global_system_matrices_.at(ordinate_index),
                     global_forcing_vectors_.at(ordinate_index));
 }
+
 }  // namespace hummingbird

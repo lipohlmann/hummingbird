@@ -45,12 +45,28 @@ class ProblemBase {
  public:
   /**
    * @brief Assemble the global element system. That is, form the matrix \f$A\f$
-   * in \f$ Ax=b\f$. This only should be called once per ordinate per simulation
+   * in \f$ Ax=b\f$. This only should be called once per ordinate per
+   * simulation. This method assumes that the length of the forcing vector is
+   * equal to the length of the global_matrix_data supplied (that is, each
+   * object in the vector as a unique row_id and col_id pair).
    *
    * @param global_matrix_data Vector of GlobalMatrixData structs
    */
   void AssembleGlobalSystem(
       const std::vector<GlobalMatrixData>& global_matrix_data,
+      const size_t ordinate_index);
+
+  /**
+   * @brief Assemble the global forcing vector for a given ordinate index. This
+   * method assumes that the length of the forcing vector is equal to the length
+   * of the global_forcing_data supplied (that is, each object in the vector
+   * supplied has a unique row_id member).
+   *
+   * @param global_forcing_data Vector of GlobalForcingData structs
+   * @param ordinate_index Ordinate index
+   */
+  void AssembleGlobalForcing(
+      const std::vector<GlobalForcingData>& global_forcing_data,
       const size_t ordinate_index);
 
   /**
