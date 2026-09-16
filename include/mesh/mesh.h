@@ -114,6 +114,15 @@ class Mesh {
   unsigned int dimension() const { return dimension_; }
 
   /**
+   * @brief Get the boundary node IDs
+   *
+   * @return const std::vector<size_t>&
+   */
+  const std::vector<size_t>& boundary_node_ids() const {
+    return boundary_node_ids_;
+  }
+
+  /**
    * @brief Get an Element by index
    *
    * @param index Index of the element
