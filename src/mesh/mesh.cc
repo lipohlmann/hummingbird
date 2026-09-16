@@ -234,7 +234,7 @@ void Mesh::ReadElements(std::ifstream& file, GmshReadState& state) {
       const auto& bc_name = state.physical_names.at(bc_id);
       BC boundary;
       from_json(nlohmann::json(bc_name.substr(bc_name.find(':') + 1)),
-               boundary);
+                boundary);
 
       size_t element_tag = 0;
       size_t node_tag = 0;
@@ -297,9 +297,9 @@ int Mesh::GetBCID(
     const std::vector<int>& point_physical_tags,
     const std::unordered_map<int, std::string>& physical_names) const {
   for (int tag : point_physical_tags)
-    if (physical_names.at(tag).starts_with("bc_")) return tag;
+    if (physical_names.at(tag).starts_with("bc:")) return tag;
   throw std::runtime_error(
-      "No Physical Group with a name prefixed \"bc_\" was found for "
+      "No Physical Group with a name prefixed \"bc:\" was found for "
       "a point entity.");
 }
 

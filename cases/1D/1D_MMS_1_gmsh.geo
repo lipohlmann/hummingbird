@@ -7,9 +7,9 @@ Point(1) = {0, 0, 0, 1.0};
 //+
 Line(1) = {2, 1};
 //+
-Physical Point("bc_west:vacuum", 2) = {1};
+Physical Point("bc:west", 2) = {1};
 //+
-Physical Point("bc_east:vacuum", 3) = {2};
+Physical Point("bc:east", 3) = {2};
 //+
 Physical Curve("material:mms_material", 4) = {1};
 //+

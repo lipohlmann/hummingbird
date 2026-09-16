@@ -3,8 +3,8 @@ $MeshFormat
 $EndMeshFormat
 $PhysicalNames
 4
-0 2 "bc_west:vacuum"
-0 3 "bc_east:vacuum"
+0 2 "bc:west"
+0 3 "bc:east"
 1 4 "material:mms_material"
 1 5 "source:mms_source"
 $EndPhysicalNames
