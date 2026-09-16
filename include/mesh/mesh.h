@@ -102,6 +102,15 @@ class Mesh {
   size_t n_nodes() const { return nodes_.size(); }
 
   /**
+   * @brief Get the spatial dimension of the mesh, derived from the elements
+   * it contains (e.g. 1 for a mesh of Segments). 0 if no elements have been
+   * added yet.
+   *
+   * @return unsigned int
+   */
+  unsigned int dimension() const { return dimension_; }
+
+  /**
    * @brief Get an Element by index
    *
    * @param index Index of the element
@@ -134,6 +143,10 @@ class Mesh {
 
   /// @brief Elements in the mesh
   std::vector<std::unique_ptr<Element>> elements_;
+
+  /// @brief Spatial dimension of the mesh's elements, set by the first call
+  /// to AddElement. 0 if no elements have been added yet.
+  unsigned int dimension_ = 0;
 
   /**
    * @brief Renumber nodes in mesh to keep node IDs near each other in a single

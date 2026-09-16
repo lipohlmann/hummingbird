@@ -99,4 +99,6 @@ arma::SpMat<double> Segment::LocalMassMatrix(
     material_matrix(k, k) = gll_quad.GetWeight(k) * length_ / 2.0 * sigma_t;
   return material_matrix;
 }
+
+unsigned int Segment::dimension() const { return 1; }
 }  // namespace hummingbird

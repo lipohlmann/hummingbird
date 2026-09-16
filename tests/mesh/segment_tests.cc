@@ -96,6 +96,12 @@ TEST_F(SegmentTest, TwoPointQuadratureProducesNoInteriorNodes) {
   EXPECT_TRUE(interior.empty());
 }
 
+TEST_F(SegmentTest, DimensionIsOne) {
+  mesh.AddNodes({MakeNode(0, 0.0, 0.0, 0.0), MakeNode(1, 10.0, 0.0, 0.0)});
+  Segment segment({0, 1}, 1, 0, mesh);
+  EXPECT_EQ(segment.dimension(), 1u);
+}
+
 // ---------------------------------------------------------------------------
 // Node ID assignment
 // ---------------------------------------------------------------------------

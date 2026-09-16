@@ -109,6 +109,13 @@ class Segment : public Element {
       const GaussLobattoLegendre& gll_quad,
       const MaterialBank& material_bank) override;
 
+  /**
+   * @brief Get the spatial dimension of a Segment (always 1)
+   *
+   * @return unsigned int
+   */
+  unsigned int dimension() const override;
+
  private:
   std::array<size_t, 2> boundary_node_ids_;
 

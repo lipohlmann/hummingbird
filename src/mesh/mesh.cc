@@ -23,6 +23,15 @@ void Mesh::AddNodes(const std::vector<Node>& nodes) {
 }
 
 void Mesh::AddElement(std::unique_ptr<Element> element) {
+  if (elements_.empty()) {
+    dimension_ = element->dimension();
+  } else if (element->dimension() != dimension_) {
+    throw std::runtime_error(std::format(
+        "Element has dimension {} but Mesh already contains elements of "
+        "dimension {}. All elements in a Mesh must have the same "
+        "dimension.",
+        element->dimension(), dimension_));
+  }
   elements_.push_back(std::move(element));
 }
 

@@ -9,6 +9,7 @@
 #include <stdexcept>
 #include <string>
 
+#include "mesh/element.h"
 #include "mesh/segment.h"
 #include "quadrature/gauss_lobatto_legendre.h"
 #include "utils/constants.h"
@@ -84,6 +85,36 @@ Node MakeNode(size_t id, double x, double y, double z) {
   return node;
 }
 
+// Minimal Element stub used only to test Mesh::AddElement's dimension
+// consistency guard; the other virtuals are never exercised.
+class FakeElement : public Element {
+ public:
+  FakeElement() : Element(0, 0) {}
+
+  std::vector<Node> CreateInteriorNodes(
+      const std::vector<Node>&, const GaussLobattoLegendre&) override {
+    return {};
+  }
+
+  arma::Col<double> LocalForcingVector(const GaussLobattoLegendre&,
+                                       const Mesh&, const size_t) override {
+    return {};
+  }
+
+  arma::Mat<double> LocalStiffnessMatrix(const GaussLobattoLegendre&,
+                                         const MaterialBank&,
+                                         const Ordinate&) override {
+    return {};
+  }
+
+  arma::SpMat<double> LocalMassMatrix(const GaussLobattoLegendre&,
+                                      const MaterialBank&) override {
+    return {};
+  }
+
+  unsigned int dimension() const override { return 2; }
+};
+
 }  // namespace
 
 TEST(MeshGMSHTest, ReadsExpectedNumberOfNodesAndElements) {
@@ -135,6 +166,29 @@ TEST(MeshGMSHTest, NonBoundaryNodesHaveNoBC) {
   for (size_t i = 2; i < mesh.nodes().size(); i++)
     EXPECT_EQ(mesh.nodes().at(i).boundary, BC::NONE)
         << "Node " << i << " should not have a boundary condition.";
+}
+
+// ---------------------------------------------------------------------------
+// Mesh::dimension
+// ---------------------------------------------------------------------------
+
+TEST(MeshDimensionTest, IsZeroBeforeAnyElementIsAdded) {
+  Mesh mesh;
+  EXPECT_EQ(mesh.dimension(), 0u);
+}
+
+TEST(MeshDimensionTest, IsOneAfterAddingSegments) {
+  Mesh mesh(WriteTempMesh("hummingbird_mesh_test_dimension.msh", kOneDGmsh));
+  EXPECT_EQ(mesh.dimension(), 1u);
+}
+
+TEST(MeshDimensionTest, ThrowsWhenElementDimensionsMismatch) {
+  Mesh mesh;
+  mesh.AddNodes({MakeNode(0, 0.0, 0.0, 0.0), MakeNode(1, 1.0, 0.0, 0.0)});
+  mesh.AddElement(
+      std::make_unique<Segment>(std::array<size_t, 2>{0, 1}, 0, 0, mesh));
+  EXPECT_THROW(mesh.AddElement(std::make_unique<FakeElement>()),
+              std::runtime_error);
 }
 
 TEST(MeshGMSHTest, ThrowsWhenPointEntityHasNoBCPhysicalGroup) {

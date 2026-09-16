@@ -97,6 +97,14 @@ class Element {
       const GaussLobattoLegendre& gll_quad,
       const MaterialBank& material_bank) = 0;
 
+  /**
+   * @brief Get the spatial dimension of this element type (e.g. 1 for a
+   * line segment)
+   *
+   * @return unsigned int
+   */
+  virtual unsigned int dimension() const = 0;
+
  protected:
   /// @brief Material ID
   const int material_id_;
