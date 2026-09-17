@@ -8,6 +8,8 @@
 #include <vector>
 
 #include "mesh/node.h"
+#include "quadrature/angular/ordinate.h"
+#include "quadrature/quadrature_base.h"
 #include "utils/enums.h"
 
 namespace hummingbird {
@@ -25,7 +27,8 @@ class Results {
    * @param nodes Mesh nodes holding the solution values to export
    */
   Results(const std::string& name, const OutputFormat output_format,
-          const std::vector<Node>& nodes);
+          const std::vector<Node>& nodes,
+          const QuadratureBase<Ordinate>& angular_quadrature);
 
   /**
    * @brief Export the results in the format given by output_format_
@@ -43,6 +46,7 @@ class Results {
 
   /// @brief Mesh nodes holding the solution values to export
   const std::vector<Node>& nodes_;
+  const QuadratureBase<Ordinate>& angular_quadrature_;
 
   /**
    * @brief Export the results as a CSV file

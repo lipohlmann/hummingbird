@@ -114,7 +114,8 @@ int main(int argc, char** argv) {
 
   // export results
   Results results(input_params.problem_params.name,
-                  input_params.problem_params.output_format, mesh.nodes());
+                  input_params.problem_params.output_format, mesh.nodes(),
+                  *angular_quad.get());
   results.Export();
 
   return 0;
