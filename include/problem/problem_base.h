@@ -139,7 +139,17 @@ class ProblemBase {
     return solution_vectors_;
   }
 
+  /**
+   * @brief Get the number of degrees of freedom
+   *
+   * @return size_t
+   */
+  size_t n_dofs() const { return n_dofs_; }
+
  protected:
+  /// @brief Number of degrees of freedom in simulation
+  const size_t n_dofs_;
+
   /// @brief Global system matrices in order of ordinates in angular
   /// quadrature set
   std::vector<arma::SpMat<double>> global_system_matrices_;
