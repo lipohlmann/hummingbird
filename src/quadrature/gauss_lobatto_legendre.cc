@@ -1,5 +1,7 @@
 #include "quadrature/gauss_lobatto_legendre.h"
 
+#include <stdexcept>
+
 #include "math/legendre_polynomials.h"
 
 namespace hummingbird {
@@ -11,6 +13,9 @@ GaussLobattoLegendre::GaussLobattoLegendre(const size_t n_points)
 
 std::vector<double> GaussLobattoLegendre::ComputeAbscissas(
     const size_t n_points) {
+  if (n_points < 2)
+    throw std::runtime_error(
+        "n_points in GaussLobattoLegendre must be at least 2.");
   std::vector<double> abscissas(n_points);
 
   abscissas[0] = -1.0;
