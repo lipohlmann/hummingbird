@@ -25,6 +25,7 @@ class Results {
    * @param name Problem name, used to build the output file name
    * @param output_format Format to export results in
    * @param nodes Mesh nodes holding the solution values to export
+   * @param angular_quadrature Angular quadrature set for the simulation
    */
   Results(const std::string& name, const OutputFormat output_format,
           const std::vector<Node>& nodes,

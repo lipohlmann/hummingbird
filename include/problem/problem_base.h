@@ -59,6 +59,10 @@ class ProblemBase {
    */
   ProblemBase(const size_t n_dofs, const size_t n_ordinates);
 
+  /**
+   * @brief Destroy the Problem Base object
+   *
+   */
   virtual ~ProblemBase() = default;
 
   /**
@@ -72,6 +76,8 @@ class ProblemBase {
    * locations instead of summing them).
    *
    * @param global_matrix_data Vector of GlobalMatrixData structs
+   * @param ordinate_index Ordinate index within the angular quadrature set
+   * (i.e. the direction number)
    */
   void AssembleGlobalSystem(
       const std::vector<GlobalMatrixData>& global_matrix_data,
