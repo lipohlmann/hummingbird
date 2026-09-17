@@ -56,7 +56,7 @@ void from_json(const json& j, AngularTreatmentParams& angular_treatment_params);
 struct SpectralElementParams {
   TransportForm transport_form;
   FEFormulation fe_formulation;
-  unsigned int gll_order;
+  unsigned int n_points;
 };
 
 /**

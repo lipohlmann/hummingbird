@@ -36,7 +36,7 @@ void from_json(const json& j, SpectralElementParams& se_params) {
   j.at("spectral_elements")
       .at("fe_formulation")
       .get_to(se_params.fe_formulation);
-  j.at("spectral_elements").at("gll_order").get_to(se_params.gll_order);
+  j.at("spectral_elements").at("n_points").get_to(se_params.n_points);
 }
 
 void from_json(const json& j, SourceIterationParams& source_iter_params) {
