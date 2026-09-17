@@ -4,6 +4,8 @@
 #ifndef HUMMINGBIRD_QUADRATURE_GAUSS_LOBATTO_LEGENDRE_H_
 #define HUMMINGBIRD_QUADRATURE_GAUSS_LOBATTO_LEGENDRE_H_
 
+#include <valarray>
+
 #include "math/legendre_polynomials.h"
 #include "quadrature/quadrature_base.h"
 namespace hummingbird {
@@ -48,7 +50,7 @@ class GaussLobattoLegendre : public QuadratureBase<double> {
    * @param grid_function_vals Grid function values on the abscissae
    * @return double
    */
-  double IntegrateGridFunction(const std::vector<double>& grid_function_vals);
+  double IntegrateGridFunction(const std::valarray<double>& grid_function_vals);
 
  private:
   /// @brief Derivatives of the Lagrange polynomials at the GLL nodes. These

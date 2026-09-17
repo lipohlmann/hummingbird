@@ -60,7 +60,7 @@ double GaussLobattoLegendre::ComputeWeight(const size_t k, const size_t n) {
 }
 
 double GaussLobattoLegendre::IntegrateGridFunction(
-    const std::vector<double>& grid_function_vals) {
+    const std::valarray<double>& grid_function_vals) {
   assert(grid_function_vals.size() == abscissas_.size());
   double sum = 0.0;
   for (auto i = 0; i < grid_function_vals.size(); i++)
