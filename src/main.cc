@@ -59,6 +59,7 @@ int main(int argc, char** argv) {
   mesh.ResolveIDs(material_bank, source_bank, bc_bank);
   mesh.FindBoundaryNodes();
   mesh.SetOutwardNormals();
+  mesh.InitializeNodeSolutions(n_ordinates);
 
   // build SEMProblem
   SEMProblem sem_problem(input_params.sem_params.fe_formulation, mesh,
