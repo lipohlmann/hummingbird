@@ -46,6 +46,8 @@ class Results {
 
   /// @brief Mesh nodes holding the solution values to export
   const std::vector<Node>& nodes_;
+
+  /// @brief Angular quadrature set
   const QuadratureBase<Ordinate>& angular_quadrature_;
 
   /**
