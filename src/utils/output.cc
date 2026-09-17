@@ -1,56 +1,23 @@
-#include "output.h"
+#include "utils/output.h"
 
 #include "enums.h"
 
-namespace starling {
+namespace hummingbird {
 void print_header() {
   fmt::print(
-      "                                       ###                              "
-      "  \n"
-      "                                        ###    #                        "
-      "  \n"
-      "               #                         ##   ###                       "
-      "  \n"
-      "              ##                         ##    #                        "
-      "  \n"
-      "              ##                         ##                             "
-      "  \n"
-      "   /###     ######## /###   ###  /###    ##  ###   ###  /###     /###   "
-      "  \n"
-      "  / #### / ######## / ###  / ###/ #### / ##   ###   ###/ #### / /  ###  "
-      "/ \n"
-      " ##  ###/     ##   /   ###/   ##   ###/  ##    ##    ##   ###/ /    "
-      "###/  \n"
-      "####          ##  ##    ##    ##         ##    ##    ##    ## ##     ## "
-      "  \n"
-      "  ###         ##  ##    ##    ##         ##    ##    ##    ## ##     ## "
-      "  \n"
-      "    ###       ##  ##    ##    ##         ##    ##    ##    ## ##     ## "
-      "  \n"
-      "      ###     ##  ##    ##    ##         ##    ##    ##    ## ##     ## "
-      "  \n"
-      " /###  ##     ##  ##    /#    ##         ##    ##    ##    ## ##     ## "
-      "  \n"
-      "/ #### /      ##   ####/ ##   ###        ### / ### / ###   ### ######## "
-      "  \n"
-      "   ###/        ##   ###   ##   ###        ##/   ##/   ###   ###  ### "
-      "###  \n"
-      "                                                                      "
-      "### \n"
-      "                                                                ####   "
-      "###\n"
-      "                                                              /######  "
-      "/# \n"
-      "                                                             /     ###/ "
-      "  \n\n");
+      " _                               _             _     _         _ \n"
+      "| |__  _   _ _ __ ___  _ __ ___ (_)_ __   __ _| |__ (_)_ __ __| |\n"
+      "| '_ \| | | | '_ ` _ \| '_ ` _ \| | '_ \ / _` | '_ \| | '__/ _` |\n"
+      "| | | | |_| | | | | | | | | | | | | | | | (_| | |_) | | | | (_| |\n"
+      "|_| |_|\__,_|_| |_| |_|_| |_| |_|_|_| |_|\__, |_.__/|_|_|  \__,_|\n"
+      "                                        |___ /                   \n "
+      "\n\n");
 
   fmt::print(
-      "    Description | Radiance Cascades on Voxel Geometry for "
-      "Nuclear "
-      "Reactor Physics\n"
+      "    Description | Spectral Elements for Radiation Transport \n "
       "      Copyright | 2026, Liam Pohlmann\n"
       "        License | "
-      "https://github.com/lipohlmann/starling/blob/main/LICENSE\n\n");
+      "https://github.com/lipohlmann/hummingbird/blob/main/LICENSE\n\n");
 }
 void print_columns() {
   fmt::print(
@@ -86,16 +53,12 @@ void print_scatter_status(const double scatter, const double error,
         iter, scatter, "-");
 }
 
-void print_scatter_complete(const double final_k_eff,
-                            const SimulationType sim_type) {
+void print_scatter_complete(const double final_k_eff, const RunMode run_mode) {
   fmt::print(
       "  "
       "------------------------------------------------------------------------"
       "-----------------"
       "\n\n");
   fmt::print("Source iterations complete.\n\n");
-
-  if (sim_type == SimulationType::K_EIGENVALUE)
-    fmt::print("Final k-eff | {:.5f}\n\n", final_k_eff);
 }
-}  // namespace starling
+}  // namespace hummingbird
