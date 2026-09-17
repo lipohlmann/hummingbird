@@ -46,7 +46,7 @@
       "displayName": "Release",
       "configurePreset": "release",
       "targets": [
-        "starling"
+        "hummingbird"
       ]
     },
     {
@@ -59,7 +59,7 @@
       "displayName": "Build Tests",
       "configurePreset": "debug",
       "targets": [
-        "test_starling"
+        "test_hummingbird"
       ]
     }
   ],
@@ -93,6 +93,21 @@
         {
           "type": "test",
           "name": "test-all"
+        }
+      ]
+    },
+    {
+      "name": "build-debug",
+      "displayName": "Debugging Build Pipeline",
+      "description": "Configures and builds in debug mode.",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "debug"
+        },
+        {
+          "type": "build",
+          "name": "debug"
         }
       ]
     }
