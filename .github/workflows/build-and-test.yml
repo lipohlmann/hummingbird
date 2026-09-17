@@ -20,5 +20,5 @@ jobs:
           cache: true
 
       - name: Build and test
-        run: pixi run de
+        run: pixi run dev
 
