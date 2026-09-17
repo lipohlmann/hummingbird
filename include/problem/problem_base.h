@@ -130,6 +130,15 @@ class ProblemBase {
   void ApplyBCs(const Mesh& mesh, const Ordinate& ordinate,
                 const BCBank& bc_bank, const size_t ordinate_index);
 
+  /**
+   * @brief Get the solution vectors
+   *
+   * @return const std::vector<arma::Col<double>>&
+   */
+  const std::vector<arma::Col<double>>& solution_vectors() const {
+    return solution_vectors_;
+  }
+
  protected:
   /// @brief Global system matrices in order of ordinates in angular
   /// quadrature set
