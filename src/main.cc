@@ -8,6 +8,7 @@
 #include "banks/source_bank.h"
 #include "input_parameters.h"
 #include "mesh/mesh.h"
+#include "problem/sem_problem.h"
 #include "quadrature/angular/angular_quadrature_set.h"
 #include "quadrature/gauss_lobatto_legendre.h"
 #include "simulation.h"
@@ -53,15 +54,42 @@ int main(int argc, char** argv) {
   mesh.FindBoundaryNodes();
   mesh.SetOutwardNormals();
 
+  // build SEMProblem
+  SEMProblem sem_problem(input_params.sem_params.fe_formulation, mesh,
+                         angular_quad.get()->n_points());
+
   Simulation simulation;
 
-  // form local matrices
+  fmt::print("Beginning source iterations.\n\n");
+  print_columns();
 
-  // assemble to global system
+  for (auto s_iter = 1;
+       s_iter <= input_params.source_iter_params.max_iterations; s_iter++) {
+    print_scatter_status(simulation.scatter_source_l2,
+                         simulation.scatter_iter_error, s_iter);
 
-  // solve system (should be a one-liner?)
+    // Solve for all ordinates
+    for (auto n = 0; n < angular_quad.get()->n_points(); n++) {
+      const auto ordinate = angular_quad.get()->GetAbscissa(n);
 
-  // check source iteration convergence
+      // assemble to global system data
+      auto global_matrix_data = sem_problem.get()->AssembleGlobalMatrixData(
+          mesh, gll_quad, material_bank, ordinate);
+      auto global_forcing_data =
+          sem_problem.get()->AssembleGlobalForcingData(gll_quad, mesh, n);
+
+      // form linear system
+      sem_problem.get()->AssembleGlobalSystem(global_matrix_data, n);
+      sem_problem.get()->AssembleGlobalForcing(global_forcing_data, n);
+      sem_problem.get()->ApplyBCs(mesh, ordinate, bc_bank, n);
+
+      // solve system
+      sem_problem.get()->Solve(n);
+    }
+    // update scattering source
+
+    // check source iteration convergence
+  }
 
   // export results
 
