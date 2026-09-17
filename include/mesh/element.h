@@ -108,14 +108,39 @@ class Element {
     node_ids_ = std::move(node_ids);
   }
 
+  /**
+   * @brief Construct the local forcing vector for this element at a given
+   * ordinate
+   *
+   * @param gll_quad GaussLobattoLegendre quadrature set
+   * @param mesh Mesh
+   * @param ordinate_index Index of the ordinate in the angular quadrature
+   * @return arma::Col<double>
+   */
   virtual arma::Col<double> LocalForcingVector(
       const GaussLobattoLegendre& gll_quad, const Mesh& mesh,
       const size_t ordinate_index) = 0;
 
+  /**
+   * @brief Construct the local stiffness matrix for this element at a given
+   * ordinate
+   *
+   * @param gll_quad GaussLobattoLegendre quadrature set
+   * @param material_bank Material bank
+   * @param ordinate Ordinate (direction)
+   * @return arma::Mat<double>
+   */
   virtual arma::Mat<double> LocalStiffnessMatrix(
       const GaussLobattoLegendre& gll_quad, const MaterialBank& material_bank,
       const Ordinate& ordinate) = 0;
 
+  /**
+   * @brief Construct the local mass matrix for this element
+   *
+   * @param gll_quad GaussLobattoLegendre quadrature set
+   * @param material_bank Material bank
+   * @return arma::SpMat<double>
+   */
   virtual arma::SpMat<double> LocalMassMatrix(
       const GaussLobattoLegendre& gll_quad,
       const MaterialBank& material_bank) = 0;

@@ -22,10 +22,31 @@ class CGProblem : public ProblemBase {
    */
   CGProblem(const size_t n_dofs, const size_t n_ordinates);
 
+  /**
+   * @brief See ProblemBase::AssembleGlobalMatrixData. For each element, the
+   * local mass and stiffness matrices are summed and scattered into
+   * GlobalMatrixData entries keyed by the element's node IDs.
+   *
+   * @param mesh Mesh
+   * @param gll_quad GaussLobattoLegendre quadrature set
+   * @param material_bank Material bank
+   * @param ordinate Ordinate for equation
+   * @return std::vector<GlobalMatrixData>
+   */
   std::vector<GlobalMatrixData> AssembleGlobalMatrixData(
       const Mesh& mesh, const GaussLobattoLegendre& gll_quad,
       const MaterialBank& material_bank, const Ordinate& ordinate) override;
 
+  /**
+   * @brief See ProblemBase::AssembleGlobalForcingData. For each element, the
+   * local forcing vector is scattered into GlobalForcingData entries keyed by
+   * the element's node IDs.
+   *
+   * @param gll_quad GaussLobattoLegendre quadrature set
+   * @param mesh Mesh
+   * @param ordinate_index Index in the angular quadrature
+   * @return std::vector<GlobalForcingData>
+   */
   // this method will need to apply boundary conditions as well if needed
   std::vector<GlobalForcingData> AssembleGlobalForcingData(
       const GaussLobattoLegendre& gll_quad, const Mesh& mesh,
@@ -33,6 +54,15 @@ class CGProblem : public ProblemBase {
 
  private:
   /**
+   * @brief See ProblemBase::Apply1DBCs. Only vacuum BCs are currently
+   * supported.
+   *
+   * @param mesh Mesh
+   * @param ordinate Ordinate (direction)
+   * @param bc_bank BCBank object
+   * @param ordinate_index Index of the ordinate in the angular quadrature
+   * @throw std::runtime_error if a boundary node has a reflective or
+   * unsupported BC
    * @todo Need to implement reflective BCs.
    */
   void Apply1DBCs(const Mesh& mesh, const Ordinate& ordinate,

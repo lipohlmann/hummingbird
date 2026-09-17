@@ -13,10 +13,12 @@ namespace hummingbird {
  * @brief Simple struct holding a function value evaluated at the supplied
  * abscissa value
  *
- * @tparam T Data type of the abscissa
  */
 struct QuadraturePair {
+  /// @brief Index of the abscissa the function was evaluated at
   int abscissa_index;
+
+  /// @brief Function value at the abscissa
   double function_value;
 };
 

@@ -14,11 +14,26 @@
 using nlohmann::json;
 namespace hummingbird {
 
+/**
+ * @brief Bank holding the boundary conditions defined in the input file
+ *
+ */
 class BCBank : public BankBase<BC> {
  public:
+  /**
+   * @brief Construct a new BCBank object. BCs are built using the json input
+   *
+   * @param json_input JSON object containing input file information
+   */
   BCBank(const json& json_input);
 
  private:
+  /**
+   * @brief Builds the BC map and assigns it to the id_object_map_ and
+   * name_id_map_ members
+   *
+   * @param json_input JSON object containing input file information
+   */
   void Build(const json& json_input) override;
 };
 }  // namespace hummingbird
