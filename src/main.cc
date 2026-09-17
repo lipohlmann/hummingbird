@@ -2,6 +2,7 @@
 #include <fstream>
 #include <iostream>
 #include <nlohmann/json.hpp>
+#include <valarray>
 
 #include "banks/bc_bank.h"
 #include "banks/material_bank.h"
@@ -13,6 +14,7 @@
 #include "quadrature/gauss_lobatto_legendre.h"
 #include "simulation.h"
 #include "utils/json.h"
+#include "utils/misc.h"
 #include "utils/output.h"
 
 using nlohmann::json;
@@ -46,6 +48,7 @@ int main(int argc, char** argv) {
       input_params.angular_treatment_params.angular_quad_set,
       input_params.angular_treatment_params.n_azim,
       input_params.angular_treatment_params.n_polar);
+  size_t n_ordinates = angular_quad.get()->n_points();
 
   // build Mesh object
   Mesh mesh(input_params.mesh_params.mesh_file);
@@ -63,13 +66,15 @@ int main(int argc, char** argv) {
   fmt::print("Beginning source iterations.\n\n");
   print_columns();
 
+  std::valarray<double> old_scalar_flux(sem_problem.get()->n_dofs(), 0);
+  std::valarray<double> new_scalar_flux(sem_problem.get()->n_dofs(), 0);
   for (auto s_iter = 1;
        s_iter <= input_params.source_iter_params.max_iterations; s_iter++) {
     print_scatter_status(simulation.scatter_source_l2,
                          simulation.scatter_iter_error, s_iter);
 
     // Solve for all ordinates
-    for (auto n = 0; n < angular_quad.get()->n_points(); n++) {
+    for (auto n = 0; n < n_ordinates; n++) {
       const auto ordinate = angular_quad.get()->GetAbscissa(n);
 
       // assemble to global system data
@@ -87,8 +92,23 @@ int main(int argc, char** argv) {
       sem_problem.get()->Solve(n);
     }
     // update scattering source
+    mesh.UpdateNodeAngularFluxes(sem_problem, n_ordinates);
+    mesh.UpdateNodeScalarFluxes(*angular_quad.get());
+    mesh.UpdateNodeSources(*angular_quad.get(), material_bank, source_bank);
 
     // check source iteration convergence
+    for (auto i = 0; i < mesh.n_nodes(); i++)
+      new_scalar_flux[i] = mesh.GetNode(i).scalar_flux;
+    std::valarray<double> error = new_scalar_flux - old_scalar_flux;
+    double new_l2_error = gll_quad.IntegrateGridFunction(error * error);
+    simulation.scatter_iter_error =
+        RelativeError(new_l2_error, simulation.scatter_source_l2);
+
+    if (simulation.scatter_iter_error <
+        input_params.source_iter_params.tolerance)
+      break;
+
+    simulation.scatter_source_l2 = new_l2_error;
   }
 
   // export results
