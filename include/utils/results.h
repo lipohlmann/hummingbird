@@ -8,13 +8,16 @@
 #include <vector>
 
 #include "mesh/node.h"
+#include "quadrature/angular/ordinate.h"
+#include "quadrature/quadrature_base.h"
 #include "utils/enums.h"
 
 namespace hummingbird {
 class Results {
  public:
   Results(const std::string& name, const OutputFormat output_format,
-          const std::vector<Node>& nodes);
+          const std::vector<Node>& nodes,
+          const QuadratureBase<Ordinate>& angular_quadrature);
 
   void Export();
 
@@ -22,6 +25,7 @@ class Results {
   const std::string& name_;
   const OutputFormat output_format_;
   const std::vector<Node>& nodes_;
+  const QuadratureBase<Ordinate>& angular_quadrature_;
 
   void ToCSV();
 };
