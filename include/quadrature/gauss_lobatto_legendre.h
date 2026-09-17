@@ -41,9 +41,18 @@ class GaussLobattoLegendre : public QuadratureBase<double> {
     return lagrange_derivatives_.at(flattened_idx);
   };
 
+  /**
+   * @brief Integrate a function defined on the abscissae given in the order the
+   * abscissae are stored.
+   *
+   * @param grid_function_vals Grid function values on the abscissae
+   * @return double
+   */
+  double IntegrateGridFunction(const std::vector<double>& grid_function_vals);
+
  private:
-  /// @brief Derivatives of the Lagrange polynomials at the GLL nodes. These are
-  /// stored as a flattened array and are indexed using the node number
+  /// @brief Derivatives of the Lagrange polynomials at the GLL nodes. These
+  /// are stored as a flattened array and are indexed using the node number
   /// and the polynomial number in GetLagrangeDerivative. See the extended
   /// description in ComputeLagrangeDerivatives().
   std::vector<double> lagrange_derivatives_;

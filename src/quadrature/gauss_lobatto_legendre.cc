@@ -1,5 +1,6 @@
 #include "quadrature/gauss_lobatto_legendre.h"
 
+#include <cassert>
 #include <stdexcept>
 
 #include "math/legendre_polynomials.h"
@@ -56,5 +57,14 @@ double GaussLobattoLegendre::ComputeWeight(const size_t k, const size_t n) {
   double legendre_weight = LegendrePolynomial(n - 1, abscissas_.at(k));
   double weight = leading_coefficient / legendre_weight / legendre_weight;
   return weight;
+}
+
+double GaussLobattoLegendre::IntegrateGridFunction(
+    const std::vector<double>& grid_function_vals) {
+  assert(grid_function_vals.size() == abscissas_.size());
+  double sum = 0.0;
+  for (auto i = 0; i < grid_function_vals.size(); i++)
+    sum += grid_function_vals[i] * weight_map_.at(i);
+  return sum;
 }
 }  // namespace hummingbird
