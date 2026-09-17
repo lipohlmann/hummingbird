@@ -18,6 +18,10 @@ using nlohmann::json;
 
 namespace hummingbird {
 
+/**
+ * @brief Bank holding the volumetric sources defined in the input file
+ *
+ */
 class SourceBank : public BankBase<std::unique_ptr<SourceBase>> {
  public:
   /**
@@ -32,7 +36,7 @@ class SourceBank : public BankBase<std::unique_ptr<SourceBase>> {
   /**
    * @brief Build internal maps based on JSON input
    *
-   * @param json_input
+   * @param json_input JSON object containing input file information
    */
   void Build(const json& json_input);
 };

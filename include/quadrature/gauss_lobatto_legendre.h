@@ -26,6 +26,11 @@ namespace hummingbird {
  */
 class GaussLobattoLegendre : public QuadratureBase<double> {
  public:
+  /**
+   * @brief Construct a new GaussLobattoLegendre object
+   *
+   * @param n_points Number of quadrature points to be created
+   */
   GaussLobattoLegendre(const size_t n_points);
 
   /**

@@ -44,6 +44,11 @@ struct GlobalForcingData {
   double value;
 };
 
+/**
+ * @brief Base class defining a formulation of the transport equation to be
+ * solved
+ *
+ */
 class ProblemBase {
  public:
   /**
@@ -126,8 +131,9 @@ class ProblemBase {
    * dimension.
    *
    * @param mesh Mesh
-   * @param angular_quadrature Angular quadrature
+   * @param ordinate Ordinate (direction)
    * @param bc_bank BCBank object
+   * @param ordinate_index Index of the ordinate in the angular quadrature
    */
   void ApplyBCs(const Mesh& mesh, const Ordinate& ordinate,
                 const BCBank& bc_bank, const size_t ordinate_index);
@@ -192,8 +198,9 @@ class ProblemBase {
    * @brief Apply boundary conditions to a 1D problem.
    *
    * @param mesh Mesh
-   * @param angular_quadrature Angular quadrature
+   * @param Ordinate Ordinate (direction)
    * @param bc_bank BCBank object
+   * @param ordinate_index Index of the ordinate in the angular quadrature
    */
   virtual void Apply1DBCs(const Mesh& mesh, const Ordinate& Ordinate,
                           const BCBank& bc_bank,

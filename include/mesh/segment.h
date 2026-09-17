@@ -60,9 +60,9 @@ class Segment : public Element {
    * (\xi_k) +\frac{d\ell_i}{d\xi}(\xi_k)\right]
    * \f]
    *
-   * @param gll_quad
-   * @param mesh
-   * @param ordinate_index
+   * @param gll_quad GaussLobattoLegendre quadrature set
+   * @param mesh Mesh
+   * @param ordinate_index Index of the ordinate in the angular quadrature
    * @return arma::Col<double>
    */
   arma::Col<double> LocalForcingVector(const GaussLobattoLegendre& gll_quad,
@@ -78,6 +78,9 @@ class Segment : public Element {
    * \frac{d\ell_i}{d\xi}(\xi_k)\frac{d\ell_j}{d\xi}(\xi_k)
    * \f]
    *
+   * @param gll_quad GaussLobattoLegendre set
+   * @param material_bank MaterialBank
+   * @param ordinate Ordinate (direction)
    * @return arma::Mat<double>
    * @todo See about cutting the loops in half by leveraging symmetry.
    */
@@ -117,6 +120,7 @@ class Segment : public Element {
   unsigned int dimension() const override;
 
  private:
+  /// @brief Node IDs defining the Segment bounds
   std::array<size_t, 2> boundary_node_ids_;
 
   /// @brief Length of the element

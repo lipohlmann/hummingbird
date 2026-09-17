@@ -23,6 +23,10 @@ namespace hummingbird {
  */
 void from_json(const json& j, Material& material);
 
+/**
+ * @brief Bank holding the materials defined in the input file
+ *
+ */
 class MaterialBank : public BankBase<Material> {
  public:
   /**
@@ -42,6 +46,14 @@ class MaterialBank : public BankBase<Material> {
    */
   void Build(const json& json_input);
 
+  /**
+   * @brief Check that all materials in id_object_map_ have physically valid
+   * cross sections
+   *
+   * @throw std::runtime_error if a material's total cross section is
+   * negative, less than the sum of its scattering and fission cross
+   * sections, or if its scattering, fission, or nu is negative
+   */
   void CheckMaterials();
 };
 }  // namespace hummingbird
