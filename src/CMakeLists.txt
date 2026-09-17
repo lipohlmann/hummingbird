@@ -1,11 +1,17 @@
 find_package(Armadillo CONFIG REQUIRED)
+find_package(superlu CONFIG REQUIRED)
 
 if(Armadillo_FOUND AND NOT TARGET Armadillo::Armadillo)
   add_library(Armadillo::Armadillo INTERFACE IMPORTED)
+  get_target_property(SUPERLU_INCLUDE_DIRS superlu::superlu
+                       INTERFACE_INCLUDE_DIRECTORIES)
+  list(GET SUPERLU_INCLUDE_DIRS 0 SUPERLU_INCLUDE_DIR)
   set_target_properties(
     Armadillo::Armadillo
     PROPERTIES INTERFACE_LINK_LIBRARIES "${ARMADILLO_LIBRARIES}"
-               INTERFACE_INCLUDE_DIRECTORIES "${ARMADILLO_INCLUDE_DIRS}")
+               INTERFACE_INCLUDE_DIRECTORIES "${ARMADILLO_INCLUDE_DIRS}"
+               INTERFACE_COMPILE_DEFINITIONS
+               "ARMA_SUPERLU_INCLUDE_DIR=${SUPERLU_INCLUDE_DIR}/")
 endif()
 
 find_package(nlohmann_json REQUIRED)
