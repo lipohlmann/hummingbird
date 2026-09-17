@@ -16,6 +16,7 @@
 #include "utils/json.h"
 #include "utils/misc.h"
 #include "utils/output.h"
+#include "utils/results.h"
 
 using nlohmann::json;
 using namespace hummingbird;
@@ -112,6 +113,9 @@ int main(int argc, char** argv) {
   }
 
   // export results
+  Results results(input_params.problem_params.name,
+                  input_params.problem_params.output_format, mesh.nodes());
+  results.Export();
 
   return 0;
 }
