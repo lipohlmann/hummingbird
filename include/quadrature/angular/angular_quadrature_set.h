@@ -15,6 +15,10 @@ class AngularQuadratureSet {
   AngularQuadratureSet(const AngularQuadSet quad_set, const size_t n_azim,
                        const size_t n_polar);
 
+  const QuadratureBase<Ordinate>* get() const {
+    return angular_quadrature_set_.get();
+  }
+
  private:
   std::unique_ptr<QuadratureBase<Ordinate>> angular_quadrature_set_;
 };
