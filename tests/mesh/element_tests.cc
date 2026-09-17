@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (c) 2026, Liam Pohlmann
 
-#include "mesh/element.h"
-
 #include <gtest/gtest.h>
 
 #include <stdexcept>
 #include <vector>
 
 #include "banks/material_bank.h"
+#include "mesh/element.h"
 #include "mesh/node.h"
 #include "quadrature/angular/ordinate.h"
 #include "quadrature/gauss_lobatto_legendre.h"
@@ -36,9 +35,9 @@ class TestElement : public Element {
     return arma::Col<double>();
   }
 
-  arma::Mat<double> LocalStiffnessMatrix(
-      const GaussLobattoLegendre& gll_quad, const MaterialBank& material_bank,
-      const Ordinate& ordinate) override {
+  arma::Mat<double> LocalStiffnessMatrix(const GaussLobattoLegendre& gll_quad,
+                                         const MaterialBank& material_bank,
+                                         const Ordinate& ordinate) override {
     return arma::Mat<double>();
   }
 

@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (c) 2026, Liam Pohlmann
 
-#include "utils/output.h"
-
 #include <gtest/gtest.h>
 
 #include <string>
 
 #include "utils/enums.h"
+#include "utils/output.h"
 
 namespace hummingbird {
 
@@ -17,7 +16,7 @@ TEST(OutputTest, PrintHeaderPrintsDescriptionAndCopyright) {
   const std::string output = testing::internal::GetCapturedStdout();
 
   EXPECT_NE(output.find("Spectral Elements for Radiation Transport"),
-           std::string::npos);
+            std::string::npos);
   EXPECT_NE(output.find("Copyright"), std::string::npos);
 }
 
@@ -56,7 +55,8 @@ TEST(OutputTest, PrintKStatusLaterIterationShowsKEffAndError) {
   EXPECT_NE(output.find("1.23456e+00"), std::string::npos);
 }
 
-TEST(OutputTest, PrintScatterStatusFirstIterationShowsPlaceholderInsteadOfError) {
+TEST(OutputTest,
+     PrintScatterStatusFirstIterationShowsPlaceholderInsteadOfError) {
   testing::internal::CaptureStdout();
   print_scatter_status(1.0, 0.5, 1);
   const std::string output = testing::internal::GetCapturedStdout();

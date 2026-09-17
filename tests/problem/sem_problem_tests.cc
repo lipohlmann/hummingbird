@@ -1,14 +1,13 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (c) 2026, Liam Pohlmann
 
-#include "problem/sem_problem.h"
-
 #include <gtest/gtest.h>
 
 #include <stdexcept>
 
 #include "mesh/mesh.h"
 #include "problem/cg_problem.h"
+#include "problem/sem_problem.h"
 #include "utils/enums.h"
 
 namespace hummingbird {
@@ -36,7 +35,7 @@ TEST(SEMProblemTest, UnsupportedFormulationThrows) {
   const auto unsupported = static_cast<FEFormulation>(-1);
 
   EXPECT_THROW(SEMProblem(unsupported, mesh, /*n_ordinates=*/1),
-              std::runtime_error);
+               std::runtime_error);
 }
 
 }  // namespace hummingbird
