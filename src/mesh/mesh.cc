@@ -11,6 +11,7 @@
 #include <unordered_map>
 
 #include "mesh/segment.h"
+#include "problem/sem_problem.h"
 #include "utils/enums.h"
 
 namespace hummingbird {

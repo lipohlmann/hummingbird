@@ -14,10 +14,11 @@
 #include "banks/source_bank.h"
 #include "mesh/element.h"
 #include "mesh/node.h"
-#include "problem/sem_problem.h"
 #include "quadrature/gauss_lobatto_legendre.h"
 
 namespace hummingbird {
+
+class SEMProblem;
 
 /**
  * @brief Class defing a mesh
