@@ -1,6 +1,6 @@
 #include "utils/output.h"
 
-#include "enums.h"
+#include "utils/enums.h"
 
 namespace hummingbird {
 void print_header() {

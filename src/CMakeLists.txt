@@ -25,6 +25,7 @@ add_library(
   banks/source_bank.cc
   problem/problem_base.cc
   problem/cg_problem.cc
+  problem/sem_problem.cc
   quadrature/gauss_chebyshev.cc
   quadrature/gauss_legendre.cc
   quadrature/gauss_lobatto_legendre.cc
@@ -33,6 +34,7 @@ add_library(
   quadrature/angular/angular_quadrature_set.cc
   quadrature/angular/ordinate.cc
   utils/misc.cc
+  utils/output.cc
   utils/tinyexpr.cpp
   utils/json.cc
   input_parameters.cc
