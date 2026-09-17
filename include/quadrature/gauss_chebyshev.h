@@ -39,7 +39,7 @@ class GaussChebyshev : public QuadratureBase<double> {
    * \f]
    * for N total points.
    *
-   * @param n_points
+   * @param n_points Total number of points desired
    * @return std::vector<double>
    */
   std::vector<double> ComputeChebyshevAbscissas(const size_t n_points);

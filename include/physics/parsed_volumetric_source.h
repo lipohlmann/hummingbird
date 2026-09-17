@@ -26,6 +26,14 @@ class ParsedVolumetricSource : public SourceBase {
   ParsedVolumetricSource(const std::string expression);
 
   /**
+   * @brief Evaluate the parsed expression_ at a node in a particular
+   * direction. The expression may reference the variables x, y, z (the
+   * node's coordinates) and mu (the direction's x-direction cosine)
+   *
+   * @param node Node
+   * @param ordinate Ordinate (direction)
+   * @return Volumetric source in n/cm2/s/str
+   * @throw std::runtime_error if the expression fails to parse
    * @todo Add support for 2- and 3D angular functions (currently only supports
    * mu-functions).
    */

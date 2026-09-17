@@ -57,8 +57,8 @@ double LegendrePolynomial(const int n, const double x);
  * \\ \frac{n(n+1)}{2} &x=1 \end{cases}
  * \f]
  *
- * @param n
- * @param x
+ * @param n Order of polynomial
+ * @param x Point to evaluate at
  * @return double
  */
 double LegendrePolynomialPrime(const int n, const double x);

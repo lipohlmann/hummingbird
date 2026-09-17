@@ -17,6 +17,8 @@ namespace hummingbird {
  *
  * @param first First number to compare
  * @param second Second number to compare
+ * @param tolerance Tolerance for the absolute difference between the first and
+ * second values
  * @return true
  * @return false
  */
