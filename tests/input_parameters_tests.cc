@@ -1,13 +1,12 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (c) 2026, Liam Pohlmann
 
-#include "input_parameters.h"
-
 #include <gtest/gtest.h>
 
 #include <nlohmann/json.hpp>
 #include <string>
 
+#include "input_parameters.h"
 #include "utils/enums.h"
 
 using nlohmann::json;
@@ -21,12 +20,11 @@ namespace hummingbird {
 // ---------------------------------------------------------------------------
 
 json MakeProblemJson(const std::string& name = "test_problem",
-                      const std::string& mode = "fixed_source",
-                      const std::string& output_format = "vtk") {
-  return json{{"problem",
-               {{"name", name},
-                {"mode", mode},
-                {"output_format", output_format}}}};
+                     const std::string& mode = "fixed_source",
+                     const std::string& output_format = "vtk") {
+  return json{
+      {"problem",
+       {{"name", name}, {"mode", mode}, {"output_format", output_format}}}};
 }
 
 json MakeMeshJson(const std::string& filename = "mesh.msh") {
@@ -43,19 +41,18 @@ json MakeAngularTreatmentJson(
 }
 
 json MakeSpectralElementsJson(const std::string& transport_form = "saaf",
-                               const std::string& fe_formulation = "cg",
-                               unsigned int gll_order = 4) {
+                              const std::string& fe_formulation = "cg",
+                              unsigned int n_points = 4) {
   return json{{"spectral_elements",
                {{"transport_form", transport_form},
                 {"fe_formulation", fe_formulation},
-                {"gll_order", gll_order}}}};
+                {"n_points", n_points}}}};
 }
 
 json MakeSourceIterationJson(double tolerance = 1e-8,
-                              unsigned int max_iterations = 1000) {
+                             unsigned int max_iterations = 1000) {
   return json{{"source_iteration",
-               {{"tolerance", tolerance},
-                {"max_iterations", max_iterations}}}};
+               {{"tolerance", tolerance}, {"max_iterations", max_iterations}}}};
 }
 
 // Merges every section above into one object, as the full input file
@@ -189,16 +186,15 @@ TEST(AngularTreatmentParamsTest, ThrowsWhenQuadratureSetMissing) {
 }
 
 TEST(AngularTreatmentParamsTest, ThrowsWhenNAzimuthalMissing) {
-  json input = json{
-      {"angular_treatment", {{"quadrature_set", "gauss_legendre"},
-                              {"n_polar", 4}}}};
+  json input = json{{"angular_treatment",
+                     {{"quadrature_set", "gauss_legendre"}, {"n_polar", 4}}}};
   EXPECT_THROW(input.get<AngularTreatmentParams>(), json::out_of_range);
 }
 
 TEST(AngularTreatmentParamsTest, ThrowsWhenNPolarMissing) {
-  json input = json{
-      {"angular_treatment", {{"quadrature_set", "gauss_legendre"},
-                              {"n_azimuthal", 1}}}};
+  json input =
+      json{{"angular_treatment",
+            {{"quadrature_set", "gauss_legendre"}, {"n_azimuthal", 1}}}};
   EXPECT_THROW(input.get<AngularTreatmentParams>(), json::out_of_range);
 }
 
@@ -225,7 +221,7 @@ TEST(SpectralElementParamsTest, ParsesAllFields) {
 
   EXPECT_EQ(params.transport_form, TransportForm::SAAF);
   EXPECT_EQ(params.fe_formulation, FEFormulation::CG);
-  EXPECT_EQ(params.gll_order, 6u);
+  EXPECT_EQ(params.n_points, 6u);
 }
 
 TEST(SpectralElementParamsTest, ThrowsWhenSpectralElementsKeyMissing) {
@@ -240,14 +236,14 @@ TEST(SpectralElementParamsTest, ThrowsWhenTransportFormMissing) {
 }
 
 TEST(SpectralElementParamsTest, ThrowsWhenFeFormulationMissing) {
-  json input =
-      json{{"spectral_elements", {{"transport_form", "saaf"}, {"gll_order", 4}}}};
+  json input = json{
+      {"spectral_elements", {{"transport_form", "saaf"}, {"gll_order", 4}}}};
   EXPECT_THROW(input.get<SpectralElementParams>(), json::out_of_range);
 }
 
 TEST(SpectralElementParamsTest, ThrowsWhenGllOrderMissing) {
-  json input = json{
-      {"spectral_elements", {{"transport_form", "saaf"}, {"fe_formulation", "cg"}}}};
+  json input = json{{"spectral_elements",
+                     {{"transport_form", "saaf"}, {"fe_formulation", "cg"}}}};
   EXPECT_THROW(input.get<SpectralElementParams>(), json::out_of_range);
 }
 
@@ -309,7 +305,7 @@ TEST(InputParamsTest, ParsesAllSubParams) {
 
   EXPECT_EQ(params.sem_params.transport_form, TransportForm::SAAF);
   EXPECT_EQ(params.sem_params.fe_formulation, FEFormulation::CG);
-  EXPECT_EQ(params.sem_params.gll_order, 4u);
+  EXPECT_EQ(params.sem_params.n_points, 4u);
 
   // BUG: InputParams::from_json (src/input_parameters.cc) never assigns
   // input_params.source_iter_params -- it's simply missing from the
