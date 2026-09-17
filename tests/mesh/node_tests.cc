@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (c) 2026, Liam Pohlmann
 
-#include "mesh/node.h"
-
 #include <gtest/gtest.h>
 
 #include <cmath>
@@ -13,6 +11,7 @@
 
 #include "banks/material_bank.h"
 #include "banks/source_bank.h"
+#include "mesh/node.h"
 #include "quadrature/angular/gauss_legendre_trapezoid.h"
 #include "quadrature/angular/ordinate.h"
 #include "utils/constants.h"
@@ -28,9 +27,9 @@ namespace {
 json WrapMaterials(double scattering_xs, double total_xs, double fission_xs,
                    double nu) {
   json body = {{"scattering_xs", scattering_xs},
-              {"total_xs", total_xs},
-              {"fission_xs", fission_xs},
-              {"nu", nu}};
+               {"total_xs", total_xs},
+               {"fission_xs", fission_xs},
+               {"nu", nu}};
   return json{{"materials", json{{"m", body}}}};
 }
 
@@ -81,7 +80,7 @@ TEST(DistanceBetweenNodesTest, DistanceIsSymmetric) {
   Node node_2(1, -3.0, 5.0, 0.5);
 
   EXPECT_NEAR(DistanceBetweenNodes(node_1, node_2),
-             DistanceBetweenNodes(node_2, node_1), EXP_NEAR_TOLERANCE);
+              DistanceBetweenNodes(node_2, node_1), EXP_NEAR_TOLERANCE);
 }
 
 // ---------------------------------------------------------------------------
@@ -132,7 +131,7 @@ TEST(UpdateScalarFluxTest, ThrowsWhenAngularFluxesIsTooShort) {
 // ---------------------------------------------------------------------------
 
 TEST(UpdateSourceFluxesTest,
-    CombinesInscatteringAndConstantIndependentSourceAtEveryPoint) {
+     CombinesInscatteringAndConstantIndependentSourceAtEveryPoint) {
   MaterialBank material_bank(WrapMaterials(/*scattering_xs=*/1.0,
                                            /*total_xs=*/2.0,
                                            /*fission_xs=*/0.0, /*nu=*/0.0));
@@ -191,7 +190,7 @@ TEST(UpdateSourceFluxesTest, ParsedSourcePassesEachAbscissaThrough) {
 
   for (size_t i = 0; i < quad.n_points(); i++)
     EXPECT_NEAR(node.source_fluxes[i], quad.GetAbscissa(i).x(),
-               EXP_NEAR_TOLERANCE)
+                EXP_NEAR_TOLERANCE)
         << "Mismatch at quadrature point " << i;
 }
 

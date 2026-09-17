@@ -1,9 +1,9 @@
-#include "problem/problem_base.h"
-
 #include <gtest/gtest.h>
 
 #include <stdexcept>
 #include <vector>
+
+#include "problem/problem_base.h"
 
 namespace hummingbird {
 

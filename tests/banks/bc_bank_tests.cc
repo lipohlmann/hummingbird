@@ -1,8 +1,6 @@
 // SPDX-License-Identifier: BSD-3-Clause
 // Copyright (c) 2026, Liam Pohlmann
 
-#include "banks/bc_bank.h"
-
 #include <gtest/gtest.h>
 
 #include <nlohmann/json.hpp>
@@ -10,6 +8,7 @@
 #include <string>
 #include <unordered_map>
 
+#include "banks/bc_bank.h"
 #include "utils/enums.h"
 
 using nlohmann::json;

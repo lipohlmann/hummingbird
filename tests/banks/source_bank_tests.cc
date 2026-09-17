@@ -51,8 +51,7 @@ TEST(SourceBankTest, IndexZeroIsAlwaysAZeroStrengthSource) {
 
   const std::unique_ptr<SourceBase>& none = bank.GetByID(0u);
   ASSERT_NE(dynamic_cast<ConstantVolumetricSource*>(none.get()), nullptr);
-  EXPECT_DOUBLE_EQ(none->EvaluateAtNode(Node(0, 0, 0, 0), Ordinate(0, 0)),
-                   0.0);
+  EXPECT_DOUBLE_EQ(none->EvaluateAtNode(Node(0, 0, 0, 0), Ordinate(0, 0)), 0.0);
   EXPECT_EQ(bank.GetByName(std::string("none")).get(), none.get());
 }
 

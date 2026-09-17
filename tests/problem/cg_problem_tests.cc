@@ -1,5 +1,3 @@
-#include "problem/cg_problem.h"
-
 #include <gtest/gtest.h>
 
 #include <array>
@@ -12,6 +10,7 @@
 #include "mesh/mesh.h"
 #include "mesh/node.h"
 #include "mesh/segment.h"
+#include "problem/cg_problem.h"
 #include "quadrature/angular/ordinate.h"
 #include "quadrature/gauss_lobatto_legendre.h"
 #include "utils/constants.h"
@@ -59,18 +58,17 @@ MaterialBank MakeSingleMaterialBank(double total_xs) {
 
 // Builds a MaterialBank with two distinct materials, "mat_a" and "mat_b".
 MaterialBank MakeTwoMaterialBank(double total_xs_a, double total_xs_b) {
-  json input = {
-      {"materials",
-       {{"mat_a",
-         {{"scattering_xs", 0.0},
-          {"total_xs", total_xs_a},
-          {"fission_xs", 0.0},
-          {"nu", 0.0}}},
-        {"mat_b",
-         {{"scattering_xs", 0.0},
-          {"total_xs", total_xs_b},
-          {"fission_xs", 0.0},
-          {"nu", 0.0}}}}}};
+  json input = {{"materials",
+                 {{"mat_a",
+                   {{"scattering_xs", 0.0},
+                    {"total_xs", total_xs_a},
+                    {"fission_xs", 0.0},
+                    {"nu", 0.0}}},
+                  {"mat_b",
+                   {{"scattering_xs", 0.0},
+                    {"total_xs", total_xs_b},
+                    {"fission_xs", 0.0},
+                    {"nu", 0.0}}}}}};
   return MaterialBank(input);
 }
 
@@ -134,10 +132,10 @@ TEST(CGProblemVacuumBCTest, OutgoingOrdinateAddsNegatedLaggedSolution) {
 
   // Expected: forcing(east) += -(Omega.n) * solution(east) = -0.6 * 5.0
   EXPECT_NEAR(problem.global_forcing_vectors_.at(0)(1), -3.0,
-             EXP_NEAR_TOLERANCE);
+              EXP_NEAR_TOLERANCE);
   // The west node is not outgoing for this ordinate; untouched.
   EXPECT_NEAR(problem.global_forcing_vectors_.at(0)(0), 0.0,
-             EXP_NEAR_TOLERANCE);
+              EXP_NEAR_TOLERANCE);
 }
 
 TEST(CGProblemVacuumBCTest, IncomingOrdinateAddsNothing) {
@@ -155,7 +153,7 @@ TEST(CGProblemVacuumBCTest, IncomingOrdinateAddsNothing) {
   problem.ApplyBCs(mesh, ordinate, bc_bank, 0);
 
   EXPECT_NEAR(problem.global_forcing_vectors_.at(0)(0), 0.0,
-             EXP_NEAR_TOLERANCE);
+              EXP_NEAR_TOLERANCE);
 }
 
 // ---------------------------------------------------------------------------
@@ -199,7 +197,7 @@ TEST(CGProblemAssemblyTest,
 
   Mesh mesh;
   mesh.AddNodes({MakeNode(0, 0.0, 0.0, 0.0), MakeNode(1, length, 0.0, 0.0),
-                MakeNode(2, 2.0 * length, 0.0, 0.0)});
+                 MakeNode(2, 2.0 * length, 0.0, 0.0)});
   mesh.AddElement(
       std::make_unique<Segment>(std::array<size_t, 2>{0, 1}, 0, 0, mesh));
   mesh.AddElement(
@@ -282,13 +280,12 @@ TEST(CGProblemAssemblyTest,
   GaussLobattoLegendre gll(3);
 
   Mesh mesh;
-  mesh.AddNodes({MakeNode(0, 0.0, 0.0, 0.0),
-                MakeNode(1, length_a, 0.0, 0.0),
-                MakeNode(2, length_a + length_b, 0.0, 0.0)});
-  mesh.AddElement(std::make_unique<Segment>(std::array<size_t, 2>{0, 1},
-                                            mat_a, 0, mesh));
-  mesh.AddElement(std::make_unique<Segment>(std::array<size_t, 2>{1, 2},
-                                            mat_b, 0, mesh));
+  mesh.AddNodes({MakeNode(0, 0.0, 0.0, 0.0), MakeNode(1, length_a, 0.0, 0.0),
+                 MakeNode(2, length_a + length_b, 0.0, 0.0)});
+  mesh.AddElement(
+      std::make_unique<Segment>(std::array<size_t, 2>{0, 1}, mat_a, 0, mesh));
+  mesh.AddElement(
+      std::make_unique<Segment>(std::array<size_t, 2>{1, 2}, mat_b, 0, mesh));
   mesh.Prepare(gll);
   mesh.InitializeNodeSolutions(1);
   const_cast<Node&>(mesh.GetNode(2)).source_fluxes.at(0) = 1.0;
@@ -334,8 +331,8 @@ TEST(CGProblemAssemblyTest, ThreeUniformElementsSumBothSharedNodes) {
 
   Mesh mesh;
   mesh.AddNodes({MakeNode(0, 0.0, 0.0, 0.0), MakeNode(1, length, 0.0, 0.0),
-                MakeNode(2, 2.0 * length, 0.0, 0.0),
-                MakeNode(3, 3.0 * length, 0.0, 0.0)});
+                 MakeNode(2, 2.0 * length, 0.0, 0.0),
+                 MakeNode(3, 3.0 * length, 0.0, 0.0)});
   mesh.AddElement(
       std::make_unique<Segment>(std::array<size_t, 2>{0, 1}, 0, 0, mesh));
   mesh.AddElement(
@@ -353,11 +350,9 @@ TEST(CGProblemAssemblyTest, ThreeUniformElementsSumBothSharedNodes) {
   ASSERT_EQ(k.n_rows, 7u);
   EXPECT_NEAR(k(0, 0), 13.0 / 8.0, EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(k(1, 1), 6.0, EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(k(2, 2), 13.0 / 4.0, EXP_NEAR_TOLERANCE)
-      << "First shared node.";
+  EXPECT_NEAR(k(2, 2), 13.0 / 4.0, EXP_NEAR_TOLERANCE) << "First shared node.";
   EXPECT_NEAR(k(3, 3), 6.0, EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(k(4, 4), 13.0 / 4.0, EXP_NEAR_TOLERANCE)
-      << "Second shared node.";
+  EXPECT_NEAR(k(4, 4), 13.0 / 4.0, EXP_NEAR_TOLERANCE) << "Second shared node.";
   EXPECT_NEAR(k(5, 5), 6.0, EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(k(6, 6), 13.0 / 8.0, EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(k(2, 3), -1.0 / 3.0, EXP_NEAR_TOLERANCE);

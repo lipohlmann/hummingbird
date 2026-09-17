@@ -326,7 +326,8 @@ class SegmentStiffnessMatrixTest : public testing::Test {
   Mesh mesh;
 };
 
-TEST_F(SegmentStiffnessMatrixTest, TwoPointLinearElementMatchesHandDerivedValues) {
+TEST_F(SegmentStiffnessMatrixTest,
+       TwoPointLinearElementMatchesHandDerivedValues) {
   // N=2: dl_0/dxi = -0.5 and dl_1/dxi = 0.5 everywhere (linear basis), and
   // the 2-point GLL rule has unit weights. This is the textbook 1D linear
   // finite-element stiffness matrix:
@@ -445,7 +446,8 @@ TEST_F(SegmentStiffnessMatrixTest, ScalesInverselyWithLength) {
   long_mesh.AddNodes({MakeNode(0, 0.0, 0.0, 0.0), MakeNode(1, 4.0, 0.0, 0.0)});
   Segment long_segment({0, 1}, 0, 0, long_mesh);
 
-  auto k_short = short_segment.LocalStiffnessMatrix(gll, material_bank, ordinate);
+  auto k_short =
+      short_segment.LocalStiffnessMatrix(gll, material_bank, ordinate);
   auto k_long = long_segment.LocalStiffnessMatrix(gll, material_bank, ordinate);
 
   for (size_t i = 0; i < gll.n_points(); ++i)
@@ -516,7 +518,8 @@ TEST_F(SegmentMassMatrixTest, IsDiagonal) {
 
   for (size_t i = 0; i < gll.n_points(); ++i)
     for (size_t j = 0; j < gll.n_points(); ++j)
-      if (i != j) EXPECT_DOUBLE_EQ(mass(i, j), 0.0) << "(i,j)=(" << i << "," << j << ")";
+      if (i != j)
+        EXPECT_DOUBLE_EQ(mass(i, j), 0.0) << "(i,j)=(" << i << "," << j << ")";
 }
 
 TEST_F(SegmentMassMatrixTest, TwoPointMatchesAnalyticalValue) {
@@ -640,7 +643,8 @@ class SegmentForcingVectorTest : public testing::Test {
   Mesh mesh;
 };
 
-TEST_F(SegmentForcingVectorTest, TwoPointDistinctBoundarySourcesMatchHandDerivedValues) {
+TEST_F(SegmentForcingVectorTest,
+       TwoPointDistinctBoundarySourcesMatchHandDerivedValues) {
   // N=2: dl_0/dxi = -0.5 and dl_1/dxi = 0.5 everywhere, weights are both 1.
   //   f_0 = h/2*Q_0 + (-0.5)*(Q_0 + Q_1)
   //   f_1 = h/2*Q_1 + ( 0.5)*(Q_0 + Q_1)
@@ -741,13 +745,13 @@ TEST_P(SegmentForcingVectorConstantSourceTest,
     double boundary_term = 0.0;
     if (i == n_points - 1) boundary_term = q0;
     if (i == 0) boundary_term -= q0;
-    const double expected = length / 2.0 * gll.GetWeight(i) * q0 + boundary_term;
+    const double expected =
+        length / 2.0 * gll.GetWeight(i) * q0 + boundary_term;
     EXPECT_NEAR(forcing(i), expected, 1e-10) << "n=" << n_points << ", i=" << i;
   }
 }
 
-INSTANTIATE_TEST_SUITE_P(VariousOrders,
-                         SegmentForcingVectorConstantSourceTest,
+INSTANTIATE_TEST_SUITE_P(VariousOrders, SegmentForcingVectorConstantSourceTest,
                          ::testing::Values(2, 3, 4, 5, 6));
 
 TEST_F(SegmentForcingVectorTest, IsLinearInSourceValues) {

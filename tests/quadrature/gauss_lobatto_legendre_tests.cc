@@ -295,8 +295,8 @@ TEST_P(GLLLagrangeDerivativeStructuralTest,
     for (unsigned int k = 0; k < n; ++k) {
       double sum = 0.0;
       for (unsigned int i = 0; i < n; ++i) {
-        sum += quad.GetLagrangeDerivative(k, i) *
-               std::pow(quad.GetAbscissa(i), d);
+        sum +=
+            quad.GetLagrangeDerivative(k, i) * std::pow(quad.GetAbscissa(i), d);
       }
       const double expected =
           (d == 0) ? 0.0 : d * std::pow(quad.GetAbscissa(k), d - 1);

@@ -1,5 +1,3 @@
-#include "mesh/mesh.h"
-
 #include <gtest/gtest.h>
 
 #include <algorithm>
@@ -11,6 +9,7 @@
 #include <string>
 
 #include "mesh/element.h"
+#include "mesh/mesh.h"
 #include "mesh/segment.h"
 #include "quadrature/gauss_lobatto_legendre.h"
 #include "utils/constants.h"
@@ -71,15 +70,15 @@ $Elements
 $EndElements
 )";
 
-std::string WriteTempMesh(const std::string& name, const std::string& contents) {
+std::string WriteTempMesh(const std::string& name,
+                          const std::string& contents) {
   std::string path = ::testing::TempDir() + name;
   std::ofstream file(path);
   file << contents;
   return path;
 }
 
-Node MakeNode(size_t id, double x, double y, double z,
-             unsigned int bc_id = 0) {
+Node MakeNode(size_t id, double x, double y, double z, unsigned int bc_id = 0) {
   Node node;
   node.id = id;
   node.x = x;
@@ -95,13 +94,13 @@ class FakeElement : public Element {
  public:
   FakeElement() : Element(0, 0) {}
 
-  std::vector<Node> CreateInteriorNodes(
-      const std::vector<Node>&, const GaussLobattoLegendre&) override {
+  std::vector<Node> CreateInteriorNodes(const std::vector<Node>&,
+                                        const GaussLobattoLegendre&) override {
     return {};
   }
 
-  arma::Col<double> LocalForcingVector(const GaussLobattoLegendre&,
-                                       const Mesh&, const size_t) override {
+  arma::Col<double> LocalForcingVector(const GaussLobattoLegendre&, const Mesh&,
+                                       const size_t) override {
     return {};
   }
 
@@ -123,22 +122,21 @@ class FakeElement : public Element {
 // tags against.
 json MakeMaterialBankJson(const std::string& name) {
   return json{{"materials",
-              {{name,
-                {{"scattering_xs", 0.0},
-                 {"total_xs", 1.0},
-                 {"fission_xs", 0.0},
-                 {"nu", 0.0}}}}}};
+               {{name,
+                 {{"scattering_xs", 0.0},
+                  {"total_xs", 1.0},
+                  {"fission_xs", 0.0},
+                  {"nu", 0.0}}}}}};
 }
 
 json MakeSourceBankJson(const std::string& name) {
-  return json{
-      {"sources", {{name, {{"type", "constant"}, {"strength", 1.0}}}}}};
+  return json{{"sources", {{name, {{"type", "constant"}, {"strength", 1.0}}}}}};
 }
 
 json MakeBCBankJson() {
-  return json{{"boundary_conditions",
-              {{"west", {{"type", "vacuum"}}},
-               {"east", {{"type", "vacuum"}}}}}};
+  return json{
+      {"boundary_conditions",
+       {{"west", {{"type", "vacuum"}}}, {"east", {{"type", "vacuum"}}}}}};
 }
 
 }  // namespace
@@ -235,7 +233,7 @@ TEST(MeshResolveIDsTest, ThrowsWhenMaterialNameNotInMaterialBank) {
   BCBank bc_bank(MakeBCBankJson());
 
   EXPECT_THROW(mesh.ResolveIDs(material_bank, source_bank, bc_bank),
-              std::runtime_error);
+               std::runtime_error);
 }
 
 // ---------------------------------------------------------------------------
@@ -243,8 +241,8 @@ TEST(MeshResolveIDsTest, ThrowsWhenMaterialNameNotInMaterialBank) {
 // ---------------------------------------------------------------------------
 
 TEST(MeshBoundaryTest, FindBoundaryNodesPopulatesRealNodeIDs) {
-  Mesh mesh(WriteTempMesh("hummingbird_mesh_test_boundary_nodes.msh",
-                          kOneDGmsh));
+  Mesh mesh(
+      WriteTempMesh("hummingbird_mesh_test_boundary_nodes.msh", kOneDGmsh));
   GaussLobattoLegendre gll(3);
   mesh.Prepare(gll);
   MaterialBank material_bank(MakeMaterialBankJson("mms_material"));
@@ -275,8 +273,8 @@ TEST(MeshBoundaryDeathTest, AssertFiresWhenBoundaryNodeCountIsNotTwoIn1D) {
   // by `pixi run dev`, does not define NDEBUG). That means this needs
   // EXPECT_DEATH, not EXPECT_THROW.
   Mesh mesh;
-  mesh.AddNodes({MakeNode(0, 0.0, 0.0, 0.0, /*bc_id=*/1),
-                MakeNode(1, 1.0, 0.0, 0.0)});
+  mesh.AddNodes(
+      {MakeNode(0, 0.0, 0.0, 0.0, /*bc_id=*/1), MakeNode(1, 1.0, 0.0, 0.0)});
   mesh.AddElement(
       std::make_unique<Segment>(std::array<size_t, 2>{0, 1}, 0, 0, mesh));
 
@@ -338,7 +336,7 @@ TEST(MeshDimensionTest, ThrowsWhenElementDimensionsMismatch) {
   mesh.AddElement(
       std::make_unique<Segment>(std::array<size_t, 2>{0, 1}, 0, 0, mesh));
   EXPECT_THROW(mesh.AddElement(std::make_unique<FakeElement>()),
-              std::runtime_error);
+               std::runtime_error);
 }
 
 TEST(MeshGMSHTest, ThrowsWhenPointEntityHasNoBCPhysicalGroup) {
@@ -370,7 +368,7 @@ $EndElements
 )";
   EXPECT_THROW(Mesh mesh(WriteTempMesh("hummingbird_mesh_test_no_bc_group.msh",
                                        kNoBCPointMesh)),
-              std::runtime_error);
+               std::runtime_error);
 }
 
 TEST(MeshGMSHTest, SegmentConnectivityMatchesFileOrder) {
@@ -422,9 +420,9 @@ TEST(MeshPrepareTest, DoesNotThrowAndProducesContiguousZeroBasedIDs) {
 
   ASSERT_EQ(mesh.nodes().size(), 9u);
   for (size_t i = 0; i < mesh.nodes().size(); i++)
-    EXPECT_EQ(mesh.nodes().at(i).id, i)
-        << "Node at vector position " << i << " does not carry a matching ID "
-                                               "(GetNode indexes by ID).";
+    EXPECT_EQ(mesh.nodes().at(i).id, i) << "Node at vector position " << i
+                                        << " does not carry a matching ID "
+                                           "(GetNode indexes by ID).";
 }
 
 TEST(MeshPrepareTest, PreservesElementConnectivityAfterRenumbering) {
@@ -460,7 +458,8 @@ TEST(MeshPrepareTest, PreservesElementConnectivityAfterRenumbering) {
   }
 }
 
-TEST(MeshPrepareTest, BoundaryConditionsSurviveRenumberingAndInteriorNodeCreation) {
+TEST(MeshPrepareTest,
+     BoundaryConditionsSurviveRenumberingAndInteriorNodeCreation) {
   // The chain's two true endpoints are tagged by kOneDGmsh's point entities:
   // x=0.0 by "bc:west" (raw tag 2), x=1.0 by "bc:east" (raw tag 3). After
   // Prepare() (interior node creation + renumbering), those two nodes must
@@ -488,7 +487,7 @@ TEST(MeshPrepareTest, HandlesSharedNodeBetweenTwoElementsWithoutIDCollisions) {
   // IDs (see RenumberNodes).
   Mesh mesh;
   mesh.AddNodes({MakeNode(0, 0.0, 0.0, 0.0), MakeNode(1, 1.0, 0.0, 0.0),
-                MakeNode(2, 2.0, 0.0, 0.0)});
+                 MakeNode(2, 2.0, 0.0, 0.0)});
   mesh.AddElement(
       std::make_unique<Segment>(std::array<size_t, 2>{0, 1}, 0, 0, mesh));
   mesh.AddElement(
@@ -514,10 +513,9 @@ $Entities
 0 0 1 0
 $EndEntities
 )";
-  EXPECT_THROW(
-      Mesh mesh(
-          WriteTempMesh("hummingbird_mesh_test_surface.msh", kSurfaceMesh)),
-      std::runtime_error);
+  EXPECT_THROW(Mesh mesh(WriteTempMesh("hummingbird_mesh_test_surface.msh",
+                                       kSurfaceMesh)),
+               std::runtime_error);
 }
 
 TEST(MeshGMSHTest, ThrowsOnUnsupportedElementType) {

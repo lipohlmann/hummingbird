@@ -1,5 +1,3 @@
-#include "utils/results.h"
-
 #include <gtest/gtest.h>
 
 #include <filesystem>
@@ -14,6 +12,7 @@
 #include "quadrature/angular/gauss_legendre_trapezoid.h"
 #include "quadrature/angular/ordinate.h"
 #include "utils/enums.h"
+#include "utils/results.h"
 
 namespace hummingbird {
 
@@ -45,8 +44,7 @@ class ResultsFile {
 template <typename T>
 std::string FormatValue(const T& value) {
   std::ostringstream out;
-  out << std::setprecision(std::numeric_limits<double>::max_digits10)
-      << value;
+  out << std::setprecision(std::numeric_limits<double>::max_digits10) << value;
   return out.str();
 }
 
@@ -68,7 +66,7 @@ TEST(ResultsToCSVTest, WritesHeaderAndRowForSingleOrdinateSingleNode) {
   std::vector<std::string> lines = file.ReadLines();
   ASSERT_EQ(lines.size(), 2u);
   EXPECT_EQ(lines[0],
-           "node_id,x,y,z,scalar_flux,angular_flux_0,azimuth_0,polar_0");
+            "node_id,x,y,z,scalar_flux,angular_flux_0,azimuth_0,polar_0");
 
   const Ordinate ordinate = quad.GetAbscissa(0);
   const std::string expected_row =
@@ -117,9 +115,8 @@ TEST(ResultsToCSVTest, WritesColumnGroupPerOrdinateAndRowPerNode) {
   for (size_t row = 0; row < expected_nodes.size(); row++) {
     const Node& node = expected_nodes[row];
     std::string expected_row = FormatValue(node.id) + "," +
-                               FormatValue(node.x) + "," +
-                               FormatValue(node.y) + "," +
-                               FormatValue(node.z) + "," +
+                               FormatValue(node.x) + "," + FormatValue(node.y) +
+                               "," + FormatValue(node.z) + "," +
                                FormatValue(node.scalar_flux);
     for (size_t i = 0; i < n_ordinates; i++) {
       const Ordinate ordinate = quad.GetAbscissa(i);
