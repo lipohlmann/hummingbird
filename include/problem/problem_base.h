@@ -54,6 +54,8 @@ class ProblemBase {
    */
   ProblemBase(const size_t n_dofs, const size_t n_ordinates);
 
+  virtual ~ProblemBase() = default;
+
   /**
    * @brief Assemble the global element system. That is, form the matrix \f$A\f$
    * in \f$ Ax=b\f$. This only should be called once per ordinate per
