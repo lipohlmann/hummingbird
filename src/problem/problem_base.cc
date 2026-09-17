@@ -5,7 +5,8 @@
 #include <stdexcept>
 
 namespace hummingbird {
-ProblemBase::ProblemBase(const size_t n_dofs, const size_t n_ordinates) {
+ProblemBase::ProblemBase(const size_t n_dofs, const size_t n_ordinates)
+    : n_dofs_(n_dofs) {
   arma::SpMat<double> global_system_template(n_dofs, n_dofs);
   arma::Col<double> global_vector_template(n_dofs, arma::fill::zeros);
 
