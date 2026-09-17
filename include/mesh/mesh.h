@@ -14,6 +14,7 @@
 #include "banks/source_bank.h"
 #include "mesh/element.h"
 #include "mesh/node.h"
+#include "problem/sem_problem.h"
 #include "quadrature/gauss_lobatto_legendre.h"
 
 namespace hummingbird {
@@ -184,6 +185,33 @@ class Mesh {
    * other dimensions)
    */
   void SetOutwardNormals();
+
+  /**
+   * @brief Update the nodes' source flux values
+   *
+   * @param angular_quad_set Angular quadrature set
+   * @param material_bank Material bank
+   * @param source_bank Source bank
+   */
+  void UpdateNodeSources(const QuadratureBase<Ordinate>& angular_quad_set,
+                         const MaterialBank material_bank,
+                         const SourceBank source_bank);
+
+  /**
+   * @brief Update the nodes' scalar flux values
+   *
+   * @param angular_quad_set Angular quadrature set
+   */
+  void UpdateNodeScalarFluxes(const QuadratureBase<Ordinate>& angular_quad_set);
+
+  /**
+   * @brief Update the nodes' angular flux values
+   *
+   * @param sem_problem SEMProblem object containing updated flux values
+   * @param n_ordinates Number of ordinates
+   */
+  void UpdateNodeAngularFluxes(const SEMProblem& sem_problem,
+                               const size_t n_ordinates);
 
  private:
   /// @brief Nodes in the mesh

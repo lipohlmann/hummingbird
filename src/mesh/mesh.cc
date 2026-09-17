@@ -357,4 +357,25 @@ void Mesh::SetOutwardNormals() {
   node_a.outward_normal = arma::normalise(direction_a);
   node_b.outward_normal = -node_a.outward_normal;
 }
+
+void Mesh::UpdateNodeSources(const QuadratureBase<Ordinate>& angular_quad_set,
+                             const MaterialBank material_bank,
+                             const SourceBank source_bank) {
+  for (auto& node : nodes_)
+    UpdateSourceFluxes(node, material_bank, source_bank, angular_quad_set);
+}
+
+void Mesh::UpdateNodeScalarFluxes(
+    const QuadratureBase<Ordinate>& angular_quad_set) {
+  for (auto& node : nodes_) UpdateScalarFlux(node, angular_quad_set);
+}
+
+void Mesh::UpdateNodeAngularFluxes(const SEMProblem& sem_problem,
+                                   const size_t n_ordinates) {
+  for (auto i = 0; i < this->n_nodes(); i++) {
+    for (auto n = 0; n < n_ordinates; n++) {
+      nodes_[i].angular_fluxes[n] = sem_problem.get()->solution_vectors()[i][n];
+    }
+  }
+}
 }  // namespace hummingbird
