@@ -195,8 +195,8 @@ class Mesh {
    * @param source_bank Source bank
    */
   void UpdateNodeSources(const QuadratureBase<Ordinate>& angular_quad_set,
-                         const MaterialBank material_bank,
-                         const SourceBank source_bank);
+                         const MaterialBank& material_bank,
+                         const SourceBank& source_bank);
 
   /**
    * @brief Update the nodes' scalar flux values

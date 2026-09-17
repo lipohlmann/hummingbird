@@ -360,8 +360,8 @@ void Mesh::SetOutwardNormals() {
 }
 
 void Mesh::UpdateNodeSources(const QuadratureBase<Ordinate>& angular_quad_set,
-                             const MaterialBank material_bank,
-                             const SourceBank source_bank) {
+                             const MaterialBank& material_bank,
+                             const SourceBank& source_bank) {
   for (auto& node : nodes_)
     UpdateSourceFluxes(node, material_bank, source_bank, angular_quad_set);
 }
