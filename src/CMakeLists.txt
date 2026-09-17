@@ -30,6 +30,7 @@ add_library(
   quadrature/gauss_lobatto_legendre.cc
   quadrature/angular/gauss_legendre_chebyshev.cc
   quadrature/angular/gauss_legendre_trapezoid.cc
+  quadrature/angular/angular_quadrature_set.cc
   quadrature/angular/ordinate.cc
   utils/misc.cc
   utils/tinyexpr.cpp
