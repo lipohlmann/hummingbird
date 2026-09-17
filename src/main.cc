@@ -35,6 +35,8 @@ int main(int argc, char** argv) {
   json user_input_json = JSONFromFile(argv[1]);
 
   InputParams input_params = user_input_json.get<InputParams>();
+  input_params.mesh_params.mesh_file =
+      (working_directory / input_params.mesh_params.mesh_file).string();
 
   print_input_files(argv[1], input_params.mesh_params.mesh_file);
 
