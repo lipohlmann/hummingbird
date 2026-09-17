@@ -21,4 +21,4 @@ jobs:
 
       - name: Build and test
         run: pixi run de
-v
+
