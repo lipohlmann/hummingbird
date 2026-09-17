@@ -32,6 +32,13 @@ class Element {
   Element(const int material_id, const int source_id);
 
   /**
+   * @brief Destroy the Element object. Virtual because Element is used
+   * polymorphically through std::unique_ptr<Element> (see Mesh::elements_).
+   *
+   */
+  virtual ~Element() = default;
+
+  /**
    * @brief Create nodes by mapping the Gauss-Lobatto-Legendre quadrature set
    * from the reference to the real domain
    *
