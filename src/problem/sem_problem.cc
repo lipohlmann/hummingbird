@@ -7,7 +7,7 @@ SEMProblem::SEMProblem(const FEFormulation fe_formulation, const Mesh& mesh,
                        const size_t n_ordinates) {
   switch (fe_formulation) {
     case FEFormulation::CG:
-      sem_problem = std::make_unique<CGProblem>(mesh.n_nodes(), n_ordinates);
+      sem_problem_ = std::make_unique<CGProblem>(mesh.n_nodes(), n_ordinates);
       break;
 
     default:

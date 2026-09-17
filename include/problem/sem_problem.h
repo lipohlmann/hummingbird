@@ -15,8 +15,10 @@ class SEMProblem {
   SEMProblem(const FEFormulation fe_formulation, const Mesh& mesh,
              const size_t n_ordinates);
 
+  ProblemBase* get() const { sem_problem_.get(); }
+
  private:
-  std::unique_ptr<ProblemBase> sem_problem;
+  std::unique_ptr<ProblemBase> sem_problem_;
 };
 }  // namespace hummingbird
 
