@@ -124,6 +124,8 @@ int main(int argc, char** argv) {
       break;
 
     simulation.scatter_source_l2 = new_l2_error;
+    old_scalar_flux = new_scalar_flux;
+    new_scalar_flux = 0.0;  // this sets all flux values to 0
   }
 
   // export results
