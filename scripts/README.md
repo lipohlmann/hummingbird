@@ -100,3 +100,16 @@ python3 scripts/plot_csv.py <results.csv> [--angular] [--output-dir DIR]
 `pixi run python3` in this repo (only `numpy`/`matplotlib-base` are, pulled in transitively
 via other pixi dependencies) — run it with a system Python that has those packages installed
 instead. `convergence_study.py` deliberately avoids `pandas`/`seaborn` for this reason.
+
+## `run_and_plot.sh`
+
+Runs a case and then plots it with `plot_csv.py`:
+
+```bash
+scripts/run_and_plot.sh <case.json>
+```
+
+The solver writes `<problem.name>_results.csv` to its working directory, so the script runs it
+from the case's directory; the CSV lands next to the JSON and both the scalar-flux and
+angular-flux plots go in `<case_dir>/plots/`. Requires `build/release/hummingbird` and a system
+`python3` with `pandas`/`seaborn` (see the known issue above).
