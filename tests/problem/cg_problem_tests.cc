@@ -7,10 +7,12 @@
 
 #include "banks/bc_bank.h"
 #include "banks/material_bank.h"
+#include "banks/source_bank.h"
 #include "mesh/mesh.h"
 #include "mesh/node.h"
 #include "mesh/segment.h"
 #include "problem/cg_problem.h"
+#include "quadrature/angular/angular_quadrature_set.h"
 #include "quadrature/angular/ordinate.h"
 #include "quadrature/gauss_lobatto_legendre.h"
 #include "utils/constants.h"
@@ -110,6 +112,18 @@ json MakeSingleVacuumBCJson() {
   return json{{"boundary_conditions", {{"only_bc", {{"type", "vacuum"}}}}}};
 }
 
+// A SourceBank with no sources beyond the implicit ID-0 "none" entry --
+// sufficient for tests that hand-set source_fluxes afterward and never
+// resolve a node's source_id away from its default (0).
+SourceBank MakeNoSourceBank() { return SourceBank(json{{"sources", json::object()}}); }
+
+// The smallest angular quadrature set AngularQuadratureSet allows (n_polar
+// must be >= 2), used only to satisfy InitializeNodeSolutions' GetAbscissa(0)
+// call in these single-ordinate (n_ordinates=1) tests.
+AngularQuadratureSet MakeMinimalAngularQuad() {
+  return AngularQuadratureSet(AngularQuadSet::GL, 1, 2);
+}
+
 }  // namespace
 
 // ---------------------------------------------------------------------------
@@ -203,7 +217,9 @@ TEST(CGProblemAssemblyTest,
   mesh.AddElement(
       std::make_unique<Segment>(std::array<size_t, 2>{1, 2}, 0, 0, mesh));
   mesh.Prepare(gll);
-  mesh.InitializeNodeSolutions(1);
+  SourceBank source_bank = MakeNoSourceBank();
+  AngularQuadratureSet angular_quad = MakeMinimalAngularQuad();
+  mesh.InitializeNodeSolutions(1, *angular_quad.get(), source_bank);
   // Mesh exposes nodes by const reference only; the underlying Mesh (and
   // its nodes) are genuinely non-const here, so mutating a specific
   // already-added node's fields this way is well-defined.
@@ -287,7 +303,9 @@ TEST(CGProblemAssemblyTest,
   mesh.AddElement(
       std::make_unique<Segment>(std::array<size_t, 2>{1, 2}, mat_b, 0, mesh));
   mesh.Prepare(gll);
-  mesh.InitializeNodeSolutions(1);
+  SourceBank source_bank = MakeNoSourceBank();
+  AngularQuadratureSet angular_quad = MakeMinimalAngularQuad();
+  mesh.InitializeNodeSolutions(1, *angular_quad.get(), source_bank);
   const_cast<Node&>(mesh.GetNode(2)).source_fluxes.at(0) = 1.0;
 
   TestableCGProblem problem(/*n_dofs=*/5, /*n_ordinates=*/1);
