@@ -63,4 +63,14 @@ void print_scatter_complete(const double final_k_eff, const RunMode run_mode) {
       "\n\n");
   fmt::print("Source iterations complete.\n\n");
 }
+void print_mesh_info(const size_t n_nodes, const size_t n_elements,
+                     const unsigned int dimension) {
+  fmt::print(
+      "Mesh info:\n"
+      "       Number of nodes: {}\n"
+      "    Number of elements: {}\n"
+      "             Dimension: {}\n\n",
+      n_nodes, n_elements, dimension);
+}
+
 }  // namespace hummingbird

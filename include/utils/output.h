@@ -55,8 +55,7 @@ void print_k_status(const double k_eff, const double error,
  * @param iter Iteration number
  */
 void print_scatter_status(const double flux_l2_error,
-                          const double relative_error,
-                          const unsigned int iter);
+                          const double relative_error, const unsigned int iter);
 
 /**
  * @brief Print a message indicating source iterations have completed
@@ -65,6 +64,16 @@ void print_scatter_status(const double flux_l2_error,
  * @param sim_typ Run mode used for the simulation
  */
 void print_scatter_complete(const double final_k_eff, const RunMode sim_typ);
+
+/**
+ * @brief Print information about the mesh
+ *
+ * @param n_nodes Number of nodes in mesh
+ * @param n_elements Number of elements in mesh
+ * @param dimension Mesh dimension
+ */
+void print_mesh_info(const size_t n_nodes, const size_t n_elements,
+                     const unsigned int dimension);
 
 }  // namespace hummingbird
 

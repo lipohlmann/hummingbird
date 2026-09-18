@@ -139,6 +139,8 @@ class Mesh {
    * lengths
    *
    * @param n_ordinates Number of ordinates
+   * @param angular_quad_set Angular quadrature set
+   * @param source_bank Source bank
    */
   void InitializeNodeSolutions(const size_t n_ordinates,
                                const QuadratureBase<Ordinate>& angular_quad_set,
