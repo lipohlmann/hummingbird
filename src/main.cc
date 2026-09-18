@@ -70,8 +70,8 @@ int main(int argc, char** argv) {
   fmt::print("Beginning source iterations.\n\n");
   print_columns();
 
-  std::valarray<double> old_scalar_flux(sem_problem.get()->n_dofs(), 0);
-  std::valarray<double> new_scalar_flux(sem_problem.get()->n_dofs(), 0);
+  std::valarray<double> old_scalar_flux(0.0, sem_problem.get()->n_dofs());
+  std::valarray<double> new_scalar_flux(0.0, sem_problem.get()->n_dofs());
   for (auto s_iter = 1;
        s_iter <= input_params.source_iter_params.max_iterations; s_iter++) {
     print_scatter_status(simulation.scatter_source_l2,
@@ -104,7 +104,18 @@ int main(int argc, char** argv) {
     for (auto i = 0; i < mesh.n_nodes(); i++)
       new_scalar_flux[i] = mesh.GetNode(i).scalar_flux;
     std::valarray<double> error = new_scalar_flux - old_scalar_flux;
-    double new_l2_error = gll_quad.IntegrateGridFunction(error * error);
+
+    double new_l2_error = 0;
+    for (const auto& elem : mesh.elements()) {
+      std::valarray<double> element_error(0.0, gll_quad.n_points());
+      for (auto i = 0; i < gll_quad.n_points(); i++) {
+        element_error[i] = error[elem->node_ids()[i]];
+      }
+      new_l2_error +=
+          gll_quad.IntegrateGridFunction(element_error * element_error);
+    }
+    new_l2_error = std::sqrt(new_l2_error);
+
     simulation.scatter_iter_error =
         RelativeError(new_l2_error, simulation.scatter_source_l2);
 
