@@ -1,5 +1,7 @@
 #include "mesh/mesh.h"
 
+#include <fmt/core.h>
+
 #include <algorithm>
 #include <array>
 #include <cassert>
@@ -343,6 +345,15 @@ void Mesh::ResolveIDs(const MaterialBank& material_bank,
     const auto source_name =
         ExtractName(physical_names_.at(element->source_id()));
     element->SetSourceID(source_bank.GetIDByName(source_name));
+  }
+
+  for (const auto& element : elements_) {
+    const auto mat_id = element->material_id();
+    const auto source_id = element->source_id();
+    for (auto id : element->node_ids()) {
+      nodes_[id].material_id = mat_id;
+      nodes_[id].source_id = source_id;
+    }
   }
 
   for (auto& node : nodes_) {
