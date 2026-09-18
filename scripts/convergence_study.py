@@ -507,7 +507,7 @@ def write_summary_plot(
         )
 
     ax.set_xlabel(param)
-    ax.set_ylabel("max |psi_numeric - psi_exact|")
+    ax.set_ylabel(r"$\max |\psi_{numeric} - \psi_{exact}|$")
     ax.set_title(f"MMS convergence: {param}")
     ax.grid(True, which="both", alpha=0.3)
     if bad.any():
