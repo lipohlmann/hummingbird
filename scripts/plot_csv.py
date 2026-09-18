@@ -85,7 +85,7 @@ def count_ordinates(df):
 
 def plot_scalar_flux(df, palette, output_path):
     fig, ax = plt.subplots(figsize=FIGSIZE)
-    sns.lineplot(data=df, x="x", y="scalar_flux", marker="o", ax=ax, color=palette[0])
+    sns.lineplot(data=df, x="x", y="scalar_flux", ax=ax, color=palette[0])
     ax.set_xlabel(X_LABEL)
     ax.set_ylabel(SCALAR_FLUX_LABEL)
     ax.set_title("Scalar Flux")
@@ -100,7 +100,7 @@ def plot_angular_fluxes(df, n_ordinates, palette, output_path):
         azimuth = df[f"azimuth_{i}"].iloc[0]
         polar = df[f"polar_{i}"].iloc[0]
         label = f"azimuth={azimuth:.3f} rad, polar={polar:.3f} rad"
-        sns.lineplot(data=df, x="x", y=f"angular_flux_{i}", marker="o", ax=ax,
+        sns.lineplot(data=df, x="x", y=f"angular_flux_{i}", ax=ax,
                     color=palette[i % len(palette)], label=label)
     ax.set_xlabel(X_LABEL)
     ax.set_ylabel(ANGULAR_FLUX_LABEL)
