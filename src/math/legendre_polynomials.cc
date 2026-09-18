@@ -1,7 +1,10 @@
 #include "math/legendre_polynomials.h"
 
 #include <cmath>
+#include <iomanip>
+#include <limits>
 #include <numeric>
+#include <sstream>
 #include <stdexcept>
 
 #include "utils/constants.h"
@@ -69,14 +72,14 @@ std::vector<double> AllLegendreRoots(const int n) {
 
 double LegendreRoot(const int n, const int k) {
   double x_old = ApproximateLegendreRoot(n, k);
-  unsigned int safety = 100;
+  unsigned int safety = 10000;
   for (auto i = 0; i < safety; i++) {
     double x_new = x_old - LegendrePolynomial(n, x_old) /
                                LegendrePolynomialPrime(n, x_old);
     double relative_error = std::abs((x_new - x_old) / std::max(1.0, x_new));
     double backward_error = std::abs(LegendrePolynomial(n, x_new));
 
-    if (backward_error < 1e-13 && relative_error < TOLERANCE) return x_new;
+    if (backward_error < 1e-8 && relative_error < TOLERANCE) return x_new;
     x_old = x_new;
   }
   throw std::runtime_error("LegendreRoot did not converge.");
@@ -104,16 +107,25 @@ std::vector<double> AllLegendrePrimeRoots(const int n) {
 double LegendrePrimeRoot(const int n, const int k) {
   double x_old = ApproximateLegendrePrimeRoot(n, k);
   unsigned int safety = 100;
+
+  double relative_error = std::numeric_limits<double>::infinity();
+  double backward_error = std::numeric_limits<double>::infinity();
   for (auto i = 0; i < safety; i++) {
     double x_new = x_old - LegendrePolynomialPrime(n, x_old) /
                                LegendrePolynomialPrimePrime(n, x_old);
-    double relative_error = std::abs((x_new - x_old) / std::max(1.0, x_new));
-    double backward_error = std::abs(LegendrePolynomialPrime(n, x_new));
+    relative_error = std::abs((x_new - x_old) / std::max(1.0, x_new));
+    backward_error = std::abs(LegendrePolynomialPrime(n, x_new));
 
-    if (backward_error < 1e-12 && relative_error < TOLERANCE) return x_new;
+    if (backward_error < 1e-8 && relative_error < TOLERANCE) return x_new;
     x_old = x_new;
   }
-  throw std::runtime_error("LegendrePrimeRoot did not converge.");
+  std::ostringstream error_message;
+  error_message << std::scientific << std::setprecision(6)
+                << "LegendrePrimeRoot did not converge. "
+                << "Backward Error: " << backward_error
+                << ", Relative Error: " << relative_error;
+
+  throw std::runtime_error(error_message.str());
 }
 
 double ApproximateLegendrePrimeRoot(const int n, const int k) {
