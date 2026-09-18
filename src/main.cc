@@ -1,6 +1,7 @@
 #include <filesystem>
 #include <fstream>
 #include <iostream>
+#include <limits>
 #include <nlohmann/json.hpp>
 #include <valarray>
 
@@ -74,8 +75,8 @@ int main(int argc, char** argv) {
   std::valarray<double> new_scalar_flux(0.0, sem_problem.get()->n_dofs());
   for (auto s_iter = 1;
        s_iter <= input_params.source_iter_params.max_iterations; s_iter++) {
-    print_scatter_status(simulation.scatter_source_l2,
-                         simulation.scatter_iter_error, s_iter);
+    print_scatter_status(simulation.flux_error_l2,
+                         simulation.flux_relative_error, s_iter);
 
     // Solve for all ordinates
     for (auto n = 0; n < n_ordinates; n++) {
@@ -106,24 +107,33 @@ int main(int argc, char** argv) {
     std::valarray<double> error = new_scalar_flux - old_scalar_flux;
 
     double new_l2_error = 0;
+    double new_flux_l2 = 0;
     for (const auto& elem : mesh.elements()) {
       std::valarray<double> element_error(0.0, gll_quad.n_points());
+      std::valarray<double> element_flux(0.0, gll_quad.n_points());
       for (auto i = 0; i < gll_quad.n_points(); i++) {
         element_error[i] = error[elem->node_ids()[i]];
+        element_flux[i] = new_scalar_flux[elem->node_ids()[i]];
       }
       new_l2_error +=
           gll_quad.IntegrateGridFunction(element_error * element_error);
+      new_flux_l2 +=
+          gll_quad.IntegrateGridFunction(element_flux * element_flux);
     }
     new_l2_error = std::sqrt(new_l2_error);
+    new_flux_l2 = std::sqrt(new_flux_l2);
 
-    simulation.scatter_iter_error =
-        RelativeError(new_l2_error, simulation.scatter_source_l2);
+    simulation.flux_relative_error =
+        (new_flux_l2 == 0.0) ? (new_l2_error == 0.0
+                                    ? 0.0
+                                    : std::numeric_limits<double>::infinity())
+                             : new_l2_error / new_flux_l2;
 
-    if (simulation.scatter_iter_error <
+    if (simulation.flux_relative_error <
         input_params.source_iter_params.tolerance)
       break;
 
-    simulation.scatter_source_l2 = new_l2_error;
+    simulation.flux_error_l2 = new_l2_error;
     old_scalar_flux = new_scalar_flux;
     new_scalar_flux = 0.0;  // this sets all flux values to 0
   }

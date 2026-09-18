@@ -22,7 +22,7 @@ void print_header() {
 void print_columns() {
   fmt::print(
       "   k-eff Iter.       k-eff       k-eff Error  | Scatter Iter.     "
-      "Scatter L2     Scatter Error\n"
+      "Flux Error     Relative Err.\n"
       "  =============  =============  ============= | =============  "
       "=============  =============\n");
 }
@@ -39,18 +39,19 @@ void print_k_status(const double k_eff, const double error,
     fmt::print("  {:^13}  {:^13.5f}  {:^13} |\n", iter, k_eff, "-");
 }
 
-void print_scatter_status(const double scatter, const double error,
+void print_scatter_status(const double flux_l2_error,
+                          const double relative_error,
                           const unsigned int iter) {
   if (iter > 1)
     fmt::print(
         "                                              | {:^13}  "
         "{:^13.5e}   {:^13.5e}\n",
-        iter, scatter, error);
+        iter, flux_l2_error, relative_error);
   else
     fmt::print(
         "                                              | {:^13}  "
         "{:^13.5e}   {:^13}\n",
-        iter, scatter, "-");
+        iter, flux_l2_error, "-");
 }
 
 void print_scatter_complete(const double final_k_eff, const RunMode run_mode) {

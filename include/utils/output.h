@@ -45,14 +45,17 @@ void print_k_status(const double k_eff, const double error,
                     const unsigned int iter);
 
 /**
- * @brief Print the scattering source status for the current iteration
- *
- * @param scatter Current scattering source L2 norm
- * @param error Relative error in the scattering source from the previous
+ * @brief Print the scalar flux convergence status for the current source
  * iteration
+ *
+ * @param flux_l2_error L2 norm of the change in scalar flux from the
+ * previous iteration
+ * @param relative_error Relative L2 error in the scalar flux (flux_l2_error
+ * normalized by the current iteration's flux L2 norm)
  * @param iter Iteration number
  */
-void print_scatter_status(const double scatter, const double error,
+void print_scatter_status(const double flux_l2_error,
+                          const double relative_error,
                           const unsigned int iter);
 
 /**

@@ -64,7 +64,7 @@ TEST(OutputTest,
   EXPECT_NE(output.find("-"), std::string::npos);
 }
 
-TEST(OutputTest, PrintScatterStatusLaterIterationShowsScatterAndError) {
+TEST(OutputTest, PrintScatterStatusLaterIterationShowsFluxErrorAndRelativeError) {
   testing::internal::CaptureStdout();
   print_scatter_status(2.5, 0.02, 4);
   const std::string output = testing::internal::GetCapturedStdout();

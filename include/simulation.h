@@ -16,8 +16,9 @@ struct Simulation {
   /// @brief Effective multiplication factor
   double k_eff = 1.0;
 
-  /// @brief L2 norm of the scattering source
-  double scatter_source_l2 = 0;
+  /// @brief L2 norm of the change in scalar flux between the current and
+  /// previous source iteration
+  double flux_error_l2 = 0;
 
   /// @brief Fission source
   double fission_source = 0.0;
@@ -26,9 +27,10 @@ struct Simulation {
   /// iteration
   double k_eff_iter_error = std::numeric_limits<double>::infinity();
 
-  /// @brief Relative error in the scattering source L2 norm between the
-  /// current and previous iteration
-  double scatter_iter_error = std::numeric_limits<double>::infinity();
+  /// @brief Relative L2 error in the scalar flux (flux_error_l2 normalized
+  /// by the current iteration's flux L2 norm) between the current and
+  /// previous source iteration
+  double flux_relative_error = std::numeric_limits<double>::infinity();
 };
 
 }  // namespace hummingbird
