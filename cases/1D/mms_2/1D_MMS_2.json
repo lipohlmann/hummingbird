@@ -26,7 +26,7 @@
   "sources": {
     "mms_source": {
       "type": "parsed_function",
-      "expression": "-2*(1-1*x^2)*exp(-1*x^2/5) * (mu*x/5*(3*mu^2+5*mu^4)*(11-1*x^2)-1*(3*mu^2+5*mu^4)*(1-1*x^2)+1*(1-1*x^2))"
+      "expression": "-2*(1-1*x^2)*exp(-1*x^2/5) * (mu*x/5*(3*mu^2+5*mu^4)*(11-1*x^2)-1*(3*mu^2+5*mu^4)*(1-1*x^2)+1*(1-1*x^2)) * 1/2/pi"
     }
   },
   "angular_treatment": {
