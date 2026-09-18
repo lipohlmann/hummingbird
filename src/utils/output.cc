@@ -5,23 +5,24 @@
 namespace hummingbird {
 void print_header() {
   fmt::print(
+      "\n"
       " _                               _             _     _         _ \n"
       "| |__  _   _ _ __ ___  _ __ ___ (_)_ __   __ _| |__ (_)_ __ __| |\n"
       "| '_ \\| | | | '_ ` _ \\| '_ ` _ \\| | '_ \\ / _` | '_ \\| | '__/ _` |\n"
       "| | | | |_| | | | | | | | | | | | | | | | (_| | |_) | | | | (_| |\n"
       "|_| |_|\\__,_|_| |_| |_|_| |_| |_|_|_| |_|\\__, |_.__/|_|_|  \\__,_|\n"
       "                                        |___ /                   \n "
-      "\n\n");
+      "\n");
 
   fmt::print(
-      "    Description | Spectral Elements for Radiation Transport \n "
+      "    Description | Spectral Elements for Radiation Transport \n"
       "      Copyright | 2026, Liam Pohlmann\n"
       "        License | "
       "https://github.com/lipohlmann/hummingbird/blob/main/LICENSE\n\n");
 }
 void print_columns() {
   fmt::print(
-      "   k-eff Iter.       k-eff       k-eff Error  | Scatter Iter.     "
+      "   k-eff Iter.       k-eff       k-eff Error  | Scatter Iter.   "
       "Flux Error     Relative Err.\n"
       "  =============  =============  ============= | =============  "
       "=============  =============\n");

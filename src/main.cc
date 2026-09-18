@@ -78,6 +78,10 @@ int main(int argc, char** argv) {
     print_scatter_status(simulation.flux_error_l2,
                          simulation.flux_relative_error, s_iter);
 
+    if (simulation.flux_relative_error <
+        input_params.source_iter_params.tolerance)
+      break;
+
     // Solve for all ordinates
     for (auto n = 0; n < n_ordinates; n++) {
       const auto ordinate = angular_quad.get()->GetAbscissa(n);
@@ -124,25 +128,25 @@ int main(int argc, char** argv) {
     new_flux_l2 = std::sqrt(new_flux_l2);
 
     simulation.flux_relative_error =
-        (new_flux_l2 == 0.0) ? (new_l2_error == 0.0
-                                    ? 0.0
-                                    : std::numeric_limits<double>::infinity())
-                             : new_l2_error / new_flux_l2;
-
-    if (simulation.flux_relative_error <
-        input_params.source_iter_params.tolerance)
-      break;
+        (new_flux_l2 == 0.0)
+            ? (new_l2_error == 0.0 ? 0.0
+                                   : std::numeric_limits<double>::infinity())
+            : new_l2_error / new_flux_l2;
 
     simulation.flux_error_l2 = new_l2_error;
     old_scalar_flux = new_scalar_flux;
     new_scalar_flux = 0.0;  // this sets all flux values to 0
   }
+  print_scatter_complete(simulation.k_eff,
+                         input_params.problem_params.run_mode);
 
+  fmt::print("Exporting results...");
   // export results
   Results results(input_params.problem_params.name,
                   input_params.problem_params.output_format, mesh.nodes(),
                   *angular_quad.get());
   results.Export();
+  fmt::print("Done.\n\n");
 
   return 0;
 }
