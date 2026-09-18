@@ -110,6 +110,21 @@
           "name": "debug"
         }
       ]
+    },
+    {
+      "name": "release",
+      "displayName": "Release Build Pipeline",
+      "description": "Configures and builds in opt mode.",
+      "steps": [
+        {
+          "type": "configure",
+          "name": "release"
+        },
+        {
+          "type": "build",
+          "name": "release"
+        }
+      ]
     }
   ]
 }
