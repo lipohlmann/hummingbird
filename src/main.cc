@@ -41,11 +41,14 @@ int main(int argc, char** argv) {
 
   print_input_files(argv[1], input_params.mesh_params.mesh_file);
 
+  fmt::print("Creating banks...");
   // Create banks
   BCBank bc_bank(user_input_json);
   MaterialBank material_bank(user_input_json);
   SourceBank source_bank(user_input_json);
+  fmt::print("Done\n");
 
+  fmt::print("Creating quadrature sets...");
   // Create quadrature sets
   GaussLobattoLegendre gll_quad(input_params.sem_params.n_points);
   AngularQuadratureSet angular_quad(
@@ -53,6 +56,7 @@ int main(int argc, char** argv) {
       input_params.angular_treatment_params.n_azim,
       input_params.angular_treatment_params.n_polar);
   size_t n_ordinates = angular_quad.get()->n_points();
+  fmt::print("Done\n\n");
 
   // build Mesh object
   Mesh mesh(input_params.mesh_params.mesh_file);
@@ -61,6 +65,8 @@ int main(int argc, char** argv) {
   mesh.FindBoundaryNodes();
   mesh.SetOutwardNormals();
   mesh.InitializeNodeSolutions(n_ordinates, *angular_quad.get(), source_bank);
+
+  print_mesh_info(mesh.n_nodes(), mesh.n_elements(), mesh.dimension());
 
   // build SEMProblem
   SEMProblem sem_problem(input_params.sem_params.fe_formulation, mesh,
