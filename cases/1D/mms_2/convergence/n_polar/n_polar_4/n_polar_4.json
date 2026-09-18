@@ -1,6 +1,6 @@
 {
   "problem": {
-    "name": "n_points_32",
+    "name": "n_polar_4",
     "mode": "fixed_source",
     "output_format": "csv"
   },
@@ -32,12 +32,12 @@
   "angular_treatment": {
     "quadrature_set": "gauss_legendre",
     "n_azimuthal": 1,
-    "n_polar": 12
+    "n_polar": 4
   },
   "spectral_elements": {
     "transport_form": "saaf",
     "fe_formulation": "cg",
-    "n_points": 32
+    "n_points": 12
   },
   "source_iteration": {
     "tolerance": 1e-08,
