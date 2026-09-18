@@ -57,7 +57,18 @@ arma::Col<double> Segment::LocalForcingVector(
     const size_t ordinate_index) {
   arma::Col<double> forcing_vec(gll_quad.n_points(), arma::fill::zeros);
   double sigma_t = material_bank.GetByID(material_id_).total_xs;
-  double streaming_coeff = ordinate.x() / sigma_t;
+  // node_ids_'s first/last entries aren't guaranteed to be in increasing-x
+  // order (verified via direct integration: for a reversed element, the
+  // physical integral int Q*dl_i/dx dx equals -1 times the reference-space
+  // GLL sum, not +1 -- unlike mass/stiffness/the q-term, which use
+  // |Jacobian| or are insensitive to its sign). Use node_ids_, not
+  // boundary_node_ids_: the latter is never updated by Mesh::RenumberNodes,
+  // so it holds stale pre-renumbering IDs by the time this runs. .at() (not
+  // .front()/.back()) so an empty node_ids_ throws instead of segfaulting.
+  double left_x = mesh.GetNode(node_ids_.at(0)).x;
+  double right_x = mesh.GetNode(node_ids_.at(node_ids_.size() - 1)).x;
+  double orientation = (right_x >= left_x) ? 1.0 : -1.0;
+  double streaming_coeff = orientation * ordinate.x() / sigma_t;
   for (auto i = 0; i < gll_quad.n_points(); i++) {
     double sum = 0.0;
     for (auto k = 0; k < gll_quad.n_points(); k++) {
