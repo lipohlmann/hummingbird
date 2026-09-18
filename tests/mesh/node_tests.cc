@@ -146,9 +146,9 @@ TEST(UpdateSourceFluxesTest,
 
   UpdateSourceFluxes(node, material_bank, source_bank, quad);
 
-  // inscattering = scattering_xs / 2 * scalar_flux = 1.0 / 2 * 3.0 = 1.5
+  // inscattering = scattering_xs / (4*pi) * scalar_flux = 1.0 / (4*pi) * 3.0
   // independent source = strength / 4*pi = 1.0
-  const double expected = 1.5 + 1.0;
+  const double expected = 1.0 / (4.0 * M_PI) * 3.0 + 1.0;
   for (size_t i = 0; i < quad.n_points(); i++)
     EXPECT_NEAR(node.source_fluxes[i], expected, EXP_NEAR_TOLERANCE)
         << "Mismatch at quadrature point " << i;

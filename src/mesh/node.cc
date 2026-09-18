@@ -29,7 +29,7 @@ void UpdateSourceFluxes(Node& node, const MaterialBank& material_bank,
         source_bank.GetByID(node.source_id)
             ->EvaluateAtNode(node, angular_quadrature.GetAbscissa(n));
     double inscattering =
-        material_bank.GetByID(node.material_id).scattering_xs / 2.0 *
+        material_bank.GetByID(node.material_id).scattering_xs / (4.0 * M_PI) *
         node.scalar_flux;
     node.source_fluxes[n] = inscattering + ind_source;
   }
