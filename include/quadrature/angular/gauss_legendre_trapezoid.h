@@ -22,8 +22,17 @@ class GaussLegendreTrapezoid : public QuadratureBase<Ordinate> {
    *
    * @param n_azim Number of azimuthal quadrature points
    * @param n_polar Number of polar quadrature points
+   * @param polar_measured_from_x If true, each ordinate is built so its
+   * polar Gauss-Legendre root ends up in Ordinate::x() (via
+   * Ordinate(acos(root), pi/2)) instead of Ordinate::z(). Used for 1D
+   * problems along x, where x() (not z()) is the streaming/BC direction
+   * cosine every consumer (Segment, ParsedVolumetricSource, CGProblem)
+   * reads; azim is otherwise degenerate for n_azim=1, since sin(polar) is
+   * the same for a Gauss-Legendre root and its negative. Defaults to false
+   * (the standard sphere convention, needed for future 2D/3D use).
    */
-  GaussLegendreTrapezoid(const size_t n_azim, const size_t n_polar);
+  GaussLegendreTrapezoid(const size_t n_azim, const size_t n_polar,
+                        const bool polar_measured_from_x = false);
 };
 }  // namespace hummingbird
 

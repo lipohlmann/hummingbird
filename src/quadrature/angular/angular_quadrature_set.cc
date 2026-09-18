@@ -16,8 +16,8 @@ AngularQuadratureSet::AngularQuadratureSet(const AngularQuadSet quad_set,
 
   switch (quad_set) {
     case AngularQuadSet::GL:
-      angular_quadrature_set_ =
-          std::make_unique<GaussLegendreTrapezoid>(1, n_polar);
+      angular_quadrature_set_ = std::make_unique<GaussLegendreTrapezoid>(
+          1, n_polar, /*polar_measured_from_x=*/true);
       break;
     case AngularQuadSet::GLT:
       angular_quadrature_set_ =

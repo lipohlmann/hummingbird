@@ -297,6 +297,50 @@ TEST(GLTRangeTest, zIsStrictlyInsideUnitInterval) {
 }
 
 // ---------------------------------------------------------------------------
+// polar_measured_from_x (1D-along-x support)
+//
+// For n_azim=1, the default (standard, z-polar) convention makes x() degenerate
+// across polar levels: x() = cos(azim)*sin(polar) only depends on sin(polar),
+// which is identical for a Gauss-Legendre root and its negative. Passing
+// polar_measured_from_x=true instead builds each Ordinate as
+// Ordinate(acos(root), pi/2), putting the (genuinely varying) root into x().
+// ---------------------------------------------------------------------------
+
+TEST(GLTPolarMeasuredFromXTest, XValuesMatchDistinctGaussLegendreRoots) {
+  GaussLegendreTrapezoid quad(1, 2, /*polar_measured_from_x=*/true);
+  ASSERT_EQ(quad.n_points(), 2u);
+
+  const double expected_root = 1.0 / std::sqrt(3.0);
+  std::vector<double> x_values;
+  for (unsigned int i = 0; i < quad.n_points(); ++i)
+    x_values.push_back(quad.GetAbscissa(i).x());
+
+  EXPECT_NEAR(std::abs(x_values.at(0)), expected_root, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(std::abs(x_values.at(1)), expected_root, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(x_values.at(0), -x_values.at(1), EXP_NEAR_TOLERANCE)
+      << "The two ordinates' x() values should be genuinely distinct "
+         "(opposite signs), not degenerate.";
+}
+
+TEST(GLTPolarMeasuredFromXTest, ZIsZeroSincePolarIsFixedAtHalfPi) {
+  // Ordinate(acos(root), pi/2): z() = cos(polar) = cos(pi/2) = 0. (y() is not
+  // zero -- it carries sin(polar)*sin(azim) = sin(acos(root)), the
+  // "leftover" component -- only z() vanishes by construction.)
+  GaussLegendreTrapezoid quad(1, 2, /*polar_measured_from_x=*/true);
+  for (unsigned int i = 0; i < quad.n_points(); ++i) {
+    Ordinate ord = quad.GetAbscissa(i);
+    EXPECT_NEAR(ord.z(), 0.0, EXP_NEAR_TOLERANCE) << "at index " << i;
+  }
+}
+
+TEST(GLTPolarMeasuredFromXTest, WeightsUnaffectedByAxisChoice) {
+  GaussLegendreTrapezoid quad_x(1, 2, /*polar_measured_from_x=*/true);
+  GaussLegendreTrapezoid quad_z(1, 2, /*polar_measured_from_x=*/false);
+  for (unsigned int i = 0; i < quad_x.n_points(); ++i)
+    EXPECT_NEAR(quad_x.GetWeight(i), quad_z.GetWeight(i), EXP_NEAR_TOLERANCE);
+}
+
+// ---------------------------------------------------------------------------
 // Minimal/edge-case configuration
 // ---------------------------------------------------------------------------
 

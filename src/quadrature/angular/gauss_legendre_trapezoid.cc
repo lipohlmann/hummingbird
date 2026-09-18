@@ -3,7 +3,8 @@
 #include <cmath>
 namespace hummingbird {
 GaussLegendreTrapezoid::GaussLegendreTrapezoid(const size_t n_azim,
-                                               const size_t n_polar) {
+                                               const size_t n_polar,
+                                               const bool polar_measured_from_x) {
   abscissas_.reserve(n_azim * n_polar);
   GaussLegendre gl_polar_quad(n_polar);
 
@@ -14,7 +15,9 @@ GaussLegendreTrapezoid::GaussLegendreTrapezoid(const size_t n_azim,
     for (double j = 0; j < n_azim; j++) {
       double azim = -M_PI + j * delta_azim;
 
-      Ordinate new_ordinate(azim, std::acos(polar));
+      Ordinate new_ordinate = polar_measured_from_x
+          ? Ordinate(std::acos(polar), M_PI / 2.0)
+          : Ordinate(azim, std::acos(polar));
       abscissas_.push_back(std::move(new_ordinate));
 
       double weight = gl_polar_quad.GetWeight(i) * delta_azim;
