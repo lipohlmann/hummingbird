@@ -33,14 +33,15 @@ struct Node {
 
   /// @brief Source ID to access Source Bank. ID of 0 is always NONE, meaning
   /// the node has no external source.
-  unsigned int source_id = 0;
+  int source_id = 0;
 
-  /// @brief Material ID to access Material Bank
-  unsigned int material_id;
+  /// @brief Material ID to access Material Bank. Auto initialized to -1. Value
+  /// must be set to a positive value (including 0) to map into the MaterialBank
+  int material_id = -1;
 
   /// @brief BC ID to access the boundary condition (BC) bank. ID of 0 is always
   /// NONE, meaning the node is internal to the mesh.
-  unsigned int bc_id = 0;
+  int bc_id = 0;
 
   /// @brief Outward pointing normal vector. This vector is only relevant if the
   /// node is on a boundary

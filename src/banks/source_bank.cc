@@ -5,7 +5,7 @@ namespace hummingbird {
 SourceBank::SourceBank(const json& json_input) { Build(json_input); }
 
 void SourceBank::Build(const json& json_input) {
-  unsigned int id = 0;
+  int id = 0;
   id_object_map_.emplace(id, std::make_unique<ConstantVolumetricSource>(0.0));
   name_id_map_.emplace(std::string("none"), id);
   id++;

@@ -20,9 +20,7 @@ class BankBase {
    * @param id ID
    * @return const T&
    */
-  const T& GetByID(const unsigned int id) const {
-    return id_object_map_.at(id);
-  }
+  const T& GetByID(const int id) const { return id_object_map_.at(id); }
 
   /**
    * @brief Get the object by its name in the JSON input file
@@ -38,18 +36,18 @@ class BankBase {
    * @brief Get the ID of an object by its name in the JSON input file
    *
    * @param name Object name
-   * @return unsigned int
+   * @return  int
    */
-  unsigned int GetIDByName(const std::string& name) const {
+  int GetIDByName(const std::string& name) const {
     return name_id_map_.at(name);
   }
 
  protected:
   /// @brief ID to object map
-  std::unordered_map<unsigned int, T> id_object_map_;
+  std::unordered_map<int, T> id_object_map_;
 
   /// @brief name to object ID map
-  std::unordered_map<std::string, unsigned int> name_id_map_;
+  std::unordered_map<std::string, int> name_id_map_;
 
   /**
    * @brief Build the bank

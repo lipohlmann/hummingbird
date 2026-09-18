@@ -14,7 +14,7 @@ MaterialBank::MaterialBank(const json& input_file_json) {
 }
 
 void MaterialBank::Build(const json& input_file_json) {
-  unsigned int id = 0;
+  int id = 0;
   for (const auto& [name, material_json] :
        input_file_json.at("materials").items()) {
     Material material = material_json.get<Material>();
