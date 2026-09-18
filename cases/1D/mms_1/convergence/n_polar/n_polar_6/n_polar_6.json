@@ -1,0 +1,46 @@
+{
+  "problem": {
+    "name": "n_polar_6",
+    "mode": "fixed_source",
+    "output_format": "csv"
+  },
+  "mesh": {
+    "filename": "/home/liamp2/projects/hummingbird/cases/1D/1D_MMS.msh"
+  },
+  "boundary_conditions": {
+    "west": {
+      "type": "vacuum"
+    },
+    "east": {
+      "type": "vacuum"
+    }
+  },
+  "materials": {
+    "mms_material": {
+      "scattering_xs": 1,
+      "total_xs": 2,
+      "fission_xs": 0,
+      "nu": 0
+    }
+  },
+  "sources": {
+    "mms_source": {
+      "type": "parsed_function",
+      "expression": "(1-x^2) * (-4*mu*x*(1+3*mu^2)+2.0*(1+3*mu^2)*(1-x^2)-2*1*(1-x^2)) * 1/2/pi"
+    }
+  },
+  "angular_treatment": {
+    "quadrature_set": "gauss_legendre",
+    "n_azimuthal": 1,
+    "n_polar": 6
+  },
+  "spectral_elements": {
+    "transport_form": "saaf",
+    "fe_formulation": "cg",
+    "n_points": 12
+  },
+  "source_iteration": {
+    "tolerance": 1e-08,
+    "max_iterations": 1000
+  }
+}

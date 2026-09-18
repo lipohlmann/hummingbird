@@ -1,0 +1,59 @@
+
+ _                               _             _     _         _ 
+| |__  _   _ _ __ ___  _ __ ___ (_)_ __   __ _| |__ (_)_ __ __| |
+| '_ \| | | | '_ ` _ \| '_ ` _ \| | '_ \ / _` | '_ \| | '__/ _` |
+| | | | |_| | | | | | | | | | | | | | | | (_| | |_) | | | | (_| |
+|_| |_|\__,_|_| |_| |_|_| |_| |_|_|_| |_|\__, |_.__/|_|_|  \__,_|
+                                        |___ /                   
+ 
+    Description | Spectral Elements for Radiation Transport 
+      Copyright | 2026, Liam Pohlmann
+        License | https://github.com/lipohlmann/hummingbird/blob/main/LICENSE
+
+     Input file | /home/liamp2/projects/hummingbird/cases/1D/mms_1/convergence/n_points/n_points_5/n_points_5.json
+      Mesh file | /home/liamp2/projects/hummingbird/cases/1D/1D_MMS.msh
+
+Creating banks...Done
+Creating quadrature sets...Done
+
+Mesh info:
+       Number of nodes: 33
+    Number of elements: 8
+             Dimension: 1
+
+Beginning source iterations.
+
+   k-eff Iter.       k-eff       k-eff Error  | Scatter Iter.   Flux Error     Relative Err.
+  =============  =============  ============= | =============  =============  =============
+                                              |       1         0.00000e+00          -      
+                                              |       2         5.81329e+00     1.00000e+00 
+                                              |       3         2.47856e+00     2.99687e-01 
+                                              |       4         1.09287e+00     1.16986e-01 
+                                              |       5         4.88557e-01     4.97715e-02 
+                                              |       6         2.19593e-01     2.18993e-02 
+                                              |       7         9.89091e-02     9.77167e-03 
+                                              |       8         4.45870e-02     4.38654e-03 
+                                              |       9         2.01056e-02     1.97431e-03 
+                                              |      10         9.06730e-03     8.89628e-04 
+                                              |      11         4.08939e-03     4.01074e-04 
+                                              |      12         1.84437e-03     1.80858e-04 
+                                              |      13         8.31839e-04     8.15637e-05 
+                                              |      14         3.75173e-04     3.67853e-05 
+                                              |      15         1.69210e-04     1.65906e-05 
+                                              |      16         7.63165e-05     7.48258e-06 
+                                              |      17         3.44201e-05     3.37477e-06 
+                                              |      18         1.55241e-05     1.52208e-06 
+                                              |      19         7.00163e-06     6.86483e-07 
+                                              |      20         3.15786e-06     3.09616e-07 
+                                              |      21         1.42425e-06     1.39642e-07 
+                                              |      22         6.42362e-07     6.29811e-08 
+                                              |      23         2.89717e-07     2.84056e-08 
+                                              |      24         1.30667e-07     1.28114e-08 
+                                              |      25         5.89333e-08     5.77818e-09 
+  -----------------------------------------------------------------------------------------
+
+Source iterations complete.
+
+Exporting results...Done.
+
+
