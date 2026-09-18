@@ -60,21 +60,20 @@ TEST(ResultsToCSVTest, WritesHeaderAndRowForSingleOrdinateSingleNode) {
 
   const std::string name = "results_test_single";
   ResultsFile file(name);
-  Results results(name, OutputFormat::CSV, nodes, quad);
+  Results results(name, OutputFormat::CSV, nodes, quad, /*dimension=*/1);
   results.Export();
 
   std::vector<std::string> lines = file.ReadLines();
   ASSERT_EQ(lines.size(), 2u);
-  EXPECT_EQ(lines[0],
-            "node_id,x,y,z,scalar_flux,angular_flux_0,azimuth_0,polar_0");
+  EXPECT_EQ(lines[0], "node_id,x,y,z,scalar_flux,angular_flux_0,"
+                      "direction_cosine_0");
 
   const Ordinate ordinate = quad.GetAbscissa(0);
   const std::string expected_row =
       FormatValue(node.id) + "," + FormatValue(node.x) + "," +
       FormatValue(node.y) + "," + FormatValue(node.z) + "," +
       FormatValue(node.scalar_flux) + "," +
-      FormatValue(node.angular_fluxes[0]) + "," +
-      FormatValue(ordinate.azimuth()) + "," + FormatValue(ordinate.polar());
+      FormatValue(node.angular_fluxes[0]) + "," + FormatValue(ordinate.x());
   EXPECT_EQ(lines[1], expected_row);
 }
 
@@ -99,7 +98,7 @@ TEST(ResultsToCSVTest, WritesColumnGroupPerOrdinateAndRowPerNode) {
 
   const std::string name = "results_test_multi";
   ResultsFile file(name);
-  Results results(name, OutputFormat::CSV, nodes, quad);
+  Results results(name, OutputFormat::CSV, nodes, quad, /*dimension=*/1);
   results.Export();
 
   std::vector<std::string> lines = file.ReadLines();
@@ -107,8 +106,8 @@ TEST(ResultsToCSVTest, WritesColumnGroupPerOrdinateAndRowPerNode) {
 
   std::string expected_header = "node_id,x,y,z,scalar_flux";
   for (size_t i = 0; i < n_ordinates; i++)
-    expected_header += ",angular_flux_" + std::to_string(i) + ",azimuth_" +
-                       std::to_string(i) + ",polar_" + std::to_string(i);
+    expected_header += ",angular_flux_" + std::to_string(i) +
+                       ",direction_cosine_" + std::to_string(i);
   EXPECT_EQ(lines[0], expected_header);
 
   const std::vector<Node> expected_nodes = {node_0, node_1};
@@ -121,11 +120,38 @@ TEST(ResultsToCSVTest, WritesColumnGroupPerOrdinateAndRowPerNode) {
     for (size_t i = 0; i < n_ordinates; i++) {
       const Ordinate ordinate = quad.GetAbscissa(i);
       expected_row += "," + FormatValue(node.angular_fluxes[i]) + "," +
-                      FormatValue(ordinate.azimuth()) + "," +
-                      FormatValue(ordinate.polar());
+                      FormatValue(ordinate.x());
     }
     EXPECT_EQ(lines[row + 1], expected_row);
   }
+}
+
+TEST(ResultsToCSVTest, NonOneDimensionalUsesAzimuthAndPolarColumns) {
+  GaussLegendreTrapezoid quad(1, 1);
+
+  Node node(0, 1.0, 2.0, 3.0);
+  node.scalar_flux = 5.0;
+  node.angular_fluxes = {7.5};
+  std::vector<Node> nodes = {node};
+
+  const std::string name = "results_test_non_1d";
+  ResultsFile file(name);
+  Results results(name, OutputFormat::CSV, nodes, quad, /*dimension=*/2);
+  results.Export();
+
+  std::vector<std::string> lines = file.ReadLines();
+  ASSERT_EQ(lines.size(), 2u);
+  EXPECT_EQ(lines[0],
+            "node_id,x,y,z,scalar_flux,angular_flux_0,azimuth_0,polar_0");
+
+  const Ordinate ordinate = quad.GetAbscissa(0);
+  const std::string expected_row =
+      FormatValue(node.id) + "," + FormatValue(node.x) + "," +
+      FormatValue(node.y) + "," + FormatValue(node.z) + "," +
+      FormatValue(node.scalar_flux) + "," +
+      FormatValue(node.angular_fluxes[0]) + "," +
+      FormatValue(ordinate.azimuth()) + "," + FormatValue(ordinate.polar());
+  EXPECT_EQ(lines[1], expected_row);
 }
 
 TEST(ResultsToCSVTest, ThrowsWhenAngularFluxesShorterThanQuadrature) {
@@ -138,7 +164,7 @@ TEST(ResultsToCSVTest, ThrowsWhenAngularFluxesShorterThanQuadrature) {
 
   const std::string name = "results_test_short_fluxes";
   ResultsFile file(name);
-  Results results(name, OutputFormat::CSV, nodes, quad);
+  Results results(name, OutputFormat::CSV, nodes, quad, /*dimension=*/1);
 
   EXPECT_THROW(results.Export(), std::out_of_range);
 }

@@ -8,11 +8,13 @@
 namespace hummingbird {
 Results::Results(const std::string& name, const OutputFormat output_format,
                  const std::vector<Node>& nodes,
-                 const QuadratureBase<Ordinate>& angular_quadrature)
+                 const QuadratureBase<Ordinate>& angular_quadrature,
+                 const unsigned int dimension)
     : name_(name),
       output_format_(output_format),
       nodes_(nodes),
-      angular_quadrature_(angular_quadrature) {}
+      angular_quadrature_(angular_quadrature),
+      dimension_(dimension) {}
 
 void Results::Export() {
   switch (output_format_) {
@@ -35,8 +37,13 @@ void Results::ToCSV() {
   const size_t n_ordinates = angular_quadrature_.n_points();
 
   out << "node_id,x,y,z,scalar_flux";
-  for (size_t i = 0; i < n_ordinates; i++)
-    out << ",angular_flux_" << i << ",azimuth_" << i << ",polar_" << i;
+  for (size_t i = 0; i < n_ordinates; i++) {
+    out << ",angular_flux_" << i;
+    if (dimension_ == 1)
+      out << ",direction_cosine_" << i;
+    else
+      out << ",azimuth_" << i << ",polar_" << i;
+  }
   out << "\n";
 
   out << std::setprecision(std::numeric_limits<double>::max_digits10);
@@ -45,8 +52,11 @@ void Results::ToCSV() {
         << node.scalar_flux;
     for (size_t i = 0; i < n_ordinates; i++) {
       const Ordinate ordinate = angular_quadrature_.GetAbscissa(i);
-      out << "," << node.angular_fluxes.at(i) << "," << ordinate.azimuth()
-          << "," << ordinate.polar();
+      out << "," << node.angular_fluxes.at(i);
+      if (dimension_ == 1)
+        out << "," << ordinate.x();
+      else
+        out << "," << ordinate.azimuth() << "," << ordinate.polar();
     }
     out << "\n";
   }

@@ -26,10 +26,14 @@ class Results {
    * @param output_format Format to export results in
    * @param nodes Mesh nodes holding the solution values to export
    * @param angular_quadrature Angular quadrature set for the simulation
+   * @param dimension Spatial dimension of the mesh. For dimension == 1, each
+   * ordinate is exported as a single direction cosine (the only angular
+   * quantity that matters in 1D) instead of azimuth/polar.
    */
   Results(const std::string& name, const OutputFormat output_format,
           const std::vector<Node>& nodes,
-          const QuadratureBase<Ordinate>& angular_quadrature);
+          const QuadratureBase<Ordinate>& angular_quadrature,
+          const unsigned int dimension);
 
   /**
    * @brief Export the results in the format given by output_format_
@@ -50,6 +54,9 @@ class Results {
 
   /// @brief Angular quadrature set
   const QuadratureBase<Ordinate>& angular_quadrature_;
+
+  /// @brief Spatial dimension of the mesh
+  const unsigned int dimension_;
 
   /**
    * @brief Export the results as a CSV file
