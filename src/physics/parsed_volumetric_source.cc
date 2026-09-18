@@ -14,7 +14,7 @@ double ParsedVolumetricSource::EvaluateAtNode(const Node& node,
   te_type x{node.x}, y{node.y}, z{node.z}, mu{ordinate.x()};
   tep.set_variables_and_functions(
       {{"x", &x}, {"y", &y}, {"z", &z}, {"mu", &mu}});
-  auto result = tep.evaluate(expression_) / 2 / M_PI;
+  auto result = tep.evaluate(expression_);
   if (tep.success())
     return result;
   else
