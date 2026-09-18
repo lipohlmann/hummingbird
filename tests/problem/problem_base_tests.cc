@@ -30,7 +30,8 @@ class TestableProblem : public ProblemBase {
   }
 
   std::vector<GlobalForcingData> AssembleGlobalForcingData(
-      const GaussLobattoLegendre&, const Mesh&, const size_t) override {
+      const GaussLobattoLegendre&, const Mesh&, const MaterialBank&,
+      const Ordinate&, const size_t) override {
     return {};
   }
 

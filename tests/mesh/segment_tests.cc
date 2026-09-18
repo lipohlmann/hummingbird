@@ -661,7 +661,11 @@ TEST_F(SegmentForcingVectorTest,
   GaussLobattoLegendre gll(2);
   segment.CreateInteriorNodes(mesh.nodes(), gll);  // no interior points; N=2
 
-  auto forcing = segment.LocalForcingVector(gll, mesh, 0);
+  // total_xs=1, x-cosine=1 => streaming_coeff = 1, keeping the documented
+  // formula's derivative term unscaled to match the hand-derived values.
+  MaterialBank material_bank = MakeSingleMaterialBank(1.0);
+  Ordinate ordinate = MakeOrdinateWithXCosine(1.0);
+  auto forcing = segment.LocalForcingVector(gll, mesh, material_bank, ordinate, 0);
 
   EXPECT_NEAR(forcing(0), 0.0, EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(forcing(1), 16.0, EXP_NEAR_TOLERANCE);
@@ -677,7 +681,9 @@ TEST_F(SegmentForcingVectorTest, TwoPointZeroSourceProducesZeroVector) {
   GaussLobattoLegendre gll(2);
   segment.CreateInteriorNodes(mesh.nodes(), gll);  // no interior points; N=2
 
-  auto forcing = segment.LocalForcingVector(gll, mesh, 0);
+  MaterialBank material_bank = MakeSingleMaterialBank(1.0);
+  Ordinate ordinate = MakeOrdinateWithXCosine(1.0);
+  auto forcing = segment.LocalForcingVector(gll, mesh, material_bank, ordinate, 0);
 
   EXPECT_DOUBLE_EQ(forcing(0), 0.0);
   EXPECT_DOUBLE_EQ(forcing(1), 0.0);
@@ -705,7 +711,9 @@ TEST_F(SegmentForcingVectorTest,
   interior.at(0).source_fluxes = {0.0};
   mesh.AddNodes(interior);
 
-  auto forcing = segment.LocalForcingVector(gll, mesh, 0);
+  MaterialBank material_bank = MakeSingleMaterialBank(1.0);
+  Ordinate ordinate = MakeOrdinateWithXCosine(1.0);
+  auto forcing = segment.LocalForcingVector(gll, mesh, material_bank, ordinate, 0);
 
   EXPECT_NEAR(forcing(0), 1.0 / 6.0, EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(forcing(1), -2.0 / 3.0, EXP_NEAR_TOLERANCE);
@@ -739,7 +747,9 @@ TEST_P(SegmentForcingVectorConstantSourceTest,
   for (auto& node : interior) node.source_fluxes = {q0};
   mesh.AddNodes(interior);
 
-  auto forcing = segment.LocalForcingVector(gll, mesh, 0);
+  MaterialBank material_bank = MakeSingleMaterialBank(1.0);
+  Ordinate ordinate = MakeOrdinateWithXCosine(1.0);
+  auto forcing = segment.LocalForcingVector(gll, mesh, material_bank, ordinate, 0);
 
   for (size_t i = 0; i < n_points; ++i) {
     double boundary_term = 0.0;
@@ -760,6 +770,8 @@ TEST_F(SegmentForcingVectorTest, IsLinearInSourceValues) {
   // source at local GLL position k (left, interior..., right).
   const double length = 5.0;
   GaussLobattoLegendre gll(4);
+  MaterialBank material_bank = MakeSingleMaterialBank(1.0);
+  Ordinate ordinate = MakeOrdinateWithXCosine(1.0);
 
   auto build_and_evaluate = [&](std::vector<double> sources) {
     Mesh local_mesh;
@@ -773,7 +785,7 @@ TEST_F(SegmentForcingVectorTest, IsLinearInSourceValues) {
     for (size_t k = 0; k < interior.size(); ++k)
       interior.at(k).source_fluxes = {sources.at(k + 1)};
     local_mesh.AddNodes(interior);
-    return segment.LocalForcingVector(gll, local_mesh, 0);
+    return segment.LocalForcingVector(gll, local_mesh, material_bank, ordinate, 0);
   };
 
   std::vector<double> q_a = {1.0, -2.0, 3.0, 0.5};
@@ -801,9 +813,12 @@ TEST_F(SegmentForcingVectorTest,
   mesh.AddNodes(nodes);
   Segment segment({0, 1}, 0, 0, mesh);
   GaussLobattoLegendre gll(2);
+  MaterialBank material_bank = MakeSingleMaterialBank(1.0);
+  Ordinate ordinate = MakeOrdinateWithXCosine(1.0);
 
   EXPECT_TRUE(segment.node_ids().empty());
-  EXPECT_THROW(segment.LocalForcingVector(gll, mesh, 0), std::out_of_range);
+  EXPECT_THROW(segment.LocalForcingVector(gll, mesh, material_bank, ordinate, 0),
+              std::out_of_range);
 }
 
 TEST_F(SegmentForcingVectorTest,
@@ -824,11 +839,13 @@ TEST_F(SegmentForcingVectorTest,
   for (auto& node : interior) node.source_fluxes = {1.0};
   mesh.AddNodes(interior);
 
-  EXPECT_FALSE(segment.node_ids().empty());
-  EXPECT_NO_THROW(segment.LocalForcingVector(gll, mesh, 0));
-
   MaterialBank material_bank = MakeSingleMaterialBank(1.0);
   Ordinate ordinate = MakeOrdinateWithXCosine(1.0);
+
+  EXPECT_FALSE(segment.node_ids().empty());
+  EXPECT_NO_THROW(
+      segment.LocalForcingVector(gll, mesh, material_bank, ordinate, 0));
+
   EXPECT_NO_THROW(segment.LocalStiffnessMatrix(gll, material_bank, ordinate));
   EXPECT_NO_THROW(segment.LocalMassMatrix(gll, material_bank));
 }

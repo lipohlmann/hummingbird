@@ -130,7 +130,7 @@ AngularQuadratureSet MakeMinimalAngularQuad() {
 // CGProblem::Apply1DBCs (vacuum), via the public ProblemBase::ApplyBCs
 // ---------------------------------------------------------------------------
 
-TEST(CGProblemVacuumBCTest, OutgoingOrdinateAddsNegatedLaggedSolution) {
+TEST(CGProblemVacuumBCTest, OutgoingOrdinateAddsToMatrixDiagonal) {
   BCBank bc_bank(MakeSingleVacuumBCJson());
   Mesh mesh = MakeTwoNodeVacuumMesh(bc_bank.GetIDByName("only_bc"));
 
@@ -140,15 +140,20 @@ TEST(CGProblemVacuumBCTest, OutgoingOrdinateAddsNegatedLaggedSolution) {
   ASSERT_NEAR(ordinate.x(), 0.6, EXP_NEAR_TOLERANCE);
 
   TestableCGProblem problem(/*n_dofs=*/2, /*n_ordinates=*/1);
-  problem.solution_vectors_.at(0)(1) = 5.0;  // lagged value at the east node
 
   problem.ApplyBCs(mesh, ordinate, bc_bank, 0);
 
-  // Expected: forcing(east) += -(Omega.n) * solution(east) = -0.6 * 5.0
-  EXPECT_NEAR(problem.global_forcing_vectors_.at(0)(1), -3.0,
+  // Per the SAAF weak form's boundary term (background.tex eq:element-boundary
+  // in 2027-ans-mc, moved to the LHS since it involves the unknown psi at
+  // this same node/ordinate): matrix(east,east) += Omega.n = 0.6. This is an
+  // implicit contribution to the same linear solve, not a forcing term.
+  EXPECT_NEAR(problem.global_system_matrices_.at(0)(1, 1), 0.6,
               EXP_NEAR_TOLERANCE);
   // The west node is not outgoing for this ordinate; untouched.
-  EXPECT_NEAR(problem.global_forcing_vectors_.at(0)(0), 0.0,
+  EXPECT_NEAR(problem.global_system_matrices_.at(0)(0, 0), 0.0,
+              EXP_NEAR_TOLERANCE);
+  // The forcing vector is never touched by this BC treatment.
+  EXPECT_NEAR(problem.global_forcing_vectors_.at(0)(1), 0.0,
               EXP_NEAR_TOLERANCE);
 }
 
@@ -158,14 +163,15 @@ TEST(CGProblemVacuumBCTest, IncomingOrdinateAddsNothing) {
 
   // Same direction (0.6,0,0.8). At the west node (normal (-1,0,0)),
   // Omega.n = -0.6 < 0 -- incoming, so vacuum means psi = 0 and nothing
-  // should be added to the forcing vector there.
+  // should be added to the matrix or forcing vector there.
   Ordinate ordinate(0.0, std::asin(0.6));
 
   TestableCGProblem problem(/*n_dofs=*/2, /*n_ordinates=*/1);
-  problem.solution_vectors_.at(0)(0) = 5.0;  // lagged value at the west node
 
   problem.ApplyBCs(mesh, ordinate, bc_bank, 0);
 
+  EXPECT_NEAR(problem.global_system_matrices_.at(0)(0, 0), 0.0,
+              EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(problem.global_forcing_vectors_.at(0)(0), 0.0,
               EXP_NEAR_TOLERANCE);
 }
@@ -200,9 +206,12 @@ TEST(CGProblemAssemblyTest,
   //
   // Forcing: source only at the far-right node (global 4, Q=1 elsewhere 0)
   // matches segment_tests.cc's ThreePointSingleBoundarySourceMatchesHand
-  // DerivedValues pattern (Q=[0,0,1] in element B's local order), scaled to
-  // length=4: f_B_local = [1/6, -2/3, 7/6]. Element A's local source is all
-  // zero, so node 2's forcing is untouched by A (0 + 1/6 = 1/6).
+  // DerivedValues pattern (Q=[0,0,1] in element B's local order), except the
+  // derivative term now carries streaming_coeff = mu_x/sigma_t = 1/2 = 0.5
+  // (the delta term, i==k, is unaffected): f_B_local =
+  // [0.5*1/3*0.5, 0.5*1/3*(-2), 4/2*1/3+0.5*1/3*1.5] = [1/12, -1/3, 11/12].
+  // Element A's local source is all zero, so node 2's forcing is untouched by
+  // A (0 + 1/12 = 1/12).
   const double length = 4.0;
   const double sigma_t = 2.0;
   MaterialBank material_bank = MakeSingleMaterialBank(sigma_t);
@@ -229,7 +238,8 @@ TEST(CGProblemAssemblyTest,
   auto gmd =
       problem.AssembleGlobalMatrixData(mesh, gll, material_bank, ordinate);
   problem.AssembleGlobalSystem(gmd, 0);
-  auto gfd = problem.AssembleGlobalForcingData(gll, mesh, 0);
+  auto gfd =
+      problem.AssembleGlobalForcingData(gll, mesh, material_bank, ordinate, 0);
   problem.AssembleGlobalForcing(gfd, 0);
 
   const auto& k = problem.global_system_matrices_.at(0);
@@ -260,10 +270,10 @@ TEST(CGProblemAssemblyTest,
   ASSERT_EQ(f.n_elem, 5u);
   EXPECT_NEAR(f(0), 0.0, EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(f(1), 0.0, EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(f(2), 1.0 / 6.0, EXP_NEAR_TOLERANCE)
+  EXPECT_NEAR(f(2), 1.0 / 12.0, EXP_NEAR_TOLERANCE)
       << "Shared node's forcing should sum both elements' contributions.";
-  EXPECT_NEAR(f(3), -2.0 / 3.0, EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(f(4), 7.0 / 6.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(f(3), -1.0 / 3.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(f(4), 11.0 / 12.0, EXP_NEAR_TOLERANCE);
 }
 
 TEST(CGProblemAssemblyTest,
@@ -282,9 +292,14 @@ TEST(CGProblemAssemblyTest,
   // Shared node 2: A's right diagonal (3/2) + B's left diagonal (13/8).
   //
   // Forcing: source only at the shared node (global 2, Q=1 elsewhere 0).
-  // For element A (k=2 term, length=2): f_A_local = [1/6, -2/3, 5/6].
-  // For element B (k=0 term, length=4): f_B_local = [1/6, 2/3, -1/6].
-  // Node 2 sums A's right component (5/6) and B's left component (1/6).
+  // The derivative term now carries streaming_coeff = mu_x/sigma_t^e (the
+  // delta term, i==k, is unaffected by it):
+  // For element A (k=2 term, length=2, streaming_coeff=1/1=1, unchanged):
+  //   f_A_local = [1/6, -2/3, 5/6].
+  // For element B (k=0 term, length=4, streaming_coeff=1/2=0.5):
+  //   f_B_local = [2*1/3 + 0.5*1/3*(-1.5), 0.5*1/3*2, 0.5*1/3*(-0.5)]
+  //             = [5/12, 1/3, -1/12].
+  // Node 2 sums A's right component (5/6) and B's left component (5/12).
   const double length_a = 2.0;
   const double sigma_t_a = 1.0;
   const double length_b = 4.0;
@@ -312,7 +327,8 @@ TEST(CGProblemAssemblyTest,
   auto gmd =
       problem.AssembleGlobalMatrixData(mesh, gll, material_bank, ordinate);
   problem.AssembleGlobalSystem(gmd, 0);
-  auto gfd = problem.AssembleGlobalForcingData(gll, mesh, 0);
+  auto gfd =
+      problem.AssembleGlobalForcingData(gll, mesh, material_bank, ordinate, 0);
   problem.AssembleGlobalForcing(gfd, 0);
 
   const auto& k = problem.global_system_matrices_.at(0);
@@ -329,10 +345,10 @@ TEST(CGProblemAssemblyTest,
   const auto& f = problem.global_forcing_vectors_.at(0);
   EXPECT_NEAR(f(0), 1.0 / 6.0, EXP_NEAR_TOLERANCE);
   EXPECT_NEAR(f(1), -2.0 / 3.0, EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(f(2), 5.0 / 6.0 + 1.0 / 6.0, EXP_NEAR_TOLERANCE)
+  EXPECT_NEAR(f(2), 5.0 / 6.0 + 5.0 / 12.0, EXP_NEAR_TOLERANCE)
       << "Shared node's forcing should sum both elements' contributions.";
-  EXPECT_NEAR(f(3), 2.0 / 3.0, EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(f(4), -1.0 / 6.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(f(3), 1.0 / 3.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(f(4), -1.0 / 12.0, EXP_NEAR_TOLERANCE);
 }
 
 TEST(CGProblemAssemblyTest, ThreeUniformElementsSumBothSharedNodes) {

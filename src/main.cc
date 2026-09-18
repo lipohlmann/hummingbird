@@ -84,8 +84,8 @@ int main(int argc, char** argv) {
       // assemble to global system data
       auto global_matrix_data = sem_problem.get()->AssembleGlobalMatrixData(
           mesh, gll_quad, material_bank, ordinate);
-      auto global_forcing_data =
-          sem_problem.get()->AssembleGlobalForcingData(gll_quad, mesh, n);
+      auto global_forcing_data = sem_problem.get()->AssembleGlobalForcingData(
+          gll_quad, mesh, material_bank, ordinate, n);
 
       // form linear system
       sem_problem.get()->AssembleGlobalSystem(global_matrix_data, n);

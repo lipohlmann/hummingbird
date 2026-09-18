@@ -53,8 +53,11 @@ std::vector<Node> Segment::CreateInteriorNodes(
 
 arma::Col<double> Segment::LocalForcingVector(
     const GaussLobattoLegendre& gll_quad, const Mesh& mesh,
+    const MaterialBank& material_bank, const Ordinate& ordinate,
     const size_t ordinate_index) {
   arma::Col<double> forcing_vec(gll_quad.n_points(), arma::fill::zeros);
+  double sigma_t = material_bank.GetByID(material_id_).total_xs;
+  double streaming_coeff = ordinate.x() / sigma_t;
   for (auto i = 0; i < gll_quad.n_points(); i++) {
     double sum = 0.0;
     for (auto k = 0; k < gll_quad.n_points(); k++) {
@@ -62,7 +65,8 @@ arma::Col<double> Segment::LocalForcingVector(
           mesh.GetNode(node_ids_.at(k)).source_fluxes.at(ordinate_index);
       double weight = gll_quad.GetWeight(k);
       if (i == k) sum += weight * node_source * length_ / 2.0;
-      sum += weight * node_source * gll_quad.GetLagrangeDerivative(k, i);
+      sum += streaming_coeff * weight * node_source *
+             gll_quad.GetLagrangeDerivative(k, i);
     }
     forcing_vec(i) = sum;
   }

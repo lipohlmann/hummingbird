@@ -124,11 +124,14 @@ class ProblemBase {
    *
    * @param gll_quad GaussLobattoLegendre quadrature set
    * @param mesh Mesh
+   * @param material_bank Material bank
+   * @param ordinate Ordinate (direction)
    * @param ordinate_index Index in the angular quadrature
    * @return std::vector<GlobalForcingData>
    */
   virtual std::vector<GlobalForcingData> AssembleGlobalForcingData(
       const GaussLobattoLegendre& gll_quad, const Mesh& mesh,
+      const MaterialBank& material_bank, const Ordinate& ordinate,
       const size_t ordinate_index) = 0;
 
   /**

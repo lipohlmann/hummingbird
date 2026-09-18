@@ -53,21 +53,25 @@ class Segment : public Element {
    *
    * \f[
    * f_i = \frac{h_e}{2}\int_{-1}^1Q_n(\xi)\ell_i (\xi)d\xi +
-   * int_{-1}^1Q_n(\xi)\frac{d\ell_i}{d\xi}d\xi
+   * \frac{\hat{\Omega}_x}{\Sigma_t^e}\int_{-1}^1Q_n(\xi)\frac{d\ell_i}{d\xi}d\xi
    * \f]
    * which the integrals are again approximated using the GLL quadrature set:
    * \f[
-   * f_i \approx \frac{h_e}{2} \sum_{k=0}^{N_x}\rho_k Q_n(\xi_k)\left[ \ell_i
-   * (\xi_k) +\frac{d\ell_i}{d\xi}(\xi_k)\right]
+   * f_i \approx \sum_{k=0}^{N_x}\rho_k Q_n(\xi_k)\left[ \frac{h_e}{2}\ell_i
+   * (\xi_k) +\frac{\hat{\Omega}_x}{\Sigma_t^e}\frac{d\ell_i}{d\xi}(\xi_k)\right]
    * \f]
    *
    * @param gll_quad GaussLobattoLegendre quadrature set
    * @param mesh Mesh
+   * @param material_bank Material bank
+   * @param ordinate Ordinate (direction)
    * @param ordinate_index Index of the ordinate in the angular quadrature
    * @return arma::Col<double>
    */
   arma::Col<double> LocalForcingVector(const GaussLobattoLegendre& gll_quad,
                                        const Mesh& mesh,
+                                       const MaterialBank& material_bank,
+                                       const Ordinate& ordinate,
                                        const size_t ordinate_index) override;
 
   /**

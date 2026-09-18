@@ -31,6 +31,8 @@ class TestElement : public Element {
 
   arma::Col<double> LocalForcingVector(const GaussLobattoLegendre& gll_quad,
                                        const Mesh& mesh,
+                                       const MaterialBank& material_bank,
+                                       const Ordinate& ordinate,
                                        const size_t ordinate_index) override {
     return arma::Col<double>();
   }

@@ -29,12 +29,13 @@ std::vector<GlobalMatrixData> CGProblem::AssembleGlobalMatrixData(
 
 std::vector<GlobalForcingData> CGProblem::AssembleGlobalForcingData(
     const GaussLobattoLegendre& gll_quad, const Mesh& mesh,
+    const MaterialBank& material_bank, const Ordinate& ordinate,
     const size_t ordinate_index) {
   std::vector<GlobalForcingData> assembled_global_forcing_data;
 
   for (const auto& elem : mesh.elements()) {
-    auto local_forcing_vector =
-        elem->LocalForcingVector(gll_quad, mesh, ordinate_index);
+    auto local_forcing_vector = elem->LocalForcingVector(
+        gll_quad, mesh, material_bank, ordinate, ordinate_index);
     for (auto i = 0; i < gll_quad.n_points(); i++) {
       GlobalForcingData gfd;
       gfd.row_id = elem->node_ids().at(i);
@@ -56,12 +57,18 @@ void CGProblem::Apply1DBCs(const Mesh& mesh, const Ordinate& ordinate,
         double direction_dot_product =
             arma::norm_dot(node.outward_normal, ordinate.CartesianUnitVector());
         // Incoming (direction_dot_product < 0): vacuum means psi = 0, so
-        // there is nothing to add. Outgoing (> 0): psi is unknown, so the
-        // lagged solution value is used as the boundary source term.
+        // there is nothing to add. Outgoing (> 0): psi is unknown at this
+        // node for this ordinate, so its coefficient (per the SAAF weak
+        // form's boundary term, background.tex eq:element-boundary in
+        // 2027-ans-mc) belongs on the system matrix's diagonal -- an
+        // implicit contribution to the same linear solve, not a forcing
+        // term lagged from the previous source iteration's solve (which
+        // both boundaries now hit every iteration once the two ordinates
+        // are no longer numerically degenerate, and diverges).
         if (direction_dot_product > 0)
-          global_forcing_vectors_.at(ordinate_index)(boundary_node_id) +=
-              -direction_dot_product *
-              solution_vectors_.at(ordinate_index)(boundary_node_id);
+          global_system_matrices_.at(ordinate_index)(boundary_node_id,
+                                                      boundary_node_id) +=
+              direction_dot_product;
         break;
       }
       case BC::REFLECTIVE:

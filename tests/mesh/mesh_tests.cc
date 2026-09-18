@@ -100,6 +100,7 @@ class FakeElement : public Element {
   }
 
   arma::Col<double> LocalForcingVector(const GaussLobattoLegendre&, const Mesh&,
+                                       const MaterialBank&, const Ordinate&,
                                        const size_t) override {
     return {};
   }
