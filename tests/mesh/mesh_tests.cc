@@ -174,6 +174,33 @@ TEST(MeshGMSHTest, ElementsHaveSourceIDFromSourcePhysicalGroup) {
         << "Element " << i << " has an unexpected source ID.";
 }
 
+TEST(MeshGMSHTest, BoundaryNodesHaveMaterialIDFromMaterialPhysicalGroup) {
+  // Every node in kOneDGmsh is an endpoint of the single
+  // "material:mms_material" curve, so all of them should pick up its raw
+  // gmsh tag (4) as material_id.
+  Mesh mesh(WriteTempMesh("hummingbird_mesh_test_node_material.msh", kOneDGmsh));
+  ASSERT_EQ(mesh.nodes().size(), 5u);
+  for (size_t i = 0; i < mesh.nodes().size(); i++)
+    EXPECT_EQ(mesh.nodes().at(i).material_id, 4)
+        << "Node " << i << " has an unexpected material ID.";
+}
+
+TEST(MeshGMSHTest, BoundaryNodesHaveSourceIDFromSourcePhysicalGroup) {
+  Mesh mesh(WriteTempMesh("hummingbird_mesh_test_node_source.msh", kOneDGmsh));
+  ASSERT_EQ(mesh.nodes().size(), 5u);
+  for (size_t i = 0; i < mesh.nodes().size(); i++)
+    EXPECT_EQ(mesh.nodes().at(i).source_id, 5)
+        << "Node " << i << " has an unexpected source ID.";
+}
+
+TEST(MeshGMSHTest, ConstructingFromValidMeshDoesNotThrow) {
+  // Regression test: CheckMaterialIDsOnNodes runs right after ReadGMSH, so
+  // every node read from a valid mesh file must already have a material ID
+  // by then, not only after Prepare() creates interior nodes.
+  EXPECT_NO_THROW(Mesh mesh(
+      WriteTempMesh("hummingbird_mesh_test_no_throw.msh", kOneDGmsh)));
+}
+
 TEST(MeshGMSHTest, BoundaryNodesHaveBCFromBCPhysicalGroup) {
   // Pre-ResolveIDs, bc_id is still the raw gmsh Physical Group tag (2 for
   // "bc:west", 3 for "bc:east" -- see ResolveIDs tests below for the

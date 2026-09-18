@@ -16,7 +16,19 @@
 
 namespace hummingbird {
 
-Mesh::Mesh(const std::string& msh_file) { ReadGMSH(msh_file); }
+Mesh::Mesh(const std::string& msh_file) {
+  ReadGMSH(msh_file);
+  CheckMaterialIDsOnNodes();
+}
+
+void Mesh::CheckMaterialIDsOnNodes() {
+  for (const auto& node : nodes_) {
+    if (node.material_id < 0)
+      throw std::runtime_error(
+          "Node does not have a material ID assigned. Node ID = " +
+          std::to_string(node.id));
+  }
+}
 
 void Mesh::AddNode(const Node& node) { nodes_.push_back(node); }
 
@@ -265,6 +277,10 @@ void Mesh::ReadElements(std::ifstream& file, GmshReadState& state) {
       std::array<size_t, 2> boundary_node_ids = {
           state.node_tag_to_id.at(node_tag_1),
           state.node_tag_to_id.at(node_tag_2)};
+      for (auto node_id : boundary_node_ids) {
+        nodes_.at(node_id).material_id = material_id;
+        nodes_.at(node_id).source_id = source_id;
+      }
       AddElement(std::make_unique<Segment>(boundary_node_ids, material_id,
                                            source_id, *this));
     }
