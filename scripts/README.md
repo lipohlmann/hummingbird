@@ -7,7 +7,7 @@ resolution parameter across a case, runs the solver at each value, compares the 
 against the case's known closed-form exact solution, and writes a summary CSV table plus
 an error-vs-parameter plot.
 
-**Prerequisites:** the project must be built (`build/debug/hummingbird` must exist — see the
+**Prerequisites:** the project must be built (`build/release/hummingbird` must exist — see the
 top-level `README.md`) and the case must have an `exact_solution.py` file (see below). Run
 via `pixi run python3` so `numpy`/`matplotlib`/`gmsh` are on `PATH`:
 
