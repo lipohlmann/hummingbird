@@ -42,6 +42,8 @@ std::vector<Node> Segment::CreateInteriorNodes(
     new_node.y = left_node.y + fraction * direction_y;
     new_node.z = left_node.z + fraction * direction_z;
     new_node.bc_id = interior_bc_id;
+    new_node.material_id = material_id_;
+    new_node.source_id = source_id_;
     nodes.at(i - 1) = std::move(new_node);
     id++;
   }
