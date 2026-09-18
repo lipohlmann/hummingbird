@@ -9,6 +9,7 @@ version = "0.1.0"
 debug = "cmake --workflow --preset build-debug"
 dev = "cmake --workflow --preset dev"
 docs = "dot -c && make -C docs html"
+release = "cmake --workflow --preset release"
 
 [dependencies]
 cmake = ">=4.4.2,<5"
