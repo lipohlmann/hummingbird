@@ -140,7 +140,9 @@ class Mesh {
    *
    * @param n_ordinates Number of ordinates
    */
-  void InitializeNodeSolutions(const size_t n_ordinates);
+  void InitializeNodeSolutions(const size_t n_ordinates,
+                               const QuadratureBase<Ordinate>& angular_quad_set,
+                               const SourceBank& source_bank);
 
   /**
    * @brief Prepare the mesh for running a simulation by generating interior

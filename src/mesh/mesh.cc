@@ -320,11 +320,17 @@ int Mesh::GetBCID(
       "a point entity.");
 }
 
-void Mesh::InitializeNodeSolutions(const size_t n_ordinates) {
+void Mesh::InitializeNodeSolutions(
+    const size_t n_ordinates, const QuadratureBase<Ordinate>& angular_quad_set,
+    const SourceBank& source_bank) {
   for (Node& node : nodes_) {
     node.scalar_flux = 0.0;
     node.angular_fluxes.assign(n_ordinates, 0.0);
     node.source_fluxes.assign(n_ordinates, 0.0);
+    for (auto n = 0; n < n_ordinates; n++)
+      node.source_fluxes[n] =
+          source_bank.GetByID(node.source_id)
+              ->EvaluateAtNode(node, angular_quad_set.GetAbscissa(n));
   }
 }
 
