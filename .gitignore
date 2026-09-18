@@ -83,3 +83,9 @@ docs/Doxyfile
 *.csv
 *.png
 
+# generated convergence-study sweep artifacts (per-run json/mesh files)
+cases/**/convergence/
+
+# python bytecode cache (created by importlib loading exact_solution.py)
+__pycache__/
+
