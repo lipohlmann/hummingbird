@@ -22,9 +22,11 @@ AngularQuadratureSet::AngularQuadratureSet(const AngularQuadSet quad_set,
     case AngularQuadSet::GLT:
       angular_quadrature_set_ =
           std::make_unique<GaussLegendreTrapezoid>(n_azim, n_polar);
+      break;
     case AngularQuadSet::GLC:
       angular_quadrature_set_ =
           std::make_unique<GaussLegendreChebyshev>(n_azim, n_polar);
+      break;
     default:
       throw std::runtime_error(
           "AngularQuadSet passed to AngularQuadratureSet constructor not "
