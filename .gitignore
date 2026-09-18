@@ -78,3 +78,8 @@ docs/Doxyfile
 # pixi environments
 .pixi/*
 !.pixi/config.toml
+
+# run files
+*.csv
+*.png
+
