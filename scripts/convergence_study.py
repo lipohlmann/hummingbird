@@ -45,11 +45,9 @@ import matplotlib.pyplot as plt
 import numpy as np
 
 REPO_ROOT = Path(__file__).resolve().parent.parent
-DEFAULT_EXE = REPO_ROOT / "build" / "debug" / "hummingbird"
+DEFAULT_EXE = REPO_ROOT / "build" / "release" / "hummingbird"
 
-SCATTER_LINE_RE = re.compile(
-    r"\|\s*(\d+)\s+([0-9.eE+\-]+)\s+([0-9.eE+\-]+)\s*$"
-)
+SCATTER_LINE_RE = re.compile(r"\|\s*(\d+)\s+([0-9.eE+\-]+)\s+([0-9.eE+\-]+)\s*$")
 
 
 # --------------------------------------------------------------------------
@@ -130,19 +128,27 @@ def validate_values(param: str, values: list[int]) -> None:
     if param == "n_points":
         for v in values:
             if v < 2:
-                errors.append(f"n_points={v} is invalid (GaussLobattoLegendre requires >= 2)")
+                errors.append(
+                    f"n_points={v} is invalid (GaussLobattoLegendre requires >= 2)"
+                )
     elif param == "n_polar":
         for v in values:
             if v < 2:
-                errors.append(f"n_polar={v} is invalid (AngularQuadratureSet requires >= 2)")
+                errors.append(
+                    f"n_polar={v} is invalid (AngularQuadratureSet requires >= 2)"
+                )
             if v % 2 != 0:
-                errors.append(f"n_polar={v} is invalid (AngularQuadratureSet requires an even value)")
+                errors.append(
+                    f"n_polar={v} is invalid (AngularQuadratureSet requires an even value)"
+                )
     elif param == "n_elements":
         for v in values:
             if v < 1:
                 errors.append(f"n_elements={v} is invalid (must be >= 1)")
     if errors:
-        raise SystemExit("Invalid --values for --param " + param + ":\n  " + "\n  ".join(errors))
+        raise SystemExit(
+            "Invalid --values for --param " + param + ":\n  " + "\n  ".join(errors)
+        )
 
 
 # --------------------------------------------------------------------------
@@ -159,7 +165,9 @@ def load_exact_psi(case_dir: Path):
     module = importlib.util.module_from_spec(spec)
     spec.loader.exec_module(module)
     if not hasattr(module, "exact_psi"):
-        raise SystemExit(f"{module_path} must define a function exact_psi(x, mu) -> float")
+        raise SystemExit(
+            f"{module_path} must define a function exact_psi(x, mu) -> float"
+        )
     return module.exact_psi
 
 
@@ -363,7 +371,9 @@ def main(argv=None) -> int:
         if args.param == "n_elements":
             mesh_path = generate_mesh(value, args.x_min, args.x_max, base_json, run_dir)
 
-        run_json = build_run_json(base_json, case_dir, args.param, value, mesh_path, run_name)
+        run_json = build_run_json(
+            base_json, case_dir, args.param, value, mesh_path, run_name
+        )
         run_json_path = run_dir / f"{run_name}.json"
         with open(run_json_path, "w") as f:
             json.dump(run_json, f, indent=2)
@@ -382,7 +392,10 @@ def main(argv=None) -> int:
         }
 
         if result is None:
-            print(f"[{args.param}={value}] TIMED OUT after {args.timeout}s", file=sys.stderr)
+            print(
+                f"[{args.param}={value}] TIMED OUT after {args.timeout}s",
+                file=sys.stderr,
+            )
             summary_rows.append(row)
             if args.stop_on_error:
                 break
@@ -403,11 +416,17 @@ def main(argv=None) -> int:
         row["converged"] = converged
         row["n_scatter_iterations"] = n_iter if n_iter is not None else ""
         if not converged:
-            print(f"[{args.param}={value}] WARNING: did not converge to tolerance", file=sys.stderr)
+            print(
+                f"[{args.param}={value}] WARNING: did not converge to tolerance",
+                file=sys.stderr,
+            )
 
         results_csv = run_dir / f"{run_name}_results.csv"
         if not results_csv.exists():
-            print(f"[{args.param}={value}] results CSV not found: {results_csv}", file=sys.stderr)
+            print(
+                f"[{args.param}={value}] results CSV not found: {results_csv}",
+                file=sys.stderr,
+            )
             summary_rows.append(row)
             if args.stop_on_error:
                 break
@@ -427,7 +446,10 @@ def main(argv=None) -> int:
 
     write_summary_csv(sweep_dir / f"convergence_{args.param}.csv", summary_rows)
     write_summary_plot(
-        sweep_dir / f"convergence_{args.param}.png", args.param, summary_rows, args.plot_scale
+        sweep_dir / f"convergence_{args.param}.png",
+        args.param,
+        summary_rows,
+        args.plot_scale,
     )
 
     print(f"\nDone. Summary table + plot written to {sweep_dir}")
@@ -451,7 +473,9 @@ def write_summary_csv(path: Path, rows: list[dict]) -> None:
             writer.writerow(row)
 
 
-def write_summary_plot(path: Path, param: str, rows: list[dict], plot_scale: str) -> None:
+def write_summary_plot(
+    path: Path, param: str, rows: list[dict], plot_scale: str
+) -> None:
     values = np.array([r["value"] for r in rows], dtype=float)
     errors = np.array([r["max_abs_error"] for r in rows], dtype=float)
     converged = np.array([bool(r["converged"]) for r in rows])
