@@ -375,7 +375,8 @@ void Mesh::UpdateNodeAngularFluxes(const SEMProblem& sem_problem,
                                    const size_t n_ordinates) {
   for (auto i = 0; i < this->n_nodes(); i++) {
     for (auto n = 0; n < n_ordinates; n++) {
-      nodes_[i].angular_fluxes[n] = sem_problem.get()->solution_vectors()[i][n];
+      nodes_[i].angular_fluxes[n] =
+          sem_problem.get()->solution_vectors().at(n)[i];
     }
   }
 }
