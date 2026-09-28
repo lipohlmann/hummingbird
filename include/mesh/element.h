@@ -157,11 +157,13 @@ class Element {
   virtual unsigned int dimension() const = 0;
 
  protected:
-  /// @brief Material ID
-  int material_id_;
+  /// @brief Material ID to access Material Bank. Auto initialized to -1. Value
+  /// must be set to a positive value (including 0) to map into the MaterialBank
+  int material_id_ = -1;
 
-  /// @brief Source ID
-  int source_id_;
+  /// @brief Source ID to access Source Bank. ID of 0 is always NONE, meaning
+  /// the node has no external source.
+  int source_id_ = 0;
 
   /// @brief IDs of nodes defining the element
   std::vector<size_t> node_ids_;

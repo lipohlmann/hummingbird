@@ -31,14 +31,6 @@ struct Node {
   /// @brief Z-coordinate of the node
   double z;
 
-  /// @brief Source ID to access Source Bank. ID of 0 is always NONE, meaning
-  /// the node has no external source.
-  int source_id = 0;
-
-  /// @brief Material ID to access Material Bank. Auto initialized to -1. Value
-  /// must be set to a positive value (including 0) to map into the MaterialBank
-  int material_id = -1;
-
   /// @brief BC ID to access the boundary condition (BC) bank. ID of 0 is always
   /// NONE, meaning the node is internal to the mesh.
   int bc_id = 0;
