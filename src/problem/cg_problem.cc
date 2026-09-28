@@ -56,19 +56,10 @@ void CGProblem::Apply1DBCs(const Mesh& mesh, const Ordinate& ordinate,
       case BC::VACUUM: {
         double direction_dot_product =
             arma::norm_dot(node.outward_normal, ordinate.CartesianUnitVector());
-        // Incoming (direction_dot_product < 0): vacuum means psi = 0, so
-        // there is nothing to add. Outgoing (> 0): psi is unknown at this
-        // node for this ordinate, so its coefficient (per the SAAF weak
-        // form's boundary term, background.tex eq:element-boundary in
-        // 2027-ans-mc) belongs on the system matrix's diagonal -- an
-        // implicit contribution to the same linear solve, not a forcing
-        // term lagged from the previous source iteration's solve (which
-        // both boundaries now hit every iteration once the two ordinates
-        // are no longer numerically degenerate, and diverges).
+
         if (direction_dot_product > 0)
-          global_system_matrices_.at(ordinate_index)(boundary_node_id,
-                                                      boundary_node_id) +=
-              direction_dot_product;
+          global_system_matrices_.at(ordinate_index)(
+              boundary_node_id, boundary_node_id) += direction_dot_product;
         break;
       }
       case BC::REFLECTIVE:
