@@ -20,15 +20,15 @@ namespace hummingbird {
 
 Mesh::Mesh(const std::string& msh_file) {
   ReadGMSH(msh_file);
-  CheckMaterialIDsOnNodes();
+  CheckMaterialIDsOnElements();
 }
 
-void Mesh::CheckMaterialIDsOnNodes() {
-  for (const auto& node : nodes_) {
-    if (node.material_id < 0)
+void Mesh::CheckMaterialIDsOnElements() {
+  for (const auto& elem : elements_) {
+    if (elem->material_id() < 0)
       throw std::runtime_error(
-          "Node does not have a material ID assigned. Node ID = " +
-          std::to_string(node.id));
+          "Element does not have a material ID assigned. Node ID = " +
+          std::to_string(elem->material_id()));
   }
 }
 
@@ -279,10 +279,7 @@ void Mesh::ReadElements(std::ifstream& file, GmshReadState& state) {
       std::array<size_t, 2> boundary_node_ids = {
           state.node_tag_to_id.at(node_tag_1),
           state.node_tag_to_id.at(node_tag_2)};
-      for (auto node_id : boundary_node_ids) {
-        nodes_.at(node_id).material_id = material_id;
-        nodes_.at(node_id).source_id = source_id;
-      }
+
       AddElement(std::make_unique<Segment>(boundary_node_ids, material_id,
                                            source_id, *this));
     }
@@ -323,14 +320,17 @@ int Mesh::GetBCID(
 void Mesh::InitializeNodeSolutions(
     const size_t n_ordinates, const QuadratureBase<Ordinate>& angular_quad_set,
     const SourceBank& source_bank) {
-  for (Node& node : nodes_) {
-    node.scalar_flux = 0.0;
-    node.angular_fluxes.assign(n_ordinates, 0.0);
-    node.source_fluxes.assign(n_ordinates, 0.0);
-    for (auto n = 0; n < n_ordinates; n++)
-      node.source_fluxes[n] =
-          source_bank.GetByID(node.source_id)
-              ->EvaluateAtNode(node, angular_quad_set.GetAbscissa(n));
+  for (const auto& element : elements_) {
+    int source_id = element->source_id();
+    for (const auto node_id : element->node_ids()) {
+      Node& node = nodes_[node_id];
+      node.scalar_flux = 0.0;
+      node.angular_fluxes.assign(n_ordinates, 0.0);
+      node.source_fluxes.assign(n_ordinates, 0.0);
+      for (auto n = 0; n < n_ordinates; n++)
+        node.source_fluxes[n] = source_bank.GetByID(source_id)->EvaluateAtNode(
+            node, angular_quad_set.GetAbscissa(n));
+    }
   }
 }
 
@@ -351,15 +351,6 @@ void Mesh::ResolveIDs(const MaterialBank& material_bank,
     const auto source_name =
         ExtractName(physical_names_.at(element->source_id()));
     element->SetSourceID(source_bank.GetIDByName(source_name));
-  }
-
-  for (const auto& element : elements_) {
-    const auto mat_id = element->material_id();
-    const auto source_id = element->source_id();
-    for (auto id : element->node_ids()) {
-      nodes_[id].material_id = mat_id;
-      nodes_[id].source_id = source_id;
-    }
   }
 
   for (auto& node : nodes_) {

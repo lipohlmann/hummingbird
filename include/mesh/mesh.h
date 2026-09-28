@@ -384,10 +384,10 @@ class Mesh {
   std::string ExtractName(const std::string& physical_name) const;
 
   /**
-   * @brief Check that the material IDs on the nodes are set on construction
+   * @brief Check that the material IDs on the elements are set on construction
    *
    */
-  void CheckMaterialIDsOnNodes();
+  void CheckMaterialIDsOnElements();
 };
 }  // namespace hummingbird
 
