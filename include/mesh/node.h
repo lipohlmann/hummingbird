@@ -71,11 +71,14 @@ void UpdateScalarFlux(Node& node,
  * @brief Update the source terms at each angular quadrature point
  *
  * @param node Node to modify
+ * @param material_id Material ID from element
+ * @param source_id Source ID from element
  * @param material_bank Material bank
  * @param source_bank Source bank
  * @param angular_quadrature Angular quadrature set
  */
-void UpdateSourceFluxes(Node& node, const MaterialBank& material_bank,
+void UpdateSourceFluxes(Node& node, const int material_id, const int source_id,
+                        const MaterialBank& material_bank,
                         const SourceBank& source_bank,
                         const QuadratureBase<Ordinate>& angular_quadrature);
 }  // namespace hummingbird

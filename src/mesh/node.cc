@@ -21,16 +21,15 @@ void UpdateScalarFlux(Node& node,
   node.scalar_flux = angular_quadrature.Integrate(quad_pairs);
 }
 
-void UpdateSourceFluxes(Node& node, const MaterialBank& material_bank,
+void UpdateSourceFluxes(Node& node, const int material_id, const int source_id,
+                        const MaterialBank& material_bank,
                         const SourceBank& source_bank,
                         const QuadratureBase<Ordinate>& angular_quadrature) {
   for (auto n = 0; n < angular_quadrature.n_points(); n++) {
-    double ind_source =
-        source_bank.GetByID(node.source_id)
-            ->EvaluateAtNode(node, angular_quadrature.GetAbscissa(n));
-    double inscattering =
-        material_bank.GetByID(node.material_id).scattering_xs / (4.0 * M_PI) *
-        node.scalar_flux;
+    double ind_source = source_bank.GetByID(source_id)->EvaluateAtNode(
+        node, angular_quadrature.GetAbscissa(n));
+    double inscattering = material_bank.GetByID(material_id).scattering_xs /
+                          (4.0 * M_PI) * node.scalar_flux;
     node.source_fluxes[n] = inscattering + ind_source;
   }
 }
