@@ -36,7 +36,7 @@
     },
     "mms_source_2": {
       "type": "parsed_function",
-      "expression": "mu*(-6*x*pow(1 - pow(x, 2), 3.0/2.0)*(2*x + 1)*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*exp(-3*pow(x, 2)) - 3*x*sqrt(1 - pow(x, 2))*(2*x + 1)*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*exp(-3*pow(x, 2)) + 2*pow(1 - pow(x, 2), 3.0/2.0)*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*exp(-3*pow(x, 2))) + (88.0/35.0)*pow(x, 3)*sqrt(1 - pow(x, 2))*exp(-3*pow(x, 2)) + (44.0/35.0)*pow(x, 2)*sqrt(1 - pow(x, 2))*exp(-3*pow(x, 2)) - 88.0/35.0*x*sqrt(1 - pow(x, 2))*exp(-3*pow(x, 2)) + (8.0/5.0)*pow(1 - pow(x, 2), 3.0/2.0)*(2*x + 1)*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*exp(-3*pow(x, 2)) - 44.0/35.0*sqrt(1 - pow(x, 2))*exp(-3*pow(x, 2))"
+      "expression": "mu*(-6*x*pow(1 - pow(x, 2), 3)*(2*x + 1)*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*exp(-3*pow(x, 2)) - 6*x*pow(1 - pow(x, 2), 2)*(2*x + 1)*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*exp(-3*pow(x, 2)) + 2*pow(1 - pow(x, 2), 3)*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*exp(-3*pow(x, 2))) + (88.0/35.0)*pow(x, 7)*exp(-3*pow(x, 2)) + (44.0/35.0)*pow(x, 6)*exp(-3*pow(x, 2)) - 264.0/35.0*pow(x, 5)*exp(-3*pow(x, 2)) - 132.0/35.0*pow(x, 4)*exp(-3*pow(x, 2)) + (264.0/35.0)*pow(x, 3)*exp(-3*pow(x, 2)) + (132.0/35.0)*pow(x, 2)*exp(-3*pow(x, 2)) - 88.0/35.0*x*exp(-3*pow(x, 2)) + (8.0/5.0)*pow(1 - pow(x, 2), 3)*(2*x + 1)*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*exp(-3*pow(x, 2)) - 44.0/35.0*exp(-3*pow(x, 2))"
     }
   },
   "angular_treatment": {

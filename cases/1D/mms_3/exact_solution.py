@@ -1,10 +1,9 @@
-"""Exact (manufactured) angular flux for the mms_2 verification case.
+"""Exact (manufactured) angular flux for the mms_3 verification case.
 
-psi(x, mu) = (1 - x^2)^2 * exp(-x^2/5) * (3*mu^2 + 5*mu^4) / (2*pi)
-
-Verified symbolically against sources.mms_source.expression in 1D_MMS_2.json
-(residual == 0) during debugging of a TinyExpr unary-minus/power precedence
-issue in that expression (fixed in commit de7550b).
+psi(x, mu) = {
+    (1+x)^2 * cos^2(x) * g(mu), -1 <= x <= 0
+    (2x+1) * (1-x^2)^3 * g(mu),  0 <= x <= 1
+ }
 """
 
 import math
@@ -20,6 +19,4 @@ def exact_psi(x: float, mu: float) -> float:
     if x <= 0:
         return (1 + x) ** 2 * math.cos(x) ** 2 * angular_contrib
     else:
-        return (
-            (1 - x**2) ** (3 / 2) * (2 * x + 1) * math.exp(-3 * x**2) * angular_contrib
-        )
+        return (1 - x**2) ** 3 * (2 * x + 1) * math.exp(-3 * x**2) * angular_contrib

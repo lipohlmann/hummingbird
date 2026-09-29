@@ -5,7 +5,7 @@ Manufactured solution, x in [-1, 1], split at x = 0:
     psi(x, mu) = f_r(x) * g(mu)
     g(mu)      = mu^6 + 5 mu^4 - 3 mu^2 + 1
     f_1(x)     = (1 + x)^2 cos(x)^2                              x in [-1, 0]
-    f_2(x)     = (2x + 1) (1 - x^2)^(3/2) exp(-3 x^2)            x in [0, 1]
+    f_2(x)     = (2x + 1) (1 - x^2)^3 exp(-3 x^2)                x in [ 0, 1]
 
 Source that makes psi an exact solution of the 1D transport equation:
 
@@ -74,7 +74,7 @@ regions = {
         "x_range": (-1.0, 0.0),
     },
     2: {
-        "f": (2 * x + 1) * (1 - x**2) ** Rational(3, 2) * exp(-3 * x**2),
+        "f": (2 * x + 1) * (1 - x**2) ** 3 * exp(-3 * x**2),
         "Sigma_t": Sigma_t2,
         "Sigma_s": Sigma_s2,
         "x_range": (0.0, 1.0),
