@@ -49,7 +49,7 @@ XS_VALUES = {
     Sigma_t1: Rational(2),
     Sigma_s1: Rational(1),
     Sigma_t2: Rational(8, 5),
-    Sigma_s2: Rational(11, 10),
+    Sigma_s2: Rational(6, 5),
 }
 
 # Stands in for g(mu) in the factored (LaTeX) form of the source.
