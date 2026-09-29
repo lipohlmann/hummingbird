@@ -383,20 +383,6 @@ void Mesh::SetOutwardNormals() {
   node_b.outward_normal = -node_a.outward_normal;
 }
 
-void Mesh::UpdateNodeSources(const QuadratureBase<Ordinate>& angular_quad_set,
-                             const MaterialBank& material_bank,
-                             const SourceBank& source_bank) {
-  for (const auto& elem : elements_) {
-    const int material_id = elem->material_id();
-    const int source_id = elem->source_id();
-    for (const auto node_id : elem->node_ids()) {
-      Node& node = nodes_[node_id];
-      UpdateSourceFluxes(node, material_id, source_id, material_bank,
-                         source_bank, angular_quad_set);
-    }
-  }
-}
-
 void Mesh::UpdateNodeScalarFluxes(
     const QuadratureBase<Ordinate>& angular_quad_set) {
   for (auto& node : nodes_) UpdateScalarFlux(node, angular_quad_set);

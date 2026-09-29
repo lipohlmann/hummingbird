@@ -192,17 +192,6 @@ class Mesh {
   void SetOutwardNormals();
 
   /**
-   * @brief Update the nodes' source flux values
-   *
-   * @param angular_quad_set Angular quadrature set
-   * @param material_bank Material bank
-   * @param source_bank Source bank
-   */
-  void UpdateNodeSources(const QuadratureBase<Ordinate>& angular_quad_set,
-                         const MaterialBank& material_bank,
-                         const SourceBank& source_bank);
-
-  /**
    * @brief Update the nodes' scalar flux values
    *
    * @param angular_quad_set Angular quadrature set
@@ -217,6 +206,17 @@ class Mesh {
    */
   void UpdateNodeAngularFluxes(const SEMProblem& sem_problem,
                                const size_t n_ordinates);
+
+  /**
+   * @brief Set the Node's source flux values
+   *
+   * @param node_id Node ID
+   * @param source_fluxes Source fluxes
+   */
+  void SetNodeSourceFluxes(const size_t node_id,
+                           const std::vector<double>& source_fluxes) {
+    nodes_.at(node_id).source_fluxes = source_fluxes;
+  }
 
  private:
   /// @brief Nodes in the mesh
