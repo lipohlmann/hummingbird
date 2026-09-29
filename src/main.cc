@@ -96,7 +96,8 @@ int main(int argc, char** argv) {
       auto global_matrix_data = sem_problem.get()->AssembleGlobalMatrixData(
           mesh, gll_quad, material_bank, ordinate);
       auto global_forcing_data = sem_problem.get()->AssembleGlobalForcingData(
-          gll_quad, mesh, material_bank, ordinate, n);
+          gll_quad, mesh, material_bank, source_bank, ordinate, n,
+          *angular_quad.get());
 
       // form linear system
       sem_problem.get()->AssembleGlobalSystem(global_matrix_data, n);
@@ -109,7 +110,6 @@ int main(int argc, char** argv) {
     // update scattering source
     mesh.UpdateNodeAngularFluxes(sem_problem, n_ordinates);
     mesh.UpdateNodeScalarFluxes(*angular_quad.get());
-    mesh.UpdateNodeSources(*angular_quad.get(), material_bank, source_bank);
 
     // check source iteration convergence
     for (auto i = 0; i < mesh.n_nodes(); i++)
