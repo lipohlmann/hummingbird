@@ -33,4 +33,20 @@ void UpdateSourceFluxes(Node& node, const int material_id, const int source_id,
     node.source_fluxes[n] = inscattering + ind_source;
   }
 }
+
+std::vector<double> ComputeNodeSourceFluxes(
+    const Node& node, const int material_id, const int source_id,
+    const MaterialBank& material_bank, const SourceBank& source_bank,
+    const QuadratureBase<Ordinate>& angular_quadrature) {
+  std::vector<double> source_fluxes;
+  source_fluxes.reserve(angular_quadrature.n_points());
+  for (auto n = 0; n < angular_quadrature.n_points(); n++) {
+    double ind_source = source_bank.GetByID(source_id)->EvaluateAtNode(
+        node, angular_quadrature.GetAbscissa(n));
+    double inscattering = material_bank.GetByID(material_id).scattering_xs /
+                          (4.0 * M_PI) * node.scalar_flux;
+    source_fluxes.push_back(inscattering + ind_source);
+  }
+  return source_fluxes;
+}
 }  // namespace hummingbird

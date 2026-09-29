@@ -68,19 +68,20 @@ void UpdateScalarFlux(Node& node,
                       const QuadratureBase<Ordinate> angular_quadrature);
 
 /**
- * @brief Update the source terms at each angular quadrature point
+ * @brief Compute the node source flux values
  *
- * @param node Node to modify
- * @param material_id Material ID from element
- * @param source_id Source ID from element
+ * @param node Node
+ * @param material_id Material ID
+ * @param source_id Source ID
  * @param material_bank Material bank
  * @param source_bank Source bank
  * @param angular_quadrature Angular quadrature set
+ * @return std::vector<double>
  */
-void UpdateSourceFluxes(Node& node, const int material_id, const int source_id,
-                        const MaterialBank& material_bank,
-                        const SourceBank& source_bank,
-                        const QuadratureBase<Ordinate>& angular_quadrature);
+std::vector<double> ComputeNodeSourceFluxes(
+    const Node& node, const int material_id, const int source_id,
+    const MaterialBank& material_bank, const SourceBank& source_bank,
+    const QuadratureBase<Ordinate>& angular_quadrature);
 }  // namespace hummingbird
 
 #endif  // HUMMINGBIRD_MESH_NODE_H_
