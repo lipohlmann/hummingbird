@@ -51,9 +51,10 @@ class CGProblem : public ProblemBase {
    */
   // this method will need to apply boundary conditions as well if needed
   std::vector<GlobalForcingData> AssembleGlobalForcingData(
-      const GaussLobattoLegendre& gll_quad, const Mesh& mesh,
-      const MaterialBank& material_bank, const Ordinate& ordinate,
-      const size_t ordinate_index) override;
+      const GaussLobattoLegendre& gll_quad, Mesh& mesh,
+      const MaterialBank& material_bank, const SourceBank& source_bank,
+      const Ordinate& ordinate, const size_t ordinate_index,
+      const QuadratureBase<Ordinate>& angular_quad_set) override;
 
  private:
   /**

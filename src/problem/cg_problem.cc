@@ -28,12 +28,15 @@ std::vector<GlobalMatrixData> CGProblem::AssembleGlobalMatrixData(
 }
 
 std::vector<GlobalForcingData> CGProblem::AssembleGlobalForcingData(
-    const GaussLobattoLegendre& gll_quad, const Mesh& mesh,
-    const MaterialBank& material_bank, const Ordinate& ordinate,
-    const size_t ordinate_index) {
+    const GaussLobattoLegendre& gll_quad, Mesh& mesh,
+    const MaterialBank& material_bank, const SourceBank& source_bank,
+    const Ordinate& ordinate, const size_t ordinate_index,
+    const QuadratureBase<Ordinate>& angular_quad_set) {
   std::vector<GlobalForcingData> assembled_global_forcing_data;
 
   for (const auto& elem : mesh.elements()) {
+    elem->SetNodeSourceFluxes(mesh, material_bank, source_bank,
+                              angular_quad_set);
     auto local_forcing_vector = elem->LocalForcingVector(
         gll_quad, mesh, material_bank, ordinate, ordinate_index);
     for (auto i = 0; i < gll_quad.n_points(); i++) {

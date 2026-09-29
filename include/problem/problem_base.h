@@ -130,9 +130,10 @@ class ProblemBase {
    * @return std::vector<GlobalForcingData>
    */
   virtual std::vector<GlobalForcingData> AssembleGlobalForcingData(
-      const GaussLobattoLegendre& gll_quad, const Mesh& mesh,
-      const MaterialBank& material_bank, const Ordinate& ordinate,
-      const size_t ordinate_index) = 0;
+      const GaussLobattoLegendre& gll_quad, Mesh& mesh,
+      const MaterialBank& material_bank, const SourceBank& source_bank,
+      const Ordinate& ordinate, const size_t ordinate_index,
+      const QuadratureBase<Ordinate>& angular_quad_set) = 0;
 
   /**
    * @brief Apply boundary conditions by adding in values needed at boundary
