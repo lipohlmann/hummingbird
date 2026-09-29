@@ -127,10 +127,10 @@ TEST(UpdateScalarFluxTest, ThrowsWhenAngularFluxesIsTooShort) {
 }
 
 // ---------------------------------------------------------------------------
-// UpdateSourceFluxes tests
+// ComputeNodeSourceFluxes tests
 // ---------------------------------------------------------------------------
 
-TEST(UpdateSourceFluxesTest,
+TEST(ComputeNodeSourceFluxesTest,
      CombinesInscatteringAndConstantIndependentSourceAtEveryPoint) {
   MaterialBank material_bank(WrapMaterials(/*scattering_xs=*/1.0,
                                            /*total_xs=*/2.0,
@@ -139,22 +139,21 @@ TEST(UpdateSourceFluxesTest,
   GaussLegendreTrapezoid quad(2, 2);
 
   Node node(0, 0.0, 0.0, 0.0);
-  node.material_id = 0;
-  node.source_id = 1;  // id 0 is reserved for the zero-strength "none" source
   node.scalar_flux = 3.0;
-  node.source_fluxes.resize(quad.n_points());
-
-  UpdateSourceFluxes(node, material_bank, source_bank, quad);
+  // material id 0; source id 1 (id 0 is reserved for the zero-strength
+  // "none" source)
+  auto source_fluxes =
+      ComputeNodeSourceFluxes(node, 0, 1, material_bank, source_bank, quad);
 
   // inscattering = scattering_xs / (4*pi) * scalar_flux = 1.0 / (4*pi) * 3.0
   // independent source = strength / 4*pi = 1.0
   const double expected = 1.0 / (4.0 * M_PI) * 3.0 + 1.0;
   for (size_t i = 0; i < quad.n_points(); i++)
-    EXPECT_NEAR(node.source_fluxes[i], expected, EXP_NEAR_TOLERANCE)
+    EXPECT_NEAR(source_fluxes[i], expected, EXP_NEAR_TOLERANCE)
         << "Mismatch at quadrature point " << i;
 }
 
-TEST(UpdateSourceFluxesTest, ZeroScatteringIsolatesIndependentSource) {
+TEST(ComputeNodeSourceFluxesTest, ZeroScatteringIsolatesIndependentSource) {
   MaterialBank material_bank(WrapMaterials(/*scattering_xs=*/0.0,
                                            /*total_xs=*/1.0,
                                            /*fission_xs=*/0.0, /*nu=*/0.0));
@@ -162,17 +161,16 @@ TEST(UpdateSourceFluxesTest, ZeroScatteringIsolatesIndependentSource) {
   GaussLegendreTrapezoid quad(1, 1);
 
   Node node(0, 0.0, 0.0, 0.0);
-  node.material_id = 0;
-  node.source_id = 1;  // id 0 is reserved for the zero-strength "none" source
   node.scalar_flux = 100.0;  // should be irrelevant since scattering_xs == 0
-  node.source_fluxes.resize(quad.n_points());
+  // material id 0; source id 1 (id 0 is reserved for the zero-strength
+  // "none" source)
+  auto source_fluxes =
+      ComputeNodeSourceFluxes(node, 0, 1, material_bank, source_bank, quad);
 
-  UpdateSourceFluxes(node, material_bank, source_bank, quad);
-
-  EXPECT_NEAR(node.source_fluxes[0], 2.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(source_fluxes[0], 2.0, EXP_NEAR_TOLERANCE);
 }
 
-TEST(UpdateSourceFluxesTest, ParsedSourcePassesEachAbscissaThrough) {
+TEST(ComputeNodeSourceFluxesTest, ParsedSourcePassesEachAbscissaThrough) {
   MaterialBank material_bank(WrapMaterials(/*scattering_xs=*/0.0,
                                            /*total_xs=*/1.0,
                                            /*fission_xs=*/0.0, /*nu=*/0.0));
@@ -181,15 +179,14 @@ TEST(UpdateSourceFluxesTest, ParsedSourcePassesEachAbscissaThrough) {
   GaussLegendreTrapezoid quad(2, 2);
 
   Node node(0, 0.0, 0.0, 0.0);
-  node.material_id = 0;
-  node.source_id = 1;  // id 0 is reserved for the zero-strength "none" source
   node.scalar_flux = 0.0;
-  node.source_fluxes.resize(quad.n_points());
-
-  UpdateSourceFluxes(node, material_bank, source_bank, quad);
+  // material id 0; source id 1 (id 0 is reserved for the zero-strength
+  // "none" source)
+  auto source_fluxes =
+      ComputeNodeSourceFluxes(node, 0, 1, material_bank, source_bank, quad);
 
   for (size_t i = 0; i < quad.n_points(); i++)
-    EXPECT_NEAR(node.source_fluxes[i], quad.GetAbscissa(i).x(),
+    EXPECT_NEAR(source_fluxes[i], quad.GetAbscissa(i).x(),
                 EXP_NEAR_TOLERANCE)
         << "Mismatch at quadrature point " << i;
 }

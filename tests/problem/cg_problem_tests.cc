@@ -112,10 +112,12 @@ json MakeSingleVacuumBCJson() {
   return json{{"boundary_conditions", {{"only_bc", {{"type", "vacuum"}}}}}};
 }
 
-// A SourceBank with no sources beyond the implicit ID-0 "none" entry --
-// sufficient for tests that hand-set source_fluxes afterward and never
-// resolve a node's source_id away from its default (0).
-SourceBank MakeNoSourceBank() { return SourceBank(json{{"sources", json::object()}}); }
+// A SourceBank with a single constant source named "src_b". A constant
+// source evaluates to strength / (4*pi) at every node and direction.
+SourceBank MakeConstantSourceBank(double strength) {
+  return SourceBank(json{
+      {"sources", {{"src_b", {{"type", "constant"}, {"strength", strength}}}}}});
+}
 
 // The smallest angular quadrature set AngularQuadratureSet allows (n_polar
 // must be >= 2), used only to satisfy InitializeNodeSolutions' GetAbscissa(0)
@@ -204,14 +206,16 @@ TEST(CGProblemAssemblyTest,
   // placed at global {0,1,2} and {2,3,4}; node 2's diagonal sums both
   // elements' (2,2)/(0,0) entries: 13/8 + 13/8 = 13/4.
   //
-  // Forcing: source only at the far-right node (global 4, Q=1 elsewhere 0)
-  // matches segment_tests.cc's ThreePointSingleBoundarySourceMatchesHand
-  // DerivedValues pattern (Q=[0,0,1] in element B's local order), except the
-  // derivative term now carries streaming_coeff = mu_x/sigma_t = 1/2 = 0.5
-  // (the delta term, i==k, is unaffected): f_B_local =
-  // [0.5*1/3*0.5, 0.5*1/3*(-2), 4/2*1/3+0.5*1/3*1.5] = [1/12, -1/3, 11/12].
-  // Element A's local source is all zero, so node 2's forcing is untouched by
-  // A (0 + 1/12 = 1/12).
+  // Forcing: element A has no source; element B has a constant source Q=1
+  // (strength 4*pi), so Q=[1,1,1] in B's local order. Sources are computed
+  // per element during assembly, so shared node 2 must see Q=0 from A and
+  // Q=1 from B. With streaming_coeff = mu_x/sigma_t = 0.5 and D(k,i) =
+  // L_i'(x_k): f_i = Q*w_i*length/2 + streaming_coeff*Q*sum_k w_k L_i'(x_k)
+  //              = w_i*2 + 0.5*(L_i(1) - L_i(-1))
+  // f_B_local = [2/3 - 1/2, 8/3, 2/3 + 1/2] = [1/6, 8/3, 7/6].
+  // Element A's local forcing is all zero, so node 2's forcing is B's alone
+  // (0 + 1/6 = 1/6). If A instead saw B's source at node 2 (the interface
+  // bug), f(0) and f(1) would be nonzero.
   const double length = 4.0;
   const double sigma_t = 2.0;
   MaterialBank material_bank = MakeSingleMaterialBank(sigma_t);
@@ -221,25 +225,23 @@ TEST(CGProblemAssemblyTest,
   Mesh mesh;
   mesh.AddNodes({MakeNode(0, 0.0, 0.0, 0.0), MakeNode(1, length, 0.0, 0.0),
                  MakeNode(2, 2.0 * length, 0.0, 0.0)});
+  SourceBank source_bank = MakeConstantSourceBank(4.0 * M_PI);
+  const int src_b = source_bank.GetIDByName("src_b");
   mesh.AddElement(
       std::make_unique<Segment>(std::array<size_t, 2>{0, 1}, 0, 0, mesh));
   mesh.AddElement(
-      std::make_unique<Segment>(std::array<size_t, 2>{1, 2}, 0, 0, mesh));
+      std::make_unique<Segment>(std::array<size_t, 2>{1, 2}, 0, src_b, mesh));
   mesh.Prepare(gll);
-  SourceBank source_bank = MakeNoSourceBank();
   AngularQuadratureSet angular_quad = MakeMinimalAngularQuad();
   mesh.InitializeNodeSolutions(1, *angular_quad.get(), source_bank);
-  // Mesh exposes nodes by const reference only; the underlying Mesh (and
-  // its nodes) are genuinely non-const here, so mutating a specific
-  // already-added node's fields this way is well-defined.
-  const_cast<Node&>(mesh.GetNode(4)).source_fluxes.at(0) = 1.0;
 
   TestableCGProblem problem(/*n_dofs=*/5, /*n_ordinates=*/1);
   auto gmd =
       problem.AssembleGlobalMatrixData(mesh, gll, material_bank, ordinate);
   problem.AssembleGlobalSystem(gmd, 0);
-  auto gfd =
-      problem.AssembleGlobalForcingData(gll, mesh, material_bank, ordinate, 0);
+  auto gfd = problem.AssembleGlobalForcingData(gll, mesh, material_bank,
+                                               source_bank, ordinate, 0,
+                                               *angular_quad.get());
   problem.AssembleGlobalForcing(gfd, 0);
 
   const auto& k = problem.global_system_matrices_.at(0);
@@ -268,12 +270,15 @@ TEST(CGProblemAssemblyTest,
 
   const auto& f = problem.global_forcing_vectors_.at(0);
   ASSERT_EQ(f.n_elem, 5u);
-  EXPECT_NEAR(f(0), 0.0, EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(f(1), 0.0, EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(f(2), 1.0 / 12.0, EXP_NEAR_TOLERANCE)
-      << "Shared node's forcing should sum both elements' contributions.";
-  EXPECT_NEAR(f(3), -1.0 / 3.0, EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(f(4), 11.0 / 12.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(f(0), 0.0, EXP_NEAR_TOLERANCE)
+      << "Sourceless element should not pick up its neighbor's source.";
+  EXPECT_NEAR(f(1), 0.0, EXP_NEAR_TOLERANCE)
+      << "Sourceless element should not pick up its neighbor's source.";
+  EXPECT_NEAR(f(2), 1.0 / 6.0, EXP_NEAR_TOLERANCE)
+      << "Shared node's forcing should only include the sourced element's "
+         "contribution.";
+  EXPECT_NEAR(f(3), 8.0 / 3.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(f(4), 7.0 / 6.0, EXP_NEAR_TOLERANCE);
 }
 
 TEST(CGProblemAssemblyTest,
@@ -291,15 +296,13 @@ TEST(CGProblemAssemblyTest,
   //   [[13/8, -1/3, 1/24], [-1/3, 6, -1/3], [1/24, -1/3, 13/8]]
   // Shared node 2: A's right diagonal (3/2) + B's left diagonal (13/8).
   //
-  // Forcing: source only at the shared node (global 2, Q=1 elsewhere 0).
-  // The derivative term now carries streaming_coeff = mu_x/sigma_t^e (the
-  // delta term, i==k, is unaffected by it):
-  // For element A (k=2 term, length=2, streaming_coeff=1/1=1, unchanged):
-  //   f_A_local = [1/6, -2/3, 5/6].
-  // For element B (k=0 term, length=4, streaming_coeff=1/2=0.5):
-  //   f_B_local = [2*1/3 + 0.5*1/3*(-1.5), 0.5*1/3*2, 0.5*1/3*(-0.5)]
-  //             = [5/12, 1/3, -1/12].
-  // Node 2 sums A's right component (5/6) and B's left component (5/12).
+  // Forcing: element A (mat_a) has no source; element B (mat_b) has a
+  // constant source Q=1, so shared node 2 must see Q=0 from A and Q=1 from
+  // B even though A and B also differ in material. Element B has the same
+  // length/sigma_t as the uniform test above, so
+  //   f_B_local = [1/6, 8/3, 7/6]
+  // and f_A_local is all zero. If A instead saw B's source at node 2 (the
+  // interface bug), f_A_local would be [1/6, -2/3, 5/6].
   const double length_a = 2.0;
   const double sigma_t_a = 1.0;
   const double length_b = 4.0;
@@ -313,22 +316,23 @@ TEST(CGProblemAssemblyTest,
   Mesh mesh;
   mesh.AddNodes({MakeNode(0, 0.0, 0.0, 0.0), MakeNode(1, length_a, 0.0, 0.0),
                  MakeNode(2, length_a + length_b, 0.0, 0.0)});
+  SourceBank source_bank = MakeConstantSourceBank(4.0 * M_PI);
+  const int src_b = source_bank.GetIDByName("src_b");
   mesh.AddElement(
       std::make_unique<Segment>(std::array<size_t, 2>{0, 1}, mat_a, 0, mesh));
-  mesh.AddElement(
-      std::make_unique<Segment>(std::array<size_t, 2>{1, 2}, mat_b, 0, mesh));
+  mesh.AddElement(std::make_unique<Segment>(std::array<size_t, 2>{1, 2},
+                                            mat_b, src_b, mesh));
   mesh.Prepare(gll);
-  SourceBank source_bank = MakeNoSourceBank();
   AngularQuadratureSet angular_quad = MakeMinimalAngularQuad();
   mesh.InitializeNodeSolutions(1, *angular_quad.get(), source_bank);
-  const_cast<Node&>(mesh.GetNode(2)).source_fluxes.at(0) = 1.0;
 
   TestableCGProblem problem(/*n_dofs=*/5, /*n_ordinates=*/1);
   auto gmd =
       problem.AssembleGlobalMatrixData(mesh, gll, material_bank, ordinate);
   problem.AssembleGlobalSystem(gmd, 0);
-  auto gfd =
-      problem.AssembleGlobalForcingData(gll, mesh, material_bank, ordinate, 0);
+  auto gfd = problem.AssembleGlobalForcingData(gll, mesh, material_bank,
+                                               source_bank, ordinate, 0,
+                                               *angular_quad.get());
   problem.AssembleGlobalForcing(gfd, 0);
 
   const auto& k = problem.global_system_matrices_.at(0);
@@ -343,12 +347,15 @@ TEST(CGProblemAssemblyTest,
          "values.";
 
   const auto& f = problem.global_forcing_vectors_.at(0);
-  EXPECT_NEAR(f(0), 1.0 / 6.0, EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(f(1), -2.0 / 3.0, EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(f(2), 5.0 / 6.0 + 5.0 / 12.0, EXP_NEAR_TOLERANCE)
-      << "Shared node's forcing should sum both elements' contributions.";
-  EXPECT_NEAR(f(3), 1.0 / 3.0, EXP_NEAR_TOLERANCE);
-  EXPECT_NEAR(f(4), -1.0 / 12.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(f(0), 0.0, EXP_NEAR_TOLERANCE)
+      << "Sourceless element should not pick up its neighbor's source.";
+  EXPECT_NEAR(f(1), 0.0, EXP_NEAR_TOLERANCE)
+      << "Sourceless element should not pick up its neighbor's source.";
+  EXPECT_NEAR(f(2), 1.0 / 6.0, EXP_NEAR_TOLERANCE)
+      << "Shared node's forcing should only include the sourced element's "
+         "contribution.";
+  EXPECT_NEAR(f(3), 8.0 / 3.0, EXP_NEAR_TOLERANCE);
+  EXPECT_NEAR(f(4), 7.0 / 6.0, EXP_NEAR_TOLERANCE);
 }
 
 TEST(CGProblemAssemblyTest, ThreeUniformElementsSumBothSharedNodes) {
