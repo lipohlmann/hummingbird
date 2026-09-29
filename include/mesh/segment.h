@@ -12,6 +12,11 @@
 #include "mesh/node.h"
 
 namespace hummingbird {
+/**
+ * @brief 1D line element defined by two boundary nodes, with interior nodes
+ * placed at Gauss-Lobatto-Legendre points
+ *
+ */
 class Segment : public Element {
  public:
   /**

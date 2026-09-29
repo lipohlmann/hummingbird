@@ -11,6 +11,12 @@
 using nlohmann::json;
 
 namespace hummingbird {
+/**
+ * @brief Base class for banks that store objects of type T by integer ID and
+ * look them up by the name given in the JSON input file
+ *
+ * @tparam T Stored object type
+ */
 template <typename T>
 class BankBase {
  public:

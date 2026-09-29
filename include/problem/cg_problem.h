@@ -39,14 +39,18 @@ class CGProblem : public ProblemBase {
 
   /**
    * @brief See ProblemBase::AssembleGlobalForcingData. For each element, the
-   * local forcing vector is scattered into GlobalForcingData entries keyed by
-   * the element's node IDs.
+   * element's node source fluxes are first recomputed with
+   * Element::SetNodeSourceFluxes (using that element's material and source),
+   * then the local forcing vector is scattered into GlobalForcingData entries
+   * keyed by the element's node IDs.
    *
    * @param gll_quad GaussLobattoLegendre quadrature set
    * @param mesh Mesh
    * @param material_bank Material bank
+   * @param source_bank Source bank
    * @param ordinate Ordinate (direction)
    * @param ordinate_index Index in the angular quadrature
+   * @param angular_quad_set Angular quadrature set
    * @return std::vector<GlobalForcingData>
    */
   // this method will need to apply boundary conditions as well if needed

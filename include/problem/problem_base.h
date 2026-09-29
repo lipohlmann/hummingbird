@@ -120,13 +120,17 @@ class ProblemBase {
 
   /**
    * @brief Assemble the vector of GlobalForcingData structs that will be using
-   * in AssembleGlobalForcing to create the global forcing vector
+   * in AssembleGlobalForcing to create the global forcing vector.
+   * Implementations may overwrite Node::source_fluxes on the mesh, which is
+   * why mesh is non-const.
    *
    * @param gll_quad GaussLobattoLegendre quadrature set
    * @param mesh Mesh
    * @param material_bank Material bank
+   * @param source_bank Source bank
    * @param ordinate Ordinate (direction)
    * @param ordinate_index Index in the angular quadrature
+   * @param angular_quad_set Angular quadrature set
    * @return std::vector<GlobalForcingData>
    */
   virtual std::vector<GlobalForcingData> AssembleGlobalForcingData(

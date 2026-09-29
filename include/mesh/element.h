@@ -176,7 +176,7 @@ class Element {
   int material_id_ = -1;
 
   /// @brief Source ID to access Source Bank. ID of 0 is always NONE, meaning
-  /// the node has no external source.
+  /// the element has no external source.
   int source_id_ = 0;
 
   /// @brief IDs of nodes defining the element

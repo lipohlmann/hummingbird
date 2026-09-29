@@ -135,8 +135,9 @@ class Mesh {
   }
 
   /**
-   * @brief Initialize all node solution values to 0's with the correct vector
-   * lengths
+   * @brief Initialize node solution vectors to the correct lengths. Scalar and
+   * angular fluxes are set to 0 and source fluxes are set to the element's
+   * external source
    *
    * @param n_ordinates Number of ordinates
    * @param angular_quad_set Angular quadrature set

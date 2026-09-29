@@ -18,6 +18,11 @@
 namespace hummingbird {
 class SourceBank;
 
+/**
+ * @brief A point in the mesh holding its coordinates, boundary info, and flux
+ * solution values
+ *
+ */
 struct Node {
   /// @brief Unique identifier for the node
   size_t id;
@@ -45,7 +50,10 @@ struct Node {
   /// @brief Angular flux values in order of the SN quadrature set
   std::vector<double> angular_fluxes;
 
-  /// @brief Source flux values in order of the SN quadrature set
+  /// @brief Source flux values in order of the SN quadrature set. These are
+  /// scratch values: they are overwritten for each element during forcing
+  /// assembly (see Element::SetNodeSourceFluxes), so on interface nodes they
+  /// hold the last element's values. Do not read them outside assembly.
   std::vector<double> source_fluxes;
 };
 
