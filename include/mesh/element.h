@@ -16,6 +16,7 @@
 
 namespace hummingbird {
 class Mesh;
+class SourceBank;
 
 /**
  * @brief Defines a subset of the domain (an "element")
@@ -108,18 +109,18 @@ class Element {
     node_ids_ = std::move(node_ids);
   }
 
-  inline void SetNodeSourceFluxes(
-      Mesh& mesh, const MaterialBank& material_bank,
-      const SourceBank& source_bank,
-      const QuadratureBase<Ordinate>& angular_quadrature) {
-    for (const auto node_id : node_ids_) {
-      auto& node = mesh.GetNode(node_id);
-      auto source_fluxes =
-          ComputeNodeSourceFluxes(node, material_id_, source_id_, material_bank,
-                                  source_bank, angular_quadrature);
-      mesh.SetNodeSourceFluxes(node_id, source_fluxes);
-    }
-  }
+  /**
+   * @brief Compute and set the source flux values on this element's nodes
+   * using this element's material and source IDs
+   *
+   * @param mesh Mesh
+   * @param material_bank Material bank
+   * @param source_bank Source bank
+   * @param angular_quadrature Angular quadrature set
+   */
+  void SetNodeSourceFluxes(Mesh& mesh, const MaterialBank& material_bank,
+                           const SourceBank& source_bank,
+                           const QuadratureBase<Ordinate>& angular_quadrature);
 
   /**
    * @brief Construct the local forcing vector for this element at a given
