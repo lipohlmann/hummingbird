@@ -1,0 +1,56 @@
+{
+  "problem": {
+    "name": "1D_MMS_5",
+    "mode": "fixed_source",
+    "output_format": "csv"
+  },
+  "mesh": {
+    "filename": "1D_MMS_5.msh"
+  },
+  "boundary_conditions": {
+    "west": {
+      "type": "vacuum"
+    },
+    "east": {
+      "type": "vacuum"
+    }
+  },
+  "materials": {
+    "mms_material_1": {
+      "scattering_xs": 0,
+      "total_xs": 1,
+      "fission_xs": 0,
+      "nu": 0
+    },
+    "mms_material_2": {
+      "scattering_xs": 0,
+      "total_xs": 50,
+      "fission_xs": 0,
+      "nu": 0
+    }
+  },
+  "sources": {
+    "mms_source_1": {
+      "type": "parsed_function",
+      "expression": "-1.0/8.0*pi*mu*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*sin((1.0/8.0)*pi*x) + (pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*cos((1.0/8.0)*pi*x)"
+    },
+    "mms_source_2": {
+      "type": "parsed_function",
+      "expression": "-1.0/80.0*mu*x*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1) + 50*(1.0/10.0 - 1.0/160.0*pow(x, 2))*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)"
+    }
+  },
+  "angular_treatment": {
+    "quadrature_set": "gauss_legendre",
+    "n_azimuthal": 1,
+    "n_polar": 12
+  },
+  "spectral_elements": {
+    "transport_form": "saaf",
+    "fe_formulation": "cg",
+    "n_points": 64
+  },
+  "source_iteration": {
+    "tolerance": 1e-12,
+    "max_iterations": 1000
+  }
+}
