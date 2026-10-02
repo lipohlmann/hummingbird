@@ -116,7 +116,7 @@ def plot_scalar_flux(df, palette, output_path):
 
 def plot_angular_fluxes(df, n_ordinates, palette, output_path):
     fig, ax = plt.subplots(figsize=FIGSIZE)
-    for i in range(n_ordinates):
+    for i in range(0, n_ordinates, 2):
         mu = df[f"direction_cosine_{i}"].iloc[0]
         label = f"μ = {mu:.3f}"
         sns.lineplot(
@@ -124,7 +124,7 @@ def plot_angular_fluxes(df, n_ordinates, palette, output_path):
             x="x",
             y=f"angular_flux_{i}",
             ax=ax,
-            color=palette[i % len(palette)],
+            color=palette[int(i / 2) % len(palette)],
             label=label,
         )
     ax.set_xlabel(X_LABEL)
