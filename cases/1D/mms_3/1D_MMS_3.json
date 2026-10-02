@@ -47,7 +47,7 @@
   "spectral_elements": {
     "transport_form": "saaf",
     "fe_formulation": "cg",
-    "n_points": 32
+    "n_points": 48
   },
   "source_iteration": {
     "tolerance": 1e-12,
