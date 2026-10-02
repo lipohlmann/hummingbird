@@ -1,11 +1,11 @@
 {
   "problem": {
-    "name": "1D_MMS_3",
+    "name": "1D_MMS_4",
     "mode": "fixed_source",
     "output_format": "csv"
   },
   "mesh": {
-    "filename": "1D_MMS_3.msh"
+    "filename": "1D_MMS_4.msh"
   },
   "boundary_conditions": {
     "west": {
@@ -32,11 +32,11 @@
   "sources": {
     "mms_source_1": {
       "type": "parsed_function",
-      "expression": "mu*(-2*pow(x + 1, 2)*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*sin(x)*cos(x) + (2*x + 2)*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*pow(cos(x), 2)) - 8.0/7.0*pow(x, 2)*pow(cos(x), 2) - 16.0/7.0*x*pow(cos(x), 2) + 2*pow(x + 1, 2)*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*pow(cos(x), 2) - 8.0/7.0*pow(cos(x), 2)"
+      "expression": "13*mu*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*cos(13*x) + 2*(sin(13*x) + sin(52))*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1) - 8.0/7.0*sin(13*x) - 8.0/7.0*sin(52)"
     },
     "mms_source_2": {
       "type": "parsed_function",
-      "expression": "mu*(-6*x*pow(1 - pow(x, 2), 3)*(2*x + 1)*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*exp(-3*pow(x, 2)) - 6*x*pow(1 - pow(x, 2), 2)*(2*x + 1)*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*exp(-3*pow(x, 2)) + 2*pow(1 - pow(x, 2), 3)*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*exp(-3*pow(x, 2))) + (96.0/35.0)*pow(x, 7)*exp(-3*pow(x, 2)) + (48.0/35.0)*pow(x, 6)*exp(-3*pow(x, 2)) - 288.0/35.0*pow(x, 5)*exp(-3*pow(x, 2)) - 144.0/35.0*pow(x, 4)*exp(-3*pow(x, 2)) + (288.0/35.0)*pow(x, 3)*exp(-3*pow(x, 2)) + (144.0/35.0)*pow(x, 2)*exp(-3*pow(x, 2)) - 96.0/35.0*x*exp(-3*pow(x, 2)) + (8.0/5.0)*pow(1 - pow(x, 2), 3)*(2*x + 1)*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*exp(-3*pow(x, 2)) - 48.0/35.0*exp(-3*pow(x, 2))"
+      "expression": "mu*(-15.0/576460752303423488.0*pow(x, 29)*(2 - exp(-13*x))*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*sin(52) + 13*(1 - 1.0/1152921504606846976.0*pow(x, 30))*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*exp(-13*x)*sin(52)) + (3.0/1261007895663738880.0)*pow(x, 30)*sin(52) - 3.0/2522015791327477760.0*pow(x, 30)*exp(-13*x)*sin(52) + (8.0/5.0)*(1 - 1.0/1152921504606846976.0*pow(x, 30))*(2 - exp(-13*x))*(pow(mu, 6) + 5*pow(mu, 4) - 3*pow(mu, 2) + 1)*sin(52) - 96.0/35.0*sin(52) + (48.0/35.0)*exp(-13*x)*sin(52)"
     }
   },
   "angular_treatment": {
@@ -47,10 +47,10 @@
   "spectral_elements": {
     "transport_form": "saaf",
     "fe_formulation": "cg",
-    "n_points": 32
+    "n_points": 128
   },
   "source_iteration": {
-    "tolerance": 1e-12,
+    "tolerance": 1e-8,
     "max_iterations": 1000
   }
 }
