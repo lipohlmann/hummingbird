@@ -130,7 +130,7 @@ def plot_angular_fluxes(df, n_ordinates, palette, output_path):
     ax.set_xlabel(X_LABEL)
     ax.set_ylabel(ANGULAR_FLUX_LABEL)
     ax.set_title("Angular Flux by Ordinate")
-    ax.legend(title="Ordinate", loc="upper left", ncols=2, fontsize="x-small")
+    ax.legend(title="Ordinate", loc="upper right", ncols=2, fontsize="x-small")
     finalize_axes(fig, ax)
     fig.savefig(output_path, dpi=DPI, bbox_inches="tight")
     plt.close(fig)
